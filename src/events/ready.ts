@@ -1,5 +1,6 @@
 import { Event } from "../structures/Events";
+import { Logger } from "../structures/Logger";
 
 export default new Event("ready", () => {
-  console.log("Bot is online!");
+  Logger.info("The bot is connected and ready!");
 });

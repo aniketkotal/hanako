@@ -15,7 +15,9 @@
   "dependencies": {
     "discord.js": "^14.3.0",
     "dotenv": "^16.0.1",
-    "glob": "^7.2.0"
+    "glob": "^7.2.0",
+    "moment": "^2.29.4",
+    "mongoose": "^6.5.3"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
