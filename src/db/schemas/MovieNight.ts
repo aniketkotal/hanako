@@ -1,15 +1,16 @@
 import { Schema } from "mongoose";
 
 type Movie = {
-  name: string;
+  name: String;
   voteCount: number;
 };
 
 interface MovieNight {
   movies: Movie[];
-  timeEnds: string;
-  createdBy: string;
-  channelToSend: string;
+  timeEnds: String;
+  createdBy: String;
+  channelToSend: String;
+  messageID: String;
 }
 
 const MovieNight = new Schema<MovieNight>({
@@ -25,6 +26,10 @@ const MovieNight = new Schema<MovieNight>({
     required: true,
   },
   channelToSend: {
+    type: String,
+    required: true,
+  },
+  messageID: {
     type: String,
     required: true,
   },

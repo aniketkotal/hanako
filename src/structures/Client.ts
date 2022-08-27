@@ -28,6 +28,13 @@ export class ExtendedClient extends Client {
     this.login(process.env.botToken);
   }
 
+  async getRandomItem(array: Object[]): Promise<any> {
+    return await new Promise(resolve => {
+      const res = array[Math.floor(Math.random() * array.length)];
+      resolve(res);
+    });
+  }
+
   private _connectToDB() {
     mongoose.connect("mongodb://localhost:27017/hanakoDB");
     const db = mongoose.connection;
@@ -62,12 +69,12 @@ export class ExtendedClient extends Client {
   private async _registerModules() {
     const slashCommands: ApplicationCommandDataResolvable[] = [];
     const commandFiles = await globPromise(
-      `${__dirname}/../commands/*/*{.ts,.js}`,
+      `${__dirname}/../commands/**/*{.ts,.js}`,
     );
 
     commandFiles.forEach(async filePath => {
       const command: CommandType = await this._importFile(filePath);
-      if (!command.name) return;
+      if (!command?.name) return;
       this.commands.set(command.name, command);
       slashCommands.push(command);
     });

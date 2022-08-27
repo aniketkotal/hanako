@@ -1,12 +1,22 @@
 {
-  "allowed_mnight_users_id": ["589206850839379969", "583246168423923712"],
-  "embed_texts": {
-    "movienight": [
+  "movienight": {
+    "allowed_mnight_users_id": ["589206850839379969", "583246168423923712"],
+    "embed_texts": [
       {
         "color": 10192110,
         "title": "📊 Movie Night Voting!",
         "description": "Welcome to another Movie Night voting! Below are this week's selection of movies to choose from.\nYour movie could be on there next too! Go to <#736683960062574635> and let us know your favourite movie!\n\nClick on the reactions below to choose the one you'd love to watch!\n",
         "footer": "This voting will end on <t:{}:F>"
+      }
+    ],
+    "button_text": [
+      {
+        "labelSuccess": "Look's perfect, Send it!",
+        "labelCancel": "Something's Off"
+      },
+      {
+        "labelSuccess": "Awesome! Send off!",
+        "labelCancel": "Nope. Cancel"
       }
     ]
   },
