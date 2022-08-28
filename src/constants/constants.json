@@ -1,14 +1,24 @@
 {
   "movienight": {
     "allowed_mnight_users_id": ["589206850839379969", "583246168423923712"],
-    "embed_texts": [
-      {
-        "color": 10192110,
-        "title": "📊 Movie Night Voting!",
-        "description": "Welcome to another Movie Night voting! Below are this week's selection of movies to choose from.\nYour movie could be on there next too! Go to <#736683960062574635> and let us know your favourite movie!\n\nClick on the reactions below to choose the one you'd love to watch!\n",
-        "footer": "This voting will end on <t:{}:F>"
-      }
-    ],
+    "embed_texts": {
+      "all_variations": [
+        {
+          "color": 10192110,
+          "title": "📊 Movie Night Voting!",
+          "description": "Welcome to another Movie Night voting! Below are this week's selection of movies to choose from.\nYour movie could be on there next too! Go to <#736683960062574635> and let us know your favourite movie!\n\nClick on the reactions below to choose the one you'd love to watch!\n"
+        }
+      ],
+      "footer_since": "This voting ended on",
+      "footer_until": "This voting ends on"
+    },
+    "messages": {
+      "embed_preview_message": "This is a preview of the embed that'll be sent. The reactions will be added on time of posting!",
+      "on_ok": "The voting message will be sent shortly!",
+      "on_success": "The message was sent successfully!",
+      "on_cancel": "Welp. Start again I guess? dum bish",
+      "on_timeout": "Guess you needed more time eh?"
+    },
     "button_text": [
       {
         "labelSuccess": "Look's perfect, Send it!",
@@ -18,7 +28,7 @@
         "labelSuccess": "Awesome! Send off!",
         "labelCancel": "Nope. Cancel"
       }
-    ]
-  },
-  "poll_emotes": ["1️⃣", "2️⃣", "3️⃣"]
+    ],
+    "vote_emotes": ["1️⃣", "2️⃣", "3️⃣"]
+  }
 }

@@ -1,8 +1,8 @@
 export class Logger {
   static info(text: string): void {
-    console.log(`[+] ${text}`);
+    console.log(`[INFO] ${text}`);
   }
   static error(text: string): void {
-    console.log(`[+] ${text}`);
+    console.log(`[ERROR] ${text}`);
   }
 }

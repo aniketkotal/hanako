@@ -7,7 +7,7 @@ import moment from "moment";
 import { Command } from "../../../structures/Command";
 import { Logger } from "../../../structures/Logger";
 import { MovieNightEmbed } from "../../../typings/ConstTypes";
-import { addCollector } from "./collectors";
+import { localCollector } from "./collectors";
 
 export default new Command({
   name: "movienight",
@@ -49,44 +49,37 @@ export default new Command({
         throw new Error("You're not allowed to use this command!");
 
       const movies = [
-        options.get("movie1", true),
-        options.get("movie2", true),
-        options.get("movie3", true),
+        options.get("movie1"),
+        options.get("movie2"),
+        options.get("movie3"),
       ];
-
-      const time = options.get("time") || { value: 24 };
+      const time: number = Number(options.get("time")?.value) || 24;
 
       const embedTexts = movienight.embed_texts;
       const embedConstant: MovieNightEmbed = await client.getRandomItem(
-        embedTexts,
+        embedTexts.all_variations,
       );
+
+      const votesText = movies
+        .map((movie, i) => `${movienight.vote_emotes[i]} ${movie.value}`)
+        .join("\n");
+
+      const timeVoteEnds: string = moment()
+        .add({ hours: time })
+        .unix()
+        .toString();
 
       const movieEmbed: APIEmbed = {
         title: embedConstant.title,
         description: embedConstant.description,
         color: embedConstant.color,
         footer: {
-          text: guild.name,
+          text: embedTexts.footer_until,
         },
-        timestamp: new Date(Date.now()).toISOString(),
+        timestamp: moment().add({ hours: time }).toISOString(),
       };
 
-      const votesText = movies
-        .map(
-          (movie, i) =>
-            `${movienight.poll_emotes[i]} ${movie.value.toString()}`,
-        )
-        .join("\n");
-
-      const timeVoteEnds: string = moment()
-        .add({ hours: Number(time.value) })
-        .unix()
-        .toString();
-
-      const endText: string = embedConstant.footer.replace("{}", timeVoteEnds);
-
       movieEmbed.description += votesText;
-      movieEmbed.description += `\n\n${endText}`;
 
       const buttonTextToUse = await client.getRandomItem(
         movienight.button_text,
@@ -113,57 +106,30 @@ export default new Command({
       };
 
       const res = await interaction.followUp({
-        content:
-          "This is a preview of the embed that'll be sent. The reactions will be added on time of posting!",
+        content: movienight.messages.embed_preview_message,
         embeds: [movieEmbed],
         components: [actionRow],
       });
 
-      const collector = res.createMessageComponentCollector({
-        time: 60000,
-      });
+      const timeUntilEnd: number = time * 60 * 60 * 100;
 
-      collector.on("collect", async i => {
-        if (i.customId === "send") {
-          interaction.editReply({
-            content: "The voting message will be sent shortly!",
-            components: [],
-            embeds: [],
-          });
-
-          const finalBtns: APIButtonComponent[] = movies.map(i => ({
-            type: 2,
-            style: 1,
-            label: String(i.value),
-            custom_id: i.name,
-          }));
-
-          const finalRow = {
-            type: 1,
-            components: finalBtns,
-          };
-
-          const msg = await interaction.channel.send({
-            embeds: [movieEmbed],
-            components: [finalRow],
-          });
-
-          addCollector(msg.id, msg.channelId, client);
-
-          await interaction.editReply({
-            content: "The message was sent successfully!",
-          });
-        } else {
-          interaction.editReply({
-            content: "Welp. Start again I guess? dum bish",
-            components: [],
-            embeds: [],
-          });
-        }
-      });
+      await localCollector(
+        interaction,
+        movienight,
+        res,
+        movies,
+        movieEmbed,
+        timeUntilEnd,
+        client,
+        timeVoteEnds,
+      );
     } catch (e) {
-      interaction.followUp({ content: e.message, ephemeral: true });
+      interaction.followUp({
+        content: "An unknown error occurred! Please try again later.",
+        ephemeral: true,
+      });
       Logger.error(e);
+      console.log(e);
     }
   },
 });
