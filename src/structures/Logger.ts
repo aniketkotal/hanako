@@ -1,8 +1,14 @@
+import chalk from "chalk";
+
 export class Logger {
-  static info(text: string): void {
-    console.log(`[INFO] ${text}`);
+  static infoColour = chalk.bold.blue;
+  static errorColour = chalk.bold.red;
+
+  static info(text: string | Error): void {
+    console.log(this.infoColour("[INFO]") + text);
   }
-  static error(text: string): void {
-    console.log(`[ERROR] ${text}`);
+
+  static error(text: string | Error): void {
+    console.log(this.errorColour("[ERROR]") + text);
   }
 }

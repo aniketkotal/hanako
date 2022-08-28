@@ -7,7 +7,7 @@ export type Movie = {
 
 export interface MovieNight extends Document, Array<Movie> {
   movies: Array<Movie>;
-  timeEnds: string;
+  timeEnds: number;
   createdBy: string;
   channelID: string;
   messageID: string;
@@ -19,7 +19,7 @@ const movieNightsSchema: Schema = new Schema({
     required: true,
   },
   timeEnds: {
-    type: String,
+    type: Number,
     required: true,
   },
   createdBy: {

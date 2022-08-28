@@ -1,8 +1,10 @@
 import {
   ApplicationCommandDataResolvable,
+  BaseGuildTextChannel,
   Client,
   ClientEvents,
   Collection,
+  Message,
 } from "discord.js";
 import { glob } from "glob";
 import { promisify } from "util";
@@ -12,10 +14,7 @@ import { Event } from "./Events";
 import constants from "../constants/constants.json";
 import mongoose from "mongoose";
 import { Logger } from "./Logger";
-import {
-  disableOlderButtons,
-  updateCollectorTimings,
-} from "../commands/utility/movienight/collectors";
+import { updateCollectorTimings } from "../commands/utility/movienight/collectors";
 const globPromise = promisify(glob);
 export class ExtendedClient extends Client {
   commands: Collection<string, CommandType> = new Collection();
@@ -30,7 +29,6 @@ export class ExtendedClient extends Client {
     this._addAdditionalData({ constants });
     this._connectToDB();
     this.login(process.env.botToken).then(() => {
-      disableOlderButtons();
       updateCollectorTimings();
     });
   }
@@ -40,6 +38,24 @@ export class ExtendedClient extends Client {
       const res = array[Math.floor(Math.random() * array.length)];
       resolve(res);
     });
+  }
+
+  async getMessage(
+    messageID: string,
+    channelID: string,
+  ): Promise<Message> | undefined {
+    const channel = (await this.channels.fetch(
+      channelID,
+    )) as BaseGuildTextChannel;
+
+    if (!channel)
+      throw new Error(
+        `The channel(${channelID}) was not found! The collector is not removed.`,
+      );
+    const messages = await channel.messages.fetch({ limit: 5 });
+    const message = messages.get(messageID);
+    if (!message) return undefined;
+    return message;
   }
 
   private _connectToDB() {
@@ -74,7 +90,7 @@ export class ExtendedClient extends Client {
   }
 
   private async _registerModules() {
-    const slashCommands: ApplicationCommandDataResolvable[] = [];
+    const slashCommands: Array<ApplicationCommandDataResolvable> = [];
     const commandFiles = await globPromise(
       `${__dirname}/../commands/**/*{.ts,.js}`,
     );

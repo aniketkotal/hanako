@@ -7,7 +7,7 @@ import moment from "moment";
 import { Command } from "../../../structures/Command";
 import { Logger } from "../../../structures/Logger";
 import { MovieNightEmbed } from "../../../typings/ConstTypes";
-import { localCollector } from "./collectors";
+import { previewEmbedCollector } from "./collectors";
 
 export default new Command({
   name: "movienight",
@@ -64,10 +64,7 @@ export default new Command({
         .map((movie, i) => `${movienight.vote_emotes[i]} ${movie.value}`)
         .join("\n");
 
-      const timeVoteEnds: string = moment()
-        .add({ hours: time })
-        .unix()
-        .toString();
+      const timeVoteEnds: number = moment().add({ hours: time }).unix();
 
       const movieEmbed: APIEmbed = {
         title: embedConstant.title,
@@ -113,7 +110,7 @@ export default new Command({
 
       const timeUntilEnd: number = time * 3600000;
 
-      await localCollector(
+      await previewEmbedCollector(
         interaction,
         movienight,
         res,

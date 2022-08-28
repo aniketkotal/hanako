@@ -1,7 +1,7 @@
 import {
   APIButtonComponent,
   APIEmbed,
-  BaseGuildTextChannel,
+  CommandInteraction,
   CommandInteractionOption,
   ComponentType,
   Message,
@@ -14,85 +14,47 @@ import { ExtendedClient } from "../../../structures/Client";
 import { Logger } from "../../../structures/Logger";
 import { ExtendedInteraction } from "../../../typings/Command";
 
-export const updateCollectorTimings = () => {
-  const currentData = moment().unix();
-  MovieNights.find({ timeEnds: { $lte: currentData } }, (err, res) => {
-    if (err) {
-      console.log(err);
-      throw new Error("An error occurred");
-    }
-    if (res.length === 0) return;
-    res.forEach(i => {
-      addGlobalCollector(i.messageID, i.channelID, client, +i.timeEnds);
-    });
+const updateCollectorTimings = async () => {
+  const aliveNights = await MovieNights.find({
+    timeEnds: { $gte: moment().unix() },
   });
+  if (!aliveNights.length) return;
+  aliveNights.forEach(i =>
+    addMovieNightCollector(i.messageID, i.channelID, client, +i.timeEnds),
+  );
 };
 
-export const disableOlderButtons = async () => {
-  const currentData = moment().unix();
-  MovieNights.find({ timeEnds: { $gte: currentData } }, (err, res) => {
-    if (err) {
-      console.log(err);
-      throw new Error("An error occurred");
-    }
-    if (res.length === 0) return;
-    res.forEach(async i => {
-      try {
-        const channel = (await client.channels.fetch(
-          i.channelID,
-        )) as BaseGuildTextChannel;
-
-        if (!channel)
-          throw new Error(
-            `The channel(${i.channelID}) was not found! The collector is not removed.`,
-          );
-
-        const messages = await channel.messages.fetch({ limit: 5 });
-        const message = messages.get(i.messageID);
-        if (!message) return;
-        console.log(message.id);
-        await message.edit({ components: [] });
-      } catch (e) {
-        console.log(e);
-      }
-    });
-  });
-};
-
-const addGlobalCollector = async (
-  messageID: string,
+const addMovieNightCollector = async (
+  messageData: string | Message,
   channelID: string,
   client: ExtendedClient,
   time: number,
 ) => {
   try {
-    const channel = (await client.channels.fetch(
-      channelID,
-    )) as BaseGuildTextChannel;
-
-    if (!channel)
-      throw new Error(
-        `The channel(${channelID}) was not found! The collector is not added.`,
-      );
-
-    const messages = await channel.messages.fetch({ limit: 5 });
-    const message = messages.get(messageID);
-    if (!message) return;
+    let message: Message;
+    if (typeof messageData === "string") {
+      message = await client.getMessage(messageData, channelID);
+      if (!message) return;
+    } else {
+      message = messageData;
+    }
 
     const collector = message.createMessageComponentCollector({
       componentType: ComponentType.Button,
       time,
     });
 
-    const [movieData] = await MovieNights.find({ messageID });
+    const [movieData] = await MovieNights.find({ messageData });
 
     collector.on("collect", async i => {
       await i.deferReply({ ephemeral: true });
+
       const vote = await addMovieVote({
         messageID: message.id,
         userID: i.user.id,
         movieID: i.customId,
       } as MovieVote);
+
       if (vote === null) {
         await i.followUp({
           content: `Your vote was added!`,
@@ -119,9 +81,7 @@ const addGlobalCollector = async (
         type: 1,
         components: btns,
       };
-
       console.log(i);
-
       message.edit({ components: [row] });
     });
   } catch (e) {
@@ -129,7 +89,27 @@ const addGlobalCollector = async (
   }
 };
 
-const localCollector = async (
+const sendMovieNightEmbed = async (
+  interaction: CommandInteraction,
+  embedData: APIEmbed,
+  movies: readonly CommandInteractionOption[],
+): Promise<Message> =>
+  await interaction.channel.send({
+    embeds: [embedData],
+    components: [
+      {
+        type: 1,
+        components: movies.map(i => ({
+          type: 2,
+          style: 1,
+          label: String(i.value),
+          custom_id: i.name,
+        })),
+      },
+    ],
+  });
+
+const previewEmbedCollector = async (
   interaction: ExtendedInteraction,
   constants: any,
   message: Message,
@@ -137,7 +117,7 @@ const localCollector = async (
   embedData: APIEmbed,
   remainTime: number,
   client: ExtendedClient,
-  endTime: string,
+  endTime: number,
 ) => {
   const collector = message.createMessageComponentCollector({
     time: 60000,
@@ -151,22 +131,9 @@ const localCollector = async (
         embeds: [],
       });
 
-      const msg = await interaction.channel.send({
-        embeds: [embedData],
-        components: [
-          {
-            type: 1,
-            components: movies.map(i => ({
-              type: 2,
-              style: 1,
-              label: String(i.value),
-              custom_id: i.name,
-            })),
-          },
-        ],
-      });
+      const msg = await sendMovieNightEmbed(interaction, embedData, movies);
 
-      await createMovieNight({
+      await addMovieNightToDB({
         movies: movies.map(movie => ({
           movieID: movie.name,
           name: String(movie.value),
@@ -177,7 +144,7 @@ const localCollector = async (
         messageID: msg.id,
       } as MovieNight);
 
-      await addGlobalCollector(msg.id, msg.channelId, client, remainTime);
+      await addMovieNightCollector(msg.id, msg.channelId, client, remainTime);
 
       await interaction.editReply({
         content: constants.messages.on_success,
@@ -215,16 +182,18 @@ async function addMovieVote(movieVote: MovieVote) {
   return res;
 }
 
-async function createMovieNight(movieNight: MovieNight) {
+async function addMovieNightToDB(movieNight: MovieNight) {
   try {
     const mnight = new MovieNights(movieNight);
-
     const result = await mnight.save();
-
     return result;
   } catch (e) {
     console.log(e);
   }
 }
 
-export { addGlobalCollector, localCollector };
+export {
+  addMovieNightCollector,
+  previewEmbedCollector,
+  updateCollectorTimings,
+};
