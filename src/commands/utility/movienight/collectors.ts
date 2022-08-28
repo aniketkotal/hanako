@@ -12,23 +12,32 @@ import { MovieNight, MovieNights } from "../../../db/schemas/MovieNights";
 import { MovieVote, MovieVotes } from "../../../db/schemas/MovieVotes";
 import { ExtendedClient } from "../../../structures/Client";
 import { Logger } from "../../../structures/Logger";
-import { ExtendedInteraction } from "../../../typings/Command";
 
 const updateCollectorTimings = async () => {
+  const currentTime = moment();
   const aliveNights = await MovieNights.find({
-    timeEnds: { $gte: moment().unix() },
+    timeEnds: { $gte: currentTime.unix() },
   });
   if (!aliveNights.length) return;
-  aliveNights.forEach(i =>
-    addMovieNightCollector(i.messageID, i.channelID, client, +i.timeEnds),
-  );
+  aliveNights.forEach(movieNight => {
+    const remainingTime = moment
+      .unix(movieNight.timeEnds)
+      .diff(currentTime, "milliseconds");
+
+    addMovieNightCollector(
+      movieNight.messageID,
+      client,
+      remainingTime,
+      movieNight.channelID,
+    );
+  });
 };
 
 const addMovieNightCollector = async (
   messageData: string | Message,
-  channelID: string,
   client: ExtendedClient,
   time: number,
+  channelID?: string,
 ) => {
   try {
     let message: Message;
@@ -38,13 +47,11 @@ const addMovieNightCollector = async (
     } else {
       message = messageData;
     }
-
     const collector = message.createMessageComponentCollector({
       componentType: ComponentType.Button,
       time,
     });
-
-    const [movieData] = await MovieNights.find({ messageData });
+    const [movieData] = await MovieNights.find({ messageID: message.id });
 
     collector.on("collect", async i => {
       await i.deferReply({ ephemeral: true });
@@ -66,7 +73,7 @@ const addMovieNightCollector = async (
       }
     });
 
-    collector.on("end", async i => {
+    collector.on("end", async () => {
       const btns: APIButtonComponent[] = [];
       movieData.movies.forEach(i => {
         btns.push({
@@ -81,7 +88,6 @@ const addMovieNightCollector = async (
         type: 1,
         components: btns,
       };
-      console.log(i);
       message.edit({ components: [row] });
     });
   } catch (e) {
@@ -109,68 +115,6 @@ const sendMovieNightEmbed = async (
     ],
   });
 
-const previewEmbedCollector = async (
-  interaction: ExtendedInteraction,
-  constants: any,
-  message: Message,
-  movies: readonly CommandInteractionOption[],
-  embedData: APIEmbed,
-  remainTime: number,
-  client: ExtendedClient,
-  endTime: number,
-) => {
-  const collector = message.createMessageComponentCollector({
-    time: 60000,
-  });
-
-  collector.on("collect", async i => {
-    if (i.customId === "send") {
-      interaction.editReply({
-        content: constants.messages.on_ok,
-        components: [],
-        embeds: [],
-      });
-
-      const msg = await sendMovieNightEmbed(interaction, embedData, movies);
-
-      await addMovieNightToDB({
-        movies: movies.map(movie => ({
-          movieID: movie.name,
-          name: String(movie.value),
-        })),
-        timeEnds: endTime,
-        createdBy: interaction.member.user.id,
-        channelID: interaction.channelId,
-        messageID: msg.id,
-      } as MovieNight);
-
-      await addMovieNightCollector(msg.id, msg.channelId, client, remainTime);
-
-      await interaction.editReply({
-        content: constants.messages.on_success,
-      });
-
-      collector.stop("finish");
-    } else {
-      interaction.editReply({
-        content: constants.messages.on_cancel,
-        components: [],
-        embeds: [],
-      });
-    }
-  });
-
-  collector.on("end", (_, reason) => {
-    if (reason === "time") {
-      interaction.followUp({
-        content: constants.messages.on_timeout,
-        components: [],
-        embeds: [],
-      });
-    }
-  });
-};
-
 async function addMovieVote(movieVote: MovieVote) {
   const res = await MovieVotes.findOneAndUpdate(
     { userID: movieVote.userID, messageID: movieVote.messageID },
@@ -194,6 +138,7 @@ async function addMovieNightToDB(movieNight: MovieNight) {
 
 export {
   addMovieNightCollector,
-  previewEmbedCollector,
   updateCollectorTimings,
+  sendMovieNightEmbed,
+  addMovieNightToDB,
 };

@@ -19,6 +19,10 @@
       "on_cancel": "Welp. Start again I guess? dum bish",
       "on_timeout": "Guess you needed more time eh?"
     },
+    "timeouts": {
+      "preview_embed": 120000,
+      "default": 24
+    },
     "button_text": [
       {
         "labelSuccess": "Look's perfect, Send it!",

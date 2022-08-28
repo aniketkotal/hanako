@@ -1,11 +1,11 @@
-import { model, Schema, Document } from "mongoose";
+import { model, Schema } from "mongoose";
 
 export type Movie = {
   movieID: string;
   name: string;
 };
 
-export interface MovieNight extends Document, Array<Movie> {
+export interface MovieNight {
   movies: Array<Movie>;
   timeEnds: number;
   createdBy: string;
