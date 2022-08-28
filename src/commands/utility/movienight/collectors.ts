@@ -1,4 +1,5 @@
 import {
+  APIButtonComponent,
   APIEmbed,
   BaseGuildTextChannel,
   CommandInteractionOption,
@@ -27,6 +28,37 @@ export const updateCollectorTimings = () => {
   });
 };
 
+export const disableOlderButtons = async () => {
+  const currentData = moment().unix();
+  MovieNights.find({ timeEnds: { $gte: currentData } }, (err, res) => {
+    if (err) {
+      console.log(err);
+      throw new Error("An error occurred");
+    }
+    if (res.length === 0) return;
+    res.forEach(async i => {
+      try {
+        const channel = (await client.channels.fetch(
+          i.channelID,
+        )) as BaseGuildTextChannel;
+
+        if (!channel)
+          throw new Error(
+            `The channel(${i.channelID}) was not found! The collector is not removed.`,
+          );
+
+        const messages = await channel.messages.fetch({ limit: 5 });
+        const message = messages.get(i.messageID);
+        if (!message) return;
+        console.log(message.id);
+        await message.edit({ components: [] });
+      } catch (e) {
+        console.log(e);
+      }
+    });
+  });
+};
+
 const addGlobalCollector = async (
   messageID: string,
   channelID: string,
@@ -45,11 +77,14 @@ const addGlobalCollector = async (
 
     const messages = await channel.messages.fetch({ limit: 5 });
     const message = messages.get(messageID);
+    if (!message) return;
 
     const collector = message.createMessageComponentCollector({
       componentType: ComponentType.Button,
       time,
     });
+
+    const [movieData] = await MovieNights.find({ messageID });
 
     collector.on("collect", async i => {
       await i.deferReply({ ephemeral: true });
@@ -70,7 +105,24 @@ const addGlobalCollector = async (
     });
 
     collector.on("end", async i => {
-      message.edit({ components: [] });
+      const btns: APIButtonComponent[] = [];
+      movieData.movies.forEach(i => {
+        btns.push({
+          type: 2,
+          style: 1,
+          label: i.name,
+          custom_id: i.movieID,
+          disabled: true,
+        });
+      });
+      const row = {
+        type: 1,
+        components: btns,
+      };
+
+      console.log(i);
+
+      message.edit({ components: [row] });
     });
   } catch (e) {
     Logger.error(e.message);

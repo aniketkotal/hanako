@@ -12,7 +12,10 @@ import { Event } from "./Events";
 import constants from "../constants/constants.json";
 import mongoose from "mongoose";
 import { Logger } from "./Logger";
-import { updateCollectorTimings } from "../commands/utility/movienight/collectors";
+import {
+  disableOlderButtons,
+  updateCollectorTimings,
+} from "../commands/utility/movienight/collectors";
 const globPromise = promisify(glob);
 export class ExtendedClient extends Client {
   commands: Collection<string, CommandType> = new Collection();
@@ -27,6 +30,7 @@ export class ExtendedClient extends Client {
     this._addAdditionalData({ constants });
     this._connectToDB();
     this.login(process.env.botToken).then(() => {
+      disableOlderButtons();
       updateCollectorTimings();
     });
   }

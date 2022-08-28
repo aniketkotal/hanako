@@ -111,7 +111,7 @@ export default new Command({
         components: [actionRow],
       });
 
-      const timeUntilEnd: number = time * 60 * 60 * 100;
+      const timeUntilEnd: number = time * 3600000;
 
       await localCollector(
         interaction,

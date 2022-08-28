@@ -5,8 +5,8 @@ export type Movie = {
   name: string;
 };
 
-export interface MovieNight extends Document {
-  movies: Movie[];
+export interface MovieNight extends Document, Array<Movie> {
+  movies: Array<Movie>;
   timeEnds: string;
   createdBy: string;
   channelID: string;
