@@ -182,6 +182,7 @@ const sendMovieNightEmbed = async (
   });
 
 const addMovieVote = async (movieVote: MovieVote) => {
+  console.log("SDFsdf");
   const res = await MovieVotes.findOneAndUpdate(
     {
       user: {
