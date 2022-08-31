@@ -2,7 +2,6 @@ import { APIEmbed, ApplicationCommandOptionType } from "discord.js";
 import moment from "moment";
 import { Command } from "../../../structures/Command";
 import { Logger } from "../../../structures/Logger";
-import { MovieNightEmbed } from "../../../typings/ConstTypes";
 import {
   addMovieNightCollector,
   addMovieNightToDB,
@@ -15,19 +14,19 @@ export default new Command({
   ephemeral: true,
   options: [
     {
-      name: "movie1",
+      name: "first_movie",
       description: "Enter the name of the first movie title",
       required: true,
       type: ApplicationCommandOptionType.String,
     },
     {
-      name: "movie2",
+      name: "second_movie",
       description: "Enter the name of the second movie title",
       required: true,
       type: ApplicationCommandOptionType.String,
     },
     {
-      name: "movie3",
+      name: "third_movie",
       description: "Enter the name of final movie title",
       required: true,
       type: ApplicationCommandOptionType.String,
@@ -40,27 +39,35 @@ export default new Command({
     },
   ],
   run: async ({ client, interaction }) => {
-    const { movienight } = client.additionalData.constants;
+    const { movienight } = client.constants;
     const { options, user, channel, guild } = interaction;
 
     if (!movienight.allowed_mnight_users_id.includes(user.id))
       throw new Error("You're not allowed to use this command!");
 
     const movies = [
-      options.get("movie1"),
-      options.get("movie2"),
-      options.get("movie3"),
+      options.get("first_movie"),
+      options.get("second_movie"),
+      options.get("third_movie"),
     ];
+
     const time: number = Number(options.get("time")?.value) || 24;
 
     const embedTexts = movienight.embed_texts;
-    const embedConstant: MovieNightEmbed = await client.getRandomItem(
-      embedTexts.all_variations,
-    );
-    const buttonText = await client.getRandomItem(movienight.button_text);
+    const embedConstant =
+      embedTexts.all_variations[
+        Math.floor(Math.random() * embedTexts.all_variations.length)
+      ];
+
+    const buttonText =
+      movienight.button_text[
+        Math.floor(Math.random() * movienight.button_text.length)
+      ];
 
     const votesText = movies
-      .map((movie, i) => `${movienight.vote_emotes[i]} ${movie.value}`)
+      .map(
+        (movie, i) => `${movienight.vote_emotes[i]} ${movie.value as string}`,
+      )
       .join("\n");
 
     const timeVoteEnds: number = moment().add({ hours: time }).unix();
@@ -126,13 +133,13 @@ export default new Command({
           const timeUntilEnd: number = time * 3600000;
           await addMovieNightCollector(sentMessage, client, timeUntilEnd);
           await interaction.editReply({
-            content: movienight.messages.on_success,
+            content: movienight.messages.on_ok,
             components: [],
             embeds: [],
           });
 
           await interaction.editReply({
-            content: movienight.messages.on_ok,
+            content: movienight.messages.on_success,
           });
           collector.stop("ok");
         } else {
@@ -145,9 +152,9 @@ export default new Command({
         }
       });
 
-      collector.on("end", (_, reason) => {
+      collector.on("end", async (_, reason) => {
         if (reason === "time") {
-          interaction.followUp({
+          await interaction.followUp({
             content: movienight.messages.on_timeout,
             components: [],
             embeds: [],
@@ -155,8 +162,8 @@ export default new Command({
         }
       });
     } catch (e) {
-      Logger.error(e);
-      interaction.followUp({
+      Logger.error(e as Error);
+      await interaction.followUp({
         content: "An unknown error occurred! Please try again later.",
       });
     }

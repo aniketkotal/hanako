@@ -6,5 +6,5 @@ export interface RegisterCommandsOptions {
 }
 
 export interface AdditionalData {
-  constants?: any;
+  constants?: unknown;
 }

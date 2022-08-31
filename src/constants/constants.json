@@ -34,5 +34,12 @@
       }
     ],
     "vote_emotes": ["1️⃣", "2️⃣", "3️⃣"]
+  },
+  "movie_votes": {
+    "embed_texts": {
+      "title": "Movie-Night Vote Count",
+      "description": "Here are the current votes for the movie night!\n\n",
+      "footer": "This movie vote ends at"
+    }
   }
 }

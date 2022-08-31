@@ -8,36 +8,29 @@ import {
 } from "discord.js";
 import { glob } from "glob";
 import { promisify } from "util";
-import { AdditionalData, RegisterCommandsOptions } from "../typings/Client";
+import { RegisterCommandsOptions } from "../typings/Client";
 import { CommandType } from "../typings/Command";
 import { Event } from "./Events";
-import constants from "../constants/constants.json";
 import mongoose from "mongoose";
 import { Logger } from "./Logger";
 import { updateCollectorTimings } from "../commands/utility/movienight/collectors";
+import constants from "../constants/constants.json";
+type JSONData = typeof constants;
+
 const globPromise = promisify(glob);
 export class ExtendedClient extends Client {
   commands: Collection<string, CommandType> = new Collection();
-  additionalData: AdditionalData;
+  constants: JSONData = constants;
 
   constructor() {
     super({ intents: 32767 });
   }
 
-  start() {
-    this._registerModules();
-    this._addAdditionalData({ constants });
+  async start() {
+    await this._registerModules();
     this._connectToDB();
-    this.login(process.env.botToken).then(() => {
-      updateCollectorTimings();
-    });
-  }
-
-  async getRandomItem(array: Object[]): Promise<any> {
-    return await new Promise(resolve => {
-      const res = array[Math.floor(Math.random() * array.length)];
-      resolve(res);
-    });
+    await this.login(process.env.botToken);
+    await updateCollectorTimings();
   }
 
   async getMessage(
@@ -48,10 +41,11 @@ export class ExtendedClient extends Client {
       channelID,
     )) as BaseGuildTextChannel;
 
-    if (!channel)
+    if (!channel) {
       throw new Error(
         `The channel(${channelID}) was not found! The collector is not removed.`,
       );
+    }
     const messages = await channel.messages.fetch({ limit: 5 });
     const message = messages.get(messageID);
     if (!message) return undefined;
@@ -59,19 +53,24 @@ export class ExtendedClient extends Client {
   }
 
   private _connectToDB() {
-    mongoose.connect("mongodb://localhost:27017/hanakoDB");
-    const db = mongoose.connection;
-    db.on("error", () => {
-      throw new Error("Failed connecting to DB!");
-    });
+    mongoose
+      .connect("mongodb://127.0.0.1:27017/hanakoDB")
+      .then(() => {
+        const db = mongoose.connection;
+        db.on("connecting", () => {
+          Logger.info("Connecting to DB...");
+        });
+        db.on("open", () => {
+          Logger.info("Connected to DB!");
+        });
 
-    db.on("open", () => {
-      Logger.info("Connected to DB!");
-    });
-  }
-
-  private _addAdditionalData(data: AdditionalData): void {
-    this.additionalData = data;
+        db.on("error", () => {
+          throw new Error("Failed connecting to DB!");
+        });
+      })
+      .catch(e => {
+        Logger.error(e as Error);
+      });
   }
 
   private async _importFile(filePath: string) {
@@ -82,11 +81,8 @@ export class ExtendedClient extends Client {
     commands,
     guildID,
   }: RegisterCommandsOptions) {
-    if (guildID) {
-      this.guilds.cache.get(guildID)?.commands.set(commands);
-    } else {
-      this.application?.commands.set(commands);
-    }
+    if (guildID) await this.guilds.cache.get(guildID)?.commands.set(commands);
+    else await this.application?.commands.set(commands);
   }
 
   private async _registerModules() {
@@ -96,21 +92,23 @@ export class ExtendedClient extends Client {
     );
 
     commandFiles.forEach(async filePath => {
-      const command: CommandType = await this._importFile(filePath);
+      const command = (await this._importFile(filePath)) as CommandType;
       if (!command?.name) return;
       this.commands.set(command.name, command);
       slashCommands.push(command);
     });
 
-    this.on("ready", () => {
-      this._registerCommands({
+    this.on("ready", async () => {
+      await this._registerCommands({
         commands: slashCommands,
       });
     });
 
     const eventFiles = await globPromise(`${__dirname}/../events/*{.ts,.js}`);
     eventFiles.forEach(async filePath => {
-      const event: Event<keyof ClientEvents> = await this._importFile(filePath);
+      const event = (await this._importFile(filePath)) as Event<
+        keyof ClientEvents
+      >;
       this.on(event.event, event.run);
     });
   }

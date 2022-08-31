@@ -1,15 +1,27 @@
 import { model, Schema, Document } from "mongoose";
 
 export interface MovieVote extends Document {
-  userID: string;
+  user: {
+    userID: string;
+    username: string;
+    hash: string;
+  };
   movieID: string;
   messageID: string;
 }
 
 const movieVoteSchema: Schema = new Schema({
-  userID: {
-    type: String,
-    required: true,
+  user: {
+    userID: {
+      type: String,
+      required: true,
+    },
+    username: {
+      type: String,
+    },
+    hash: {
+      type: String,
+    },
   },
   messageID: {
     type: String,
