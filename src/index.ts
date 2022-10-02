@@ -5,5 +5,5 @@ import { ExtendedClient } from "./structures/Client";
 export const client = new ExtendedClient();
 
 client.start().catch(e => {
-  console.log(e);
+  // console.log(e);
 });

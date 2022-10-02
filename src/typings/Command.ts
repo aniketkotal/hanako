@@ -22,6 +22,7 @@ type RunFunction = (options: RunOptions) => any;
 export type CommandType = {
   userPermissions?: PermissionResolvable;
   cooldown?: number;
+  ownerOnly?: boolean;
   ephemeral?: boolean;
   run: RunFunction;
 } & ChatInputApplicationCommandData;

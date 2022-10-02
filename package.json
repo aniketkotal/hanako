@@ -18,7 +18,8 @@
     "chalk": "^4.1.2",
     "discord.js": "^14.3.0",
     "dotenv": "^16.0.1",
-    "glob": "^7.2.0",
+    "glob": "^8.0.3",
+    "glob-promise": "^5.0.0",
     "moment": "^2.29.4",
     "mongoose": "^6.5.3"
   },
@@ -27,7 +28,7 @@
     "@types/node": "^18.7.13",
     "@typescript-eslint/eslint-plugin": "^5.35.1",
     "@typescript-eslint/parser": "^5.35.1",
-    "eslint": "^8.23.0",
+    "eslint": "8.22.0",
     "eslint-config-standard-with-typescript": "^22.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.2.5",

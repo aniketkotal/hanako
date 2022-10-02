@@ -1,7 +1,7 @@
 import { APIEmbed, ApplicationCommandOptionType } from "discord.js";
 import moment from "moment";
-import { Command } from "../../../structures/Command";
-import { Logger } from "../../../structures/Logger";
+import { Command } from "../../../../structures/Command";
+import { Logger } from "../../../../structures/Logger";
 import {
   addMovieNightCollector,
   addMovieNightToDB,
@@ -11,6 +11,7 @@ import {
 export default new Command({
   name: "movienight",
   description: "Create a movie night!",
+  ownerOnly: true,
   ephemeral: true,
   options: [
     {
@@ -41,9 +42,6 @@ export default new Command({
   run: async ({ client, interaction }) => {
     const { movienight } = client.constants;
     const { options, user, channel, guild } = interaction;
-
-    if (!movienight.allowed_mnight_users_id.includes(user.id))
-      throw new Error("You're not allowed to use this command!");
 
     const movies = [
       options.get("first_movie"),
