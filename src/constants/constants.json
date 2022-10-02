@@ -17,7 +17,9 @@
       "on_ok": "The voting message will be sent shortly!",
       "on_success": "The message was sent successfully!",
       "on_cancel": "Welp. Start again I guess? dum bish",
-      "on_timeout": "Guess you needed more time eh?"
+      "on_timeout": "Guess you needed more time eh?",
+      "message_on_finish": "This Movie Night voting has ended!",
+      "owner_message_on_finish": "The Movie Night voting has ended!"
     },
     "timeouts": {
       "preview_embed": 120000,
@@ -41,5 +43,9 @@
       "description": "Here are the current votes for the movie night!\n\n",
       "footer": "This movie vote ends at"
     }
+  },
+  "error_messages": {
+    "OWNER_ONLY": "You do not have permission to use this command!",
+    "GUILD_ONLY": "This command can only be used in a server!"
   }
 }
