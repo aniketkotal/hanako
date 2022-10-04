@@ -45,7 +45,259 @@
     }
   },
   "error_messages": {
-    "OWNER_ONLY": "You do not have permission to use this command!",
+    "OWNER_ONLY": "Only the Bot Owner(s) can use this command!",
     "GUILD_ONLY": "This command can only be used in a server!"
+  },
+  "gif_endpoints": {
+    "common": [
+      "bite",
+      "blush",
+      "cry",
+      "cuddle",
+      "dance",
+      "feed",
+      "hug",
+      "kiss",
+      "pat",
+      "poke",
+      "slap",
+      "smile",
+      "tickle"
+    ],
+    "purrbot": [
+      "fluff",
+      "lick"
+    ],
+    "neko": [
+      "kick",
+      "pout",
+      "shoot",
+      "sleep",
+      "stare",
+      "think",
+      "wave",
+      "yeet"
+    ]
+  },
+  "action_embeds": {
+    "bite": {
+      "embed_details": {
+        "color": "ff6b6b",
+        "title": {
+          "normal": "{} bites {}",
+          "self": "{} bites themselves"
+        },
+        "footer": "You've bit {} {} times!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to bite!"
+      }
+    },
+    "blush": {
+      "embed_details": {
+        "color": "ff9ff3",
+        "title": "{} blushes"
+      }
+    },
+    "cry": {
+      "embed_details": {
+        "color": "48dbfb",
+        "title": "{} cries-"
+      }
+    },
+    "cuddle": {
+      "embed_details": {
+        "color": "ee5253",
+        "title": {
+          "normal": "{} cuddles {}",
+          "self": "{} cuddles, themselves-"
+        },
+        "footer": "You've cuddled with {} {} times!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to cuddle with!"
+      }
+    },
+    "dance": {
+      "embed_details": {
+        "color": "1dd1a1",
+        "title": {
+          "normal": "{} dances with {}",
+          "self": "{} dances by themselves"
+        },
+        "footer": "You've danced with {} {} times!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to dance with!"
+      }
+    },
+    "feed": {
+      "embed_details": {
+        "color": "00d2d3",
+        "title": {
+          "normal": "{} feeds {}",
+          "self": "{} feeds themselves"
+        },
+        "footer": "You've fed {} {} times!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to feed!"
+      }
+    },
+    "hug": {
+      "embed_details": {
+        "color": "5f27cd",
+        "title": {
+          "normal": "{} hugs {}",
+          "self": "{} hugs themselves"
+        },
+        "footer": "You've hugged {} {} times!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to hug!"
+      }
+    },
+    "kiss": {
+      "embed_details": {
+        "color": "f368e0",
+        "title": {
+          "normal": "{} kisses {}",
+          "self": "{} kisses themselves"
+        },
+        "footer": "You've kissed {} {} times!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to kiss!"
+      }
+    },
+    "pat": {
+      "embed_details": {
+        "color": "feca57",
+        "title": {
+          "normal": "{} pats {}",
+          "self": "{} pats themselves"
+        },
+        "footer": "You've patted {} {} times!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to pat!"
+      }
+    },
+    "poke": {
+      "embed_details": {
+        "color": "8395a7",
+        "title": {
+          "normal": "{} pokes {}",
+          "self": "{} pokes themselves"
+        },
+        "footer": "You've poked {} {} times!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to poke!"
+      }
+    },
+    "slap": {
+      "embed_details": {
+        "color": "222f3e",
+        "title": {
+          "normal": "{} slaps {}",
+          "self": "{} slaps themselves"
+        },
+        "footer": "You've slapped {} {} times!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to slap!"
+      }
+    },
+    "smile": {
+      "embed_details": {
+        "color": "01a3a4",
+        "title": "{} smiles"
+      }
+    },
+    "tickle": {
+      "embed_details": {
+        "color": "55efc4",
+        "title": {
+          "normal": "{} tickles {}",
+          "self": "{} tickles themselves"
+        },
+        "footer": "You've tickled {} {} times!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to tickle!"
+      }
+    },
+    "fluff": {
+      "embed_details": {
+        "color": "6c5ce7",
+        "title": {
+          "normal": "{} fluffs {}",
+          "self": "{} fluffs themselves"
+        },
+        "footer": "You've fluffed {} {} times!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to fluff!"
+      }
+    },
+    "lick": {
+      "embed_details": {
+        "color": "fd79a8",
+        "title": {
+          "normal": "{} licks {}",
+          "self": "{} licks themselves"
+        },
+        "footer": "You've licked {} {} times!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to lick!"
+      }
+    },
+    "kick": {
+      "embed_details": {
+        "color": "ff7675",
+        "title": {
+          "normal": "{} kicks {}",
+          "self": "{} kicks themselves"
+        },
+        "footer": "You've kicked {} {} times!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to kick!"
+      }
+    },
+    "pout": {
+      "embed_details": {
+        "color": "e17055",
+        "title": "{} pouts"
+      }
+    },
+    "punch": {
+      "embed_details": {
+        "color": "636e72",
+        "title": {
+          "normal": "{} punches {}",
+          "self": "{} punches themselves"
+        },
+        "footer": "You've punched {} {} times!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to punch!"
+      }
+    },
+    "stare": {
+      "embed_details": {
+        "color": "00cec9",
+        "title": {
+          "normal": "{} stares at {}",
+          "self": "{} stares at themselves"
+        },
+        "footer": "You've stared at {} {} times!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to stare at!"
+      }
+    }
   }
 }

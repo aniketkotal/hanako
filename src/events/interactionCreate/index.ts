@@ -5,11 +5,10 @@ import { ExtendedInteraction } from "../../typings/Command";
 
 export default new Event("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
-  if (!interaction.guildId) {
+  if (!interaction.guildId)
     return interaction.reply(client.constants.error_messages.GUILD_ONLY);
-  }
 
-  const command = client.commands.get(interaction.commandName);
+  const command = client.slashCommands.get(interaction.commandName);
   if (!command) return interaction.reply("This command does not exists!");
 
   if (command.ownerOnly && !client.owners.includes(interaction.user.id)) {

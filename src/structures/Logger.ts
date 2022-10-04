@@ -2,8 +2,10 @@ import chalk from "chalk";
 
 export class Logger {
   static dashedLine = "------x------";
-  static infoColour = chalk.bold.blue;
-  static errorColour = chalk.bold.red;
+  static infoColour = chalk.blue;
+  static errorColour = chalk.red;
+  static loadedColour = chalk.greenBright;
+  static eventColour = chalk.blueBright;
 
   static info(text: string): void {
     console.log(this.infoColour("[INFO] ") + text);
@@ -17,5 +19,13 @@ export class Logger {
       console.log(error);
       console.log(this.dashedLine);
     }
+  }
+
+  static moduleLoaded(moduleName: string): void {
+    console.log(this.loadedColour("[+] Module ") + moduleName + " loaded!");
+  }
+
+  static eventLoaded(eventName: string): void {
+    console.log(this.eventColour("[+] Event  ") + eventName + " loaded!");
   }
 }
