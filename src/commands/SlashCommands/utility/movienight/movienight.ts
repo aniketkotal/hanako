@@ -1,6 +1,6 @@
 import { APIEmbed, ApplicationCommandOptionType } from "discord.js";
 import moment from "moment";
-import { Command } from "../../../../structures/Command";
+import { SlashCommand } from "../../../../structures/Command";
 import { Logger } from "../../../../structures/Logger";
 import {
   addMovieNightCollector,
@@ -8,7 +8,7 @@ import {
   sendMovieNightEmbed,
 } from "./collectors";
 
-export default new Command({
+export default new SlashCommand({
   name: "movienight",
   description: "Create a movie night!",
   ownerOnly: true,

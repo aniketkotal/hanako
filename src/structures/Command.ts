@@ -1,7 +1,13 @@
-import { CommandType } from "../typings/Command";
+import { SlashCommandType, TextCommandType } from "../typings/Command";
 
-export class Command {
-  constructor(commandOptions: CommandType) {
+export class SlashCommand {
+  constructor(commandOptions: SlashCommandType) {
+    Object.assign(this, commandOptions);
+  }
+}
+
+export class TextCommand {
+  constructor(commandOptions: TextCommandType) {
     Object.assign(this, commandOptions);
   }
 }

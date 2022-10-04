@@ -5,36 +5,46 @@ import {
   ClientEvents,
   Collection,
   Message,
+  GatewayIntentBits,
 } from "discord.js";
 import glob from "glob-promise";
-import globb from "glob";
-import { promisify } from "util";
-import { RegisterCommandsOptions } from "../typings/Client";
-import { CommandType } from "../typings/Command";
+import { Constant, RegisterCommandsOptions } from "../typings/Client";
+import {
+  CooldownType,
+  SlashCommandType,
+  TextCommandType,
+} from "../typings/Command";
 import { Event } from "./Events";
 import mongoose from "mongoose";
 import { Logger } from "./Logger";
 import { updateCollectorTimings } from "../commands/SlashCommands/utility/movienight/collectors";
 import constants from "../constants/constants.json";
+import axios from "axios";
 
-type JSONData = typeof constants;
-
-const globPromise = promisify(globb);
+const { Guilds, MessageContent, GuildMessages, GuildMembers } =
+  GatewayIntentBits;
 
 export class ExtendedClient extends Client {
-  commands: Collection<string, CommandType> = new Collection();
-  constants: JSONData = constants;
-  owners = process.env.botOwners.split(",");
+  slashCommands: Collection<string, SlashCommandType> = new Collection();
+  textCommands: Collection<string, TextCommandType> = new Collection();
+  coolDowns: Collection<string, CooldownType> = new Collection();
+  constants: Constant = constants;
+  owners = process.env.OWNER_IDS.split(",");
 
   constructor() {
-    super({ intents: 32767 });
+    super({
+      intents: [Guilds, MessageContent, GuildMessages, GuildMembers],
+      allowedMentions: {
+        repliedUser: false,
+      },
+    });
   }
 
   async start() {
     try {
       await this._registerModules();
       await this._connectToDB();
-      await this.login(process.env.botToken);
+      await this.login(process.env.TOKEN);
       await updateCollectorTimings();
     } catch (e) {
       Logger.error(e as Error);
@@ -58,6 +68,31 @@ export class ExtendedClient extends Client {
     const message = messages.get(messageID);
     if (!message) return undefined;
     return message;
+  }
+
+  async getActionGIF(action: string): Promise<string> {
+    let url: number;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    const { common, purrbot, neko } = this.constants.gif_endpoints;
+    if (common.includes(action)) url = 1;
+    else if (purrbot.includes(action)) url = 2;
+    else if (neko.includes(action)) url = 3;
+
+    const purrBotURL = `https://purrbot.site/api/img/sfw/${action}/gif`; // .link
+    const nekoBestURL = `https://nekos.best/api/v2/${action}`; // .url
+
+    const randomNum = Math.floor(Math.random() * 2);
+
+    switch (url) {
+      case 1:
+        if (randomNum === 0) return (await axios.get(purrBotURL))?.data.link;
+        else return (await axios.get(nekoBestURL))?.data.results[0].url;
+      case 2:
+        return (await axios.get(purrBotURL))?.data.link;
+      case 3:
+        return (await axios.get(nekoBestURL))?.data.results[0].url;
+    }
   }
 
   private async _connectToDB() {
@@ -84,7 +119,7 @@ export class ExtendedClient extends Client {
     return (await import(filePath))?.default;
   }
 
-  private async _registerCommands({
+  private async _registerSlashCommands({
     commands,
     guildID,
   }: RegisterCommandsOptions) {
@@ -94,31 +129,46 @@ export class ExtendedClient extends Client {
 
   private async _registerModules() {
     const slashCommands: Array<ApplicationCommandDataResolvable> = [];
-    const commandFiles = await globPromise(
-      `${__dirname}/../commands/**/*{.ts,.js}`
+    const [eventFiles, slashCommandFiles, textCommandFiles] = await Promise.all(
+      [
+        glob(`/events/**/index.ts`, {
+          root: require.main.path,
+        }),
+        glob(`/commands/SlashCommands/**/*.ts`, {
+          root: require.main.path,
+        }),
+        glob(`/commands/TextCommands/**/*.ts`, {
+          root: require.main.path,
+        }),
+      ]
     );
 
-    for (const filePath of commandFiles) {
-      const command = (await this._importFile(filePath)) as CommandType;
+    for (const filePath of textCommandFiles) {
+      const command = (await this._importFile(filePath)) as TextCommandType;
       if (!command?.name) continue;
-      this.commands.set(command.name, command);
-      slashCommands.push(command);
+      this.textCommands.set(command.name, command);
+      Logger.moduleLoaded(command.name);
     }
 
+    for (const filePath of slashCommandFiles) {
+      const command = (await this._importFile(filePath)) as SlashCommandType;
+      if (!command?.name) continue;
+      this.slashCommands.set(command.name, command);
+      slashCommands.push(command);
+      Logger.moduleLoaded(command.name);
+    }
     this.on("ready", async () => {
-      await this._registerCommands({
+      await this._registerSlashCommands({
         commands: slashCommands,
       });
     });
 
-    const eventFiles = await glob(`/events/**/*{.ts,.js}`, {
-      root: require.main.path,
-    });
     for (const filePath of eventFiles) {
       const { event, run } = (await this._importFile(filePath)) as Event<
         keyof ClientEvents
       >;
       this.on(event, run);
+      Logger.eventLoaded(event);
     }
   }
 }
