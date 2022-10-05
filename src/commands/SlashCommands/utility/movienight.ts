@@ -1,15 +1,15 @@
 import { APIEmbed, ApplicationCommandOptionType } from "discord.js";
-import moment from "moment";
-import { SlashCommand } from "../../../../structures/Command";
-import { Logger } from "../../../../structures/Logger";
+import dayjs from "dayjs";
+import { SlashCommand } from "../../../structures/Command";
+import { Logger } from "../../../structures/Logger";
 import {
   addMovieNightCollector,
   addMovieNightToDB,
   sendMovieNightEmbed,
-} from "./collectors";
+} from "./helpers";
 
 export default new SlashCommand({
-  name: "movienight",
+  name: "movie_night",
   description: "Create a movie night!",
   ownerOnly: true,
   ephemeral: true,
@@ -40,7 +40,7 @@ export default new SlashCommand({
     },
   ],
   run: async ({ client, interaction }) => {
-    const { movienight } = client.constants;
+    const { movie_night } = client.constants;
     const { options, user, channel, guild } = interaction;
 
     const movies = [
@@ -51,24 +51,24 @@ export default new SlashCommand({
 
     const time: number = Number(options.get("time")?.value) || 24;
 
-    const embedTexts = movienight.embed_texts;
+    const embedTexts = movie_night.embed_texts;
     const embedConstant =
       embedTexts.all_variations[
         Math.floor(Math.random() * embedTexts.all_variations.length)
       ];
 
     const buttonText =
-      movienight.button_text[
-        Math.floor(Math.random() * movienight.button_text.length)
+      movie_night.button_text[
+        Math.floor(Math.random() * movie_night.button_text.length)
       ];
 
     const votesText = movies
       .map(
-        (movie, i) => `${movienight.vote_emotes[i]} ${movie.value as string}`,
+        (movie, i) => `${movie_night.vote_emotes[i]} ${movie.value as string}`
       )
       .join("\n");
 
-    const timeVoteEnds: number = moment().add({ hours: time }).unix();
+    const timeVoteEnds: number = dayjs().add(time, "h").unix();
 
     const movieEmbed: APIEmbed = {
       title: embedConstant.title,
@@ -78,7 +78,7 @@ export default new SlashCommand({
         text: embedTexts.footer_until,
         icon_url: guild.iconURL(),
       },
-      timestamp: moment().add({ hours: time }).toISOString(),
+      timestamp: dayjs().add(time, "h").toISOString(),
     };
 
     const actionRow = {
@@ -101,25 +101,25 @@ export default new SlashCommand({
 
     try {
       const previewEmbedMessage = await interaction.followUp({
-        content: movienight.messages.embed_preview_message,
+        content: movie_night.messages.embed_preview_message,
         embeds: [movieEmbed],
         components: [actionRow],
         ephemeral: true,
       });
 
       const collector = previewEmbedMessage.createMessageComponentCollector({
-        time: movienight.timeouts.preview_embed,
+        time: movie_night.timeouts.preview_embed,
       });
 
-      collector.on("collect", async i => {
+      collector.on("collect", async (i) => {
         if (i.customId === "send") {
           const sentMessage = await sendMovieNightEmbed(
             interaction,
             movieEmbed,
-            movies,
+            movies
           );
           await addMovieNightToDB({
-            movies: movies.map(movie => ({
+            movies: movies.map((movie) => ({
               movieID: movie.name,
               name: String(movie.value),
             })),
@@ -131,18 +131,18 @@ export default new SlashCommand({
           const timeUntilEnd: number = time * 3600000;
           await addMovieNightCollector(sentMessage, client, timeUntilEnd);
           await interaction.editReply({
-            content: movienight.messages.on_ok,
+            content: movie_night.messages.on_ok,
             components: [],
             embeds: [],
           });
 
           await interaction.editReply({
-            content: movienight.messages.on_success,
+            content: movie_night.messages.on_success,
           });
           collector.stop("ok");
         } else {
           await interaction.editReply({
-            content: movienight.messages.on_cancel,
+            content: movie_night.messages.on_cancel,
             components: [],
             embeds: [],
           });
@@ -153,7 +153,7 @@ export default new SlashCommand({
       collector.on("end", async (_, reason) => {
         if (reason === "time") {
           await interaction.followUp({
-            content: movienight.messages.on_timeout,
+            content: movie_night.messages.on_timeout,
             components: [],
             embeds: [],
           });

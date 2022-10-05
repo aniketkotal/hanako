@@ -1,4 +1,8 @@
-import { SlashCommandType, TextCommandType } from "../typings/Command";
+import {
+  ActionCommandType,
+  SlashCommandType,
+  TextCommandType,
+} from "../typings/Command";
 
 export class SlashCommand {
   constructor(commandOptions: SlashCommandType) {
@@ -8,6 +12,12 @@ export class SlashCommand {
 
 export class TextCommand {
   constructor(commandOptions: TextCommandType) {
+    Object.assign(this, commandOptions);
+  }
+}
+
+export class ActionTextCommand {
+  constructor(commandOptions: ActionTextCommand) {
     Object.assign(this, commandOptions);
   }
 }

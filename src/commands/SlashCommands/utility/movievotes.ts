@@ -1,9 +1,9 @@
 import { ApplicationCommandOptionType } from "discord.js";
-import { SlashCommand } from "../../../../structures/Command";
-import { prepareVotesEmbed } from "./collectors";
+import { SlashCommand } from "../../../structures/Command";
+import { prepareVotesEmbed } from "./helpers";
 
 export default new SlashCommand({
-  name: "checkmovievotes",
+  name: "check_movie_votes",
   description: "Get votes for a movie night",
   ownerOnly: true,
   ephemeral: true,

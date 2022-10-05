@@ -13,10 +13,10 @@ export class Logger {
 
   static error(error: string | Error): void {
     if (typeof error === "string") {
-      console.log(this.errorColour("[ERROR] ") + error);
+      console.error(this.errorColour("[ERROR] ") + error);
     } else {
       console.log(this.errorColour("[ERROR] ") + error.message);
-      console.log(error);
+      console.error(error);
       console.log(this.dashedLine);
     }
   }
