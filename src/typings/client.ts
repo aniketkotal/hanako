@@ -6,7 +6,7 @@ export interface RegisterCommandsOptions {
 }
 
 export interface Constant {
-  movienight: Movienight;
+  movie_night: Movienight;
   movie_votes: MovieVotes;
   error_messages: ConstantErrorMessages;
   gif_endpoints: GIFEndpoints;
@@ -67,6 +67,8 @@ export interface SimpleEmbedDetails {
 export interface ConstantErrorMessages {
   OWNER_ONLY: string;
   GUILD_ONLY: string;
+  NO_VOTES: string;
+  MOVIE_NIGHT_NOT_FOUND: string;
 }
 
 export interface GIFEndpoints {
@@ -76,7 +78,8 @@ export interface GIFEndpoints {
 }
 
 export interface MovieVotes {
-  embed_texts: MovieVotesEmbedTexts;
+  embed_texts: EmbedTexts;
+  messages: MovieVoteMessages;
 }
 
 export interface MovieVotesEmbedTexts {
@@ -109,6 +112,22 @@ export interface AllVariation {
   color: number;
   title: string;
   description: string;
+}
+
+export interface EmbedTexts {
+  title: string;
+  description: string;
+  fields: Fields;
+  footer: string;
+}
+
+export interface Fields {
+  title: string;
+}
+
+export interface MovieVoteMessages {
+  on_vote_add: string;
+  on_vote_update: string;
 }
 
 export interface Messages {

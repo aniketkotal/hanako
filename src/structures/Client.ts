@@ -17,9 +17,11 @@ import {
 import { Event } from "./Events";
 import mongoose from "mongoose";
 import { Logger } from "./Logger";
-import { updateCollectorTimings } from "../commands/SlashCommands/utility/movienight/collectors";
+import { updateCollectorTimings } from "../commands/SlashCommands/utility/helpers";
 import constants from "../constants/constants.json";
 import axios from "axios";
+import { constructAllActions } from "../commands/TextCommands/action/constructor";
+import { ActionTextCommand } from "./Command";
 
 const { Guilds, MessageContent, GuildMessages, GuildMembers } =
   GatewayIntentBits;
@@ -128,6 +130,7 @@ export class ExtendedClient extends Client {
   }
 
   private async _registerModules() {
+    const start = process.hrtime();
     const slashCommands: Array<ApplicationCommandDataResolvable> = [];
     const [eventFiles, slashCommandFiles, textCommandFiles] = await Promise.all(
       [
@@ -157,6 +160,15 @@ export class ExtendedClient extends Client {
       slashCommands.push(command);
       Logger.moduleLoaded(command.name);
     }
+
+    // REGISTERING CODED ACTION COMMANDS
+    const actionCommands = constructAllActions();
+    actionCommands.forEach((command) => {
+      if (!command?.name) return;
+      this.textCommands.set(command.name, command);
+      Logger.moduleLoaded(command.name);
+    });
+
     this.on("ready", async () => {
       await this._registerSlashCommands({
         commands: slashCommands,
@@ -170,5 +182,9 @@ export class ExtendedClient extends Client {
       this.on(event, run);
       Logger.eventLoaded(event);
     }
+    const end = process.hrtime(start);
+    Logger.info(
+      `Loaded all modules in ${end[0]}.${Math.floor(end[1] / 1000000)}s`
+    );
   }
 }

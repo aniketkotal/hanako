@@ -1,11 +1,14 @@
 {
-  "movienight": {
-    "allowed_mnight_users_id": ["589206850839379969", "583246168423923712"],
+  "movie_night": {
+    "allowed_mnight_users_id": [
+      "589206850839379969",
+      "583246168423923712"
+    ],
     "embed_texts": {
       "all_variations": [
         {
           "color": 10192110,
-          "title": "📊 Movie Night Voting!",
+          "title": "<:RAWR:815320678664241173> Movie Night Voting!",
           "description": "Welcome to another Movie Night voting! Below are this week's selection of movies to choose from.\nYour movie could be on there next too! Go to <#736683960062574635> and let us know your favourite movie!\n\nClick on the reactions below to choose the one you'd love to watch!\n"
         }
       ],
@@ -38,18 +41,31 @@
         "labelCancel": "Nope. Cancel"
       }
     ],
-    "vote_emotes": ["1️⃣", "2️⃣", "3️⃣"]
+    "vote_emotes": [
+      "1️⃣",
+      "2️⃣",
+      "3️⃣"
+    ]
   },
   "movie_votes": {
     "embed_texts": {
-      "title": "Movie-Night Vote Count",
+      "title": "Movie Night Vote Count",
       "description": "Here are the current votes for the movie night!\n\n",
+      "fields": {
+        "title": "{movie_title}({vote_count})"
+      },
       "footer": "This movie vote ends at"
+    },
+    "messages": {
+      "on_vote_add": "Your vote has been added! Thank you for voting!",
+      "on_vote_update": "Your vote has been updated!"
     }
   },
   "error_messages": {
     "OWNER_ONLY": "Only the Bot Owner(s) can use this command!",
-    "GUILD_ONLY": "This command can only be used in a server!"
+    "GUILD_ONLY": "This command can only be used in a server!",
+    "NO_VOTES": "No votes yet!",
+    "MOVIE_NIGHT_NOT_FOUND": "No Movie Night voting found for the queried message ID!"
   },
   "gif_endpoints": {
     "common": [
@@ -87,10 +103,10 @@
       "embed_details": {
         "color": "ff6b6b",
         "title": {
-          "normal": "{} bites {}",
-          "self": "{} bites themselves"
+          "normal": "{author} bites {victim}",
+          "self": "{author} bites themselves"
         },
-        "footer": "You've bit {} {} times!"
+        "footer": "You've bit {victim} {count} {t}!"
       },
       "error_messages": {
         "NO_USER": "You need to mention someone to bite!"
@@ -99,23 +115,23 @@
     "blush": {
       "embed_details": {
         "color": "ff9ff3",
-        "title": "{} blushes"
+        "title": "{author} blushes"
       }
     },
     "cry": {
       "embed_details": {
         "color": "48dbfb",
-        "title": "{} cries-"
+        "title": "{author} cries-"
       }
     },
     "cuddle": {
       "embed_details": {
         "color": "ee5253",
         "title": {
-          "normal": "{} cuddles {}",
-          "self": "{} cuddles, themselves-"
+          "normal": "{author} cuddles {victim}",
+          "self": "{author} cuddles, themselves-"
         },
-        "footer": "You've cuddled with {} {} times!"
+        "footer": "You've cuddled with {author} {count} {t}!"
       },
       "error_messages": {
         "NO_USER": "You need to mention someone to cuddle with!"
@@ -125,10 +141,10 @@
       "embed_details": {
         "color": "1dd1a1",
         "title": {
-          "normal": "{} dances with {}",
-          "self": "{} dances by themselves"
+          "normal": "{author} dances with {victim}",
+          "self": "{author} dances by themselves"
         },
-        "footer": "You've danced with {} {} times!"
+        "footer": "You've danced with {victim} {count} {t}!"
       },
       "error_messages": {
         "NO_USER": "You need to mention someone to dance with!"
@@ -138,10 +154,10 @@
       "embed_details": {
         "color": "00d2d3",
         "title": {
-          "normal": "{} feeds {}",
-          "self": "{} feeds themselves"
+          "normal": "{author} feeds {victim}",
+          "self": "{author} feeds themselves"
         },
-        "footer": "You've fed {} {} times!"
+        "footer": "You've fed {victim} {count} {t}!"
       },
       "error_messages": {
         "NO_USER": "You need to mention someone to feed!"
@@ -151,10 +167,10 @@
       "embed_details": {
         "color": "5f27cd",
         "title": {
-          "normal": "{} hugs {}",
-          "self": "{} hugs themselves"
+          "normal": "{author} hugs {victim}",
+          "self": "{author} hugs themselves"
         },
-        "footer": "You've hugged {} {} times!"
+        "footer": "You've hugged {victim} {count} {t}!"
       },
       "error_messages": {
         "NO_USER": "You need to mention someone to hug!"
@@ -164,10 +180,10 @@
       "embed_details": {
         "color": "f368e0",
         "title": {
-          "normal": "{} kisses {}",
-          "self": "{} kisses themselves"
+          "normal": "{author} kisses {victim}",
+          "self": "{author} kisses themselves"
         },
-        "footer": "You've kissed {} {} times!"
+        "footer": "You've kissed {victim} {count} {t}!"
       },
       "error_messages": {
         "NO_USER": "You need to mention someone to kiss!"
@@ -177,10 +193,10 @@
       "embed_details": {
         "color": "feca57",
         "title": {
-          "normal": "{} pats {}",
-          "self": "{} pats themselves"
+          "normal": "{author} pats {victim}",
+          "self": "{author} pats themselves"
         },
-        "footer": "You've patted {} {} times!"
+        "footer": "You've patted {victim} {count} {t}!"
       },
       "error_messages": {
         "NO_USER": "You need to mention someone to pat!"
@@ -190,10 +206,10 @@
       "embed_details": {
         "color": "8395a7",
         "title": {
-          "normal": "{} pokes {}",
-          "self": "{} pokes themselves"
+          "normal": "{author} pokes {victim}",
+          "self": "{author} pokes themselves"
         },
-        "footer": "You've poked {} {} times!"
+        "footer": "You've poked {victim} {count} {t}!"
       },
       "error_messages": {
         "NO_USER": "You need to mention someone to poke!"
@@ -203,10 +219,10 @@
       "embed_details": {
         "color": "222f3e",
         "title": {
-          "normal": "{} slaps {}",
-          "self": "{} slaps themselves"
+          "normal": "{author} slaps {victim}",
+          "self": "{author} slaps themselves"
         },
-        "footer": "You've slapped {} {} times!"
+        "footer": "You've slapped {victim} {count} {t}!"
       },
       "error_messages": {
         "NO_USER": "You need to mention someone to slap!"
@@ -215,17 +231,17 @@
     "smile": {
       "embed_details": {
         "color": "01a3a4",
-        "title": "{} smiles"
+        "title": "{author} smiles"
       }
     },
     "tickle": {
       "embed_details": {
         "color": "55efc4",
         "title": {
-          "normal": "{} tickles {}",
-          "self": "{} tickles themselves"
+          "normal": "{author} tickles {victim}",
+          "self": "{author} tickles themselves"
         },
-        "footer": "You've tickled {} {} times!"
+        "footer": "You've tickled {victim} {count} {t}!"
       },
       "error_messages": {
         "NO_USER": "You need to mention someone to tickle!"
@@ -235,10 +251,10 @@
       "embed_details": {
         "color": "6c5ce7",
         "title": {
-          "normal": "{} fluffs {}",
-          "self": "{} fluffs themselves"
+          "normal": "{author} fluffs {victim}",
+          "self": "{author} fluffs themselves"
         },
-        "footer": "You've fluffed {} {} times!"
+        "footer": "You've fluffed {victim} {count} {t}!"
       },
       "error_messages": {
         "NO_USER": "You need to mention someone to fluff!"
@@ -248,10 +264,10 @@
       "embed_details": {
         "color": "fd79a8",
         "title": {
-          "normal": "{} licks {}",
-          "self": "{} licks themselves"
+          "normal": "{author} licks {victim}",
+          "self": "{author} licks themselves"
         },
-        "footer": "You've licked {} {} times!"
+        "footer": "You've licked {victim} {count} {t}!"
       },
       "error_messages": {
         "NO_USER": "You need to mention someone to lick!"
@@ -261,10 +277,10 @@
       "embed_details": {
         "color": "ff7675",
         "title": {
-          "normal": "{} kicks {}",
-          "self": "{} kicks themselves"
+          "normal": "{author} kicks {victim}",
+          "self": "{author} kicks themselves"
         },
-        "footer": "You've kicked {} {} times!"
+        "footer": "You've kicked {victim} {count} {t}!"
       },
       "error_messages": {
         "NO_USER": "You need to mention someone to kick!"
@@ -273,17 +289,17 @@
     "pout": {
       "embed_details": {
         "color": "e17055",
-        "title": "{} pouts"
+        "title": "{author} pouts"
       }
     },
     "punch": {
       "embed_details": {
         "color": "636e72",
         "title": {
-          "normal": "{} punches {}",
-          "self": "{} punches themselves"
+          "normal": "{author} punches {victim}",
+          "self": "{author} punches themselves"
         },
-        "footer": "You've punched {} {} times!"
+        "footer": "You've punched {victim} {count} {t}!"
       },
       "error_messages": {
         "NO_USER": "You need to mention someone to punch!"
@@ -293,10 +309,10 @@
       "embed_details": {
         "color": "00cec9",
         "title": {
-          "normal": "{} stares at {}",
-          "self": "{} stares at themselves"
+          "normal": "{author} stares at {victim}",
+          "self": "{author} stares at themselves"
         },
-        "footer": "You've stared at {} {} times!"
+        "footer": "You've stared at {victim} {count} {t}!"
       },
       "error_messages": {
         "NO_USER": "You need to mention someone to stare at!"

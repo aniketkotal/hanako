@@ -1,4 +1,4 @@
-import { Document, model, Schema } from "mongoose";
+import { Document, model, Schema, Model } from "mongoose";
 import { MovieVote } from "./MovieVotes";
 
 export type Movie = {
@@ -16,7 +16,11 @@ export interface MovieNight {
 
 interface MovieNightDocument extends MovieNight, Document {
   votes: Array<MovieVote>;
-  getAllVotes: () => Promise<Array<Array<MovieVote>>>;
+  getAllVotes: () => Promise<{ [key: string]: Array<MovieVote> }>;
+}
+
+interface MovieNightModel extends Model<MovieNightDocument> {
+  getAliveMovieNights: (timeUntil: number) => Promise<Array<MovieNight>>;
 }
 
 const movieNightsSchema: Schema<MovieNightDocument> = new Schema(
@@ -48,13 +52,19 @@ const movieNightsSchema: Schema<MovieNightDocument> = new Schema(
     methods: {
       async getAllVotes() {
         const { votes } = await this.populate("votes");
+
         const movies: { [key: string]: Array<MovieVote> } = {};
         votes.forEach((vote) => {
           if (!movies[vote.movieID]) movies[vote.movieID] = [];
           movies[vote.movieID].push(vote);
         });
 
-        return Object.values(movies);
+        return movies;
+      },
+    },
+    statics: {
+      async getAliveMovieNights(timeUntil: number) {
+        return this.find({ timeEnds: { $gt: timeUntil } });
       },
     },
     virtuals: {
@@ -75,9 +85,8 @@ const movieNightsSchema: Schema<MovieNightDocument> = new Schema(
   }
 );
 
-export const MovieNights = model<MovieNightDocument>(
+export const MovieNights = model<MovieNightDocument, MovieNightModel>(
   "MovieNights",
   movieNightsSchema,
   "MovieNights"
 );
-

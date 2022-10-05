@@ -1,6 +1,6 @@
-import { model, Schema, Document } from "mongoose";
+import { model, Schema, Document, Model } from "mongoose";
 
-export interface MovieVote extends Document {
+export interface MovieVote {
   user: {
     userID: string;
     username: string;
@@ -10,7 +10,13 @@ export interface MovieVote extends Document {
   messageID: string;
 }
 
-const movieVoteSchema: Schema = new Schema(
+type MovieVoteDocument = Document & MovieVote;
+
+interface MovieVoteModel extends Model<MovieVoteDocument> {
+  addMovieVote: (movieVote: MovieVote) => Promise<MovieVote>;
+}
+
+const movieVoteSchema: Schema<MovieVoteDocument> = new Schema(
   {
     user: {
       userID: {
@@ -54,7 +60,7 @@ const movieVoteSchema: Schema = new Schema(
   }
 );
 
-export const MovieVotes = model<MovieVote>(
+export const MovieVotes = model<MovieVoteDocument, MovieVoteModel>(
   "MovieVotes",
   movieVoteSchema,
   "MovieVotes"
