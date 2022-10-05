@@ -175,5 +175,5 @@ const actionCountsSchema: Schema<ActionCountDocument> = new Schema(
 export const ActionCount = model<ActionCountDocument, ActionCountModel>(
   "ActionCounts",
   actionCountsSchema,
-  "actionCounts"
+  "ActionCounts"
 );
