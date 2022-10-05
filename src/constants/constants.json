@@ -10,7 +10,10 @@
         }
       ],
       "footer_since": "This voting ended on",
-      "footer_until": "This voting ends on"
+      "footer_until": "This voting ends on",
+      "owner_message_texts": {
+        "title": "Movie Night Details"
+      }
     },
     "messages": {
       "embed_preview_message": "This is a preview of the embed that'll be sent. The reactions will be added on time of posting!",

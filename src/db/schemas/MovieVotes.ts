@@ -10,28 +10,52 @@ export interface MovieVote extends Document {
   messageID: string;
 }
 
-const movieVoteSchema: Schema = new Schema({
-  user: {
-    userID: {
+const movieVoteSchema: Schema = new Schema(
+  {
+    user: {
+      userID: {
+        type: String,
+        required: true,
+      },
+      username: {
+        type: String,
+      },
+      hash: {
+        type: String,
+      },
+    },
+    messageID: {
       type: String,
       required: true,
     },
-    username: {
+    movieID: {
       type: String,
-    },
-    hash: {
-      type: String,
+      required: true,
     },
   },
-  messageID: {
-    type: String,
-    required: true,
-    ref: "MovieNight",
-  },
-  movieID: {
-    type: String,
-    required: true,
-  },
-});
+  {
+    statics: {
+      async addMovieVote(movieVote: MovieVote): Promise<MovieVote> {
+        const { user, messageID } = movieVote;
+        return this.findOneAndUpdate(
+          {
+            user: {
+              userID: user.userID,
+              username: user.username,
+              hash: user.hash,
+            },
+            messageID: messageID,
+          },
+          movieVote,
+          { upsert: true }
+        );
+      },
+    },
+  }
+);
 
-export const MovieVotes = model<MovieVote>("MovieVotes", movieVoteSchema);
+export const MovieVotes = model<MovieVote>(
+  "MovieVotes",
+  movieVoteSchema,
+  "MovieVotes"
+);

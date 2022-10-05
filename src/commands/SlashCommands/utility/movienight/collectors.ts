@@ -99,7 +99,7 @@ const addMovieNightCollector = async (
         embeds: [embed],
       });
       // Send message to owners
-      await sendMessageToOwners(await prepareVotesEmbed(message.id));
+      await sendMessageToOwners([await prepareVotesEmbed(message.id)]);
     });
   } catch (e) {
     Logger.error(e as Error);
@@ -124,21 +124,18 @@ const getVotes = async (messageID: string): MovieVoteFromDB => {
   return [movie1Votes, movie2Votes, movie3Votes];
 };
 
-const sendMessageToOwners = async (embed: APIEmbed) => {
+const sendMessageToOwners = async (embed: Array<APIEmbed>) => {
   try {
-    const owners = process.env.botOwners
-      .split(",")
-      .map((owner) => client.users.fetch(owner));
+    const owners = process.env.OWNER_IDS.split(",").map((owner) =>
+      client.users.fetch(owner)
+    );
+    const ownersFetched = await Promise.all(owners);
     await Promise.all(
-      owners.map(
-        async (owner) =>
-          await (
-            await owner
-          ).send({
-            content:
-              client.constants.movienight.messages.owner_message_on_finish,
-            embeds: [embed],
-          })
+      ownersFetched.map((owner) =>
+        owner.send({
+          content: client.constants.movienight.messages.owner_message_on_finish,
+          embeds: embed,
+        })
       )
     );
   } catch (e) {
@@ -180,12 +177,24 @@ const prepareVotesEmbed = async (messageID: string): Promise<APIEmbed> => {
   };
 };
 
+// const prepareMovieNightDetailsEmbed = async (
+//   messageID: string
+// ): Promise<APIEmbed> => {
+//   const movieNight = await MovieNights.findOne({ messageID }).exec();
+//   if (!movieNight)
+//     return { description: "The requested movie night was not found!" };
+//
+//   const { movies, timeEnds, createdBy, channelID } = movieNight;
+//
+//   const embed: APIEmbed = {};
+// };
+
 const sendMovieNightEmbed = async (
   interaction: CommandInteraction,
   embedData: APIEmbed,
   movies: readonly CommandInteractionOption[]
 ): Promise<Message> =>
-  await interaction.channel.send({
+  interaction.channel.send({
     embeds: [embedData],
     components: [
       {
@@ -223,6 +232,7 @@ const addMovieNightToDB = async (movieNight: MovieNight) => {
     return mnight.save();
   } catch (e) {
     Logger.error(e as Error);
+    ("");
   }
 };
 
