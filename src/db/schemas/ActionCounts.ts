@@ -169,6 +169,7 @@ const actionCountsSchema: Schema<ActionCountDocument> = new Schema(
         }).save();
       },
     },
+    timestamps: true,
   }
 );
 

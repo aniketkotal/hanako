@@ -1,6 +1,7 @@
 import { ApplicationCommandOptionType } from "discord.js";
 import { SlashCommand } from "../../../structures/Command";
-import { prepareVotesEmbed } from "./helpers";
+import { prepareMovieNightDetailEmbed, prepareVotesEmbed } from "./helpers";
+import { MovieNights } from "../../../db/schemas/MovieNights";
 
 export default new SlashCommand({
   name: "check_movie_votes",
@@ -15,18 +16,15 @@ export default new SlashCommand({
       type: ApplicationCommandOptionType.String,
     },
   ],
-  run: async ({ client, interaction }) => {
+  run: async ({ interaction }) => {
     const messageID = interaction.options.get("message_id")?.value as string;
 
-    const embed = await prepareVotesEmbed(messageID);
-    if (typeof embed === "string") {
-      await interaction.followUp({
-        content: embed,
-      });
-    } else {
-      await interaction.followUp({
-        embeds: [embed],
-      });
-    }
+    const movieNight = await MovieNights.findOne({ messageID }).exec();
+
+    const votes = await prepareVotesEmbed(movieNight);
+    const details = prepareMovieNightDetailEmbed(movieNight);
+    await interaction.followUp({
+      embeds: [details, votes],
+    });
   },
 });

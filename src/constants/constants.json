@@ -9,13 +9,14 @@
         {
           "color": 10192110,
           "title": "<:RAWR:815320678664241173> Movie Night Voting!",
-          "description": "Welcome to another Movie Night voting! Below are this week's selection of movies to choose from.\nYour movie could be on there next too! Go to <#736683960062574635> and let us know your favourite movie!\n\nClick on the reactions below to choose the one you'd love to watch!\n"
+          "description": "Welcome to another Movie Night voting! Below are this week's selection of movies to choose from.\nYour movie could be on there next too! Go to <#736683960062574635> and let us know your favourite movie!\n\nClick on the buttons below to choose the one you'd love to watch!\n"
         }
       ],
       "footer_since": "This voting ended on",
       "footer_until": "This voting ends on",
       "owner_message_texts": {
-        "title": "Movie Night Details"
+        "title": "Movie Night Details",
+        "description": "Here are the details of the requested Movie Night voting"
       }
     },
     "messages": {

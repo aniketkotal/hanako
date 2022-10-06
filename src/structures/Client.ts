@@ -21,7 +21,6 @@ import { updateCollectorTimings } from "../commands/SlashCommands/utility/helper
 import constants from "../constants/constants.json";
 import axios from "axios";
 import { constructAllActions } from "../commands/TextCommands/action/constructor";
-import { ActionTextCommand } from "./Command";
 
 const { Guilds, MessageContent, GuildMessages, GuildMembers } =
   GatewayIntentBits;
@@ -35,7 +34,7 @@ export class ExtendedClient extends Client {
 
   constructor() {
     super({
-      intents: [Guilds, MessageContent, GuildMessages, GuildMembers],
+      intents: 130863,
       allowedMentions: {
         repliedUser: false,
       },

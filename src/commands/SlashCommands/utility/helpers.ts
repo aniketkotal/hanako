@@ -5,9 +5,15 @@ import {
   ComponentType,
   EmbedBuilder,
   Message,
+  MessageReaction,
+  User,
 } from "discord.js";
 import dayjs from "dayjs";
-import { MovieNight, MovieNights } from "../../../db/schemas/MovieNights";
+import {
+  MovieNight,
+  MovieNightDocument,
+  MovieNights,
+} from "../../../db/schemas/MovieNights";
 import { MovieVotes } from "../../../db/schemas/MovieVotes";
 import { ExtendedClient } from "../../../structures/Client";
 import { Logger } from "../../../structures/Logger";
@@ -59,6 +65,17 @@ const addMovieNightCollector = async (
     time,
   });
 
+  const reactionFilter = (reaction: MessageReaction, user: User) =>
+    !!(reaction.emoji.name === "❌" && client.owners.includes(user.id));
+  const stopCollectorFromReaction = message.createReactionCollector({
+    time,
+    filter: reactionFilter,
+  });
+  stopCollectorFromReaction.on("collect", async () => {
+    await message.reactions.removeAll();
+    collector.stop("end");
+  });
+
   collector.on("collect", async (i) => {
     await i.deferReply({ ephemeral: true });
 
@@ -105,8 +122,24 @@ const addMovieNightCollector = async (
       components: [row],
       embeds: [embed],
     });
+
     // Send message to owners
-    await sendMessageToOwners([await prepareVotesEmbed(message.id)], client);
+    const movieNight = await MovieNights.findOne({
+      messageID: message.id,
+    }).exec();
+    if (!movieNight) {
+      return await sendMessageToOwners(
+        [{ description: error_messages.MOVIE_NIGHT_NOT_FOUND }],
+        client
+      );
+    }
+
+    const embeds = [
+      prepareMovieNightDetailEmbed(movieNight),
+      await prepareVotesEmbed(movieNight),
+    ];
+
+    await sendMessageToOwners(embeds, client);
   });
 };
 
@@ -132,10 +165,46 @@ const sendMessageToOwners = async (
   }
 };
 
-const prepareVotesEmbed = async (messageID: string): Promise<APIEmbed> => {
-  const movieNight = await MovieNights.findOne({ messageID }).exec();
-  if (!movieNight) return { description: error_messages.MOVIE_NIGHT_NOT_FOUND };
+export const prepareMovieNightDetailEmbed = (
+  movieNight: MovieNightDocument
+) => {
+  const { title, description } = movie_night.embed_texts.owner_message_texts;
+  const { channelID, createdBy, timeEnds } = movieNight;
 
+  const dateFormat = "MMM D, YYYY hh:mma";
+
+  const endsOn = dayjs.unix(timeEnds).format(dateFormat);
+
+  const embed: APIEmbed = {
+    title,
+    description,
+    url: "https://www.youtube.com/watch?v=2Vv-BfVoq4g",
+    color: parseInt("a29bfe", 16),
+    fields: [
+      {
+        inline: true,
+        name: "Created By",
+        value: `<@${createdBy}>`,
+      },
+      {
+        inline: true,
+        name: "Channel Hosted",
+        value: `<#${channelID}>`,
+      },
+      {
+        inline: true,
+        name: "Expiry Timestamp",
+        value: endsOn,
+      },
+    ],
+  };
+
+  return embed;
+};
+
+const prepareVotesEmbed = async (
+  movieNight: MovieNightDocument
+): Promise<APIEmbed> => {
   const { movies } = movieNight;
   const movieVotes = await movieNight.getAllVotes();
 
@@ -161,6 +230,7 @@ const prepareVotesEmbed = async (messageID: string): Promise<APIEmbed> => {
   return {
     title: embed_texts.title,
     fields: movieDataFields,
+    color: parseInt("ff7675", 16),
   };
 };
 

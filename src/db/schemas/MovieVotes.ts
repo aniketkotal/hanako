@@ -57,6 +57,7 @@ const movieVoteSchema: Schema<MovieVoteDocument> = new Schema(
         );
       },
     },
+    timestamps: true,
   }
 );
 

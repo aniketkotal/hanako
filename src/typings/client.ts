@@ -106,6 +106,10 @@ export interface MovienightEmbedTexts {
   all_variations: AllVariation[];
   footer_since: string;
   footer_until: string;
+  owner_message_texts: {
+    title: string;
+    description: string;
+  };
 }
 
 export interface AllVariation {
