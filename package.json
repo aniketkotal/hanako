@@ -21,6 +21,7 @@
     "dotenv": "^16.0.1",
     "glob": "^8.0.3",
     "glob-promise": "^5.0.0",
+    "module-alias": "^2.2.2",
     "mongoose": "^6.5.3"
   },
   "devDependencies": {

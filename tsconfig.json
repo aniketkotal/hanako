@@ -1,17 +1,13 @@
 {
   "compilerOptions": {
-//    "baseUrl": "./src",
-//    "paths": {
-//      "@/*": [
-//        "*"
-//      ]
-//    },
     "lib": [
       "ESNext"
     ],
+    "baseUrl": ".",
     "module": "CommonJS",
     "moduleResolution": "node",
     "target": "ESNext",
+    "strictNullChecks": false,
     "outDir": "dist",
     "sourceMap": false,
     "esModuleInterop": true,
@@ -21,10 +17,11 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "resolveJsonModule": true,
-    "importHelpers": true
+    "importHelpers": true,
+    "strict": true
   },
   "include": [
-    "src/**/*",
+    "./src",
     "environment.d.ts"
   ],
   "exclude": [
