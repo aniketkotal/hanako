@@ -5,7 +5,6 @@ import {
   ClientEvents,
   Collection,
   Message,
-  GatewayIntentBits,
 } from "discord.js";
 import glob from "glob-promise";
 import { Constant, RegisterCommandsOptions } from "../typings/Client";
@@ -21,9 +20,6 @@ import { updateCollectorTimings } from "../commands/SlashCommands/utility/helper
 import constants from "../constants/constants.json";
 import axios from "axios";
 import { constructAllActions } from "../commands/TextCommands/action/constructor";
-
-const { Guilds, MessageContent, GuildMessages, GuildMembers } =
-  GatewayIntentBits;
 
 export class ExtendedClient extends Client {
   slashCommands: Collection<string, SlashCommandType> = new Collection();
@@ -55,7 +51,7 @@ export class ExtendedClient extends Client {
   async getMessage(
     messageID: string,
     channelID: string
-  ): Promise<Message> | undefined {
+  ): Promise<Promise<Message> | undefined> {
     const channel = (await this.channels.fetch(
       channelID
     )) as BaseGuildTextChannel;
@@ -71,7 +67,7 @@ export class ExtendedClient extends Client {
     return message;
   }
 
-  async getActionGIF(action: string): Promise<string> {
+  async getActionGIF(action: string): Promise<string | undefined> {
     let url: number;
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -79,6 +75,7 @@ export class ExtendedClient extends Client {
     if (common.includes(action)) url = 1;
     else if (purrbot.includes(action)) url = 2;
     else if (neko.includes(action)) url = 3;
+    else return undefined;
 
     const purrBotURL = `https://purrbot.site/api/img/sfw/${action}/gif`; // .link
     const nekoBestURL = `https://nekos.best/api/v2/${action}`; // .url
@@ -134,13 +131,13 @@ export class ExtendedClient extends Client {
     const [eventFiles, slashCommandFiles, textCommandFiles] = await Promise.all(
       [
         glob(`/events/**/index.ts`, {
-          root: require.main.path,
+          root: require.main?.path,
         }),
         glob(`/commands/SlashCommands/**/*.ts`, {
-          root: require.main.path,
+          root: require.main?.path,
         }),
         glob(`/commands/TextCommands/**/*.ts`, {
-          root: require.main.path,
+          root: require.main?.path,
         }),
       ]
     );
@@ -165,7 +162,7 @@ export class ExtendedClient extends Client {
     actionCommands.forEach((command) => {
       if (!command?.name) return;
       this.textCommands.set(command.name, command);
-      Logger.moduleLoaded(command.name);
+      Logger.actionLoaded(command.name);
     });
 
     this.on("ready", async () => {

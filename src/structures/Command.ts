@@ -1,8 +1,4 @@
-import {
-  ActionCommandType,
-  SlashCommandType,
-  TextCommandType,
-} from "../typings/Command";
+import { SlashCommandType, TextCommandType } from "../typings/Command";
 
 export class SlashCommand {
   constructor(commandOptions: SlashCommandType) {

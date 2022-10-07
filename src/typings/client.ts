@@ -1,4 +1,4 @@
-import { ApplicationCommandDataResolvable } from "discord.js";
+import {ApplicationCommandDataResolvable} from "discord.js";
 
 export interface RegisterCommandsOptions {
   guildID?: string;
@@ -13,27 +13,11 @@ export interface Constant {
   action_embeds: ActionEmbeds;
 }
 
-export interface ActionEmbeds {
-  bite: DetailedAction;
-  blush: SimpleEmbed;
-  cry: SimpleEmbed;
-  cuddle: DetailedAction;
-  dance: DetailedAction;
-  feed: DetailedAction;
-  hug: DetailedAction;
-  kiss: DetailedAction;
-  pat: DetailedAction;
-  poke: DetailedAction;
-  slap: DetailedAction;
-  smile: SimpleEmbed;
-  tickle: DetailedAction;
-  fluff: DetailedAction;
-  lick: DetailedAction;
-  kick: DetailedAction;
-  pout: SimpleEmbed;
-  punch: DetailedAction;
-  stare: DetailedAction;
-}
+export type DetailedActions = Record<DetailedActionNames, DetailedAction>;
+
+export type SimpleActions = Record<SimpleActionNames, SimpleEmbed>
+
+export type ActionEmbeds = DetailedActions & SimpleActions;
 
 export interface DetailedAction {
   embed_details: DetailedEmbedDetails;
@@ -148,3 +132,27 @@ export interface Timeouts {
   preview_embed: number;
   default: number;
 }
+
+//
+export type DetailedActionNames =
+    | "bite"
+    | "cuddle"
+    | "dance"
+    | "feed"
+    | "hug"
+    | "kiss"
+    | "pat"
+    | "poke"
+    | "slap"
+    | "tickle"
+    | "fluff"
+    | "lick"
+    | "shoot"
+    | "stare"
+    | "kick"
+    | "punch"
+    | "yeet";
+
+export type SimpleActionNames = "blush" | "cry" | "smile" | "pout";
+
+export type ActionNames = DetailedActionNames | SimpleActionNames;

@@ -1,7 +1,11 @@
 import { APIEmbed, Message } from "discord.js";
 import { ActionCount } from "../../../db/schemas/ActionCounts";
 import { client } from "../../../index";
-import { DetailedAction, SimpleEmbed } from "../../../typings/client";
+import {
+  DetailedAction,
+  DetailedActionNames,
+  SimpleActionNames,
+} from "../../../typings/client";
 import { ActionCommandType } from "../../../typings/Command";
 
 const commaFormatter = new Intl.ListFormat("en", {
@@ -11,12 +15,10 @@ const commaFormatter = new Intl.ListFormat("en", {
 
 export const prepareSimpleEmbed = async (
   message: Message,
-  action: string,
+  action: SimpleActionNames,
   gifs?: Array<string>
 ): Promise<APIEmbed> => {
-  const { embed_details } = client.constants.action_embeds[
-    action
-  ] as SimpleEmbed;
+  const { embed_details } = client.constants.action_embeds[action];
   const { color, title } = embed_details;
   const gif = gifs?.length
     ? gifs[Math.floor(Math.random() * gifs.length)]
@@ -32,11 +34,11 @@ export const prepareSimpleEmbed = async (
 
 export const prepareDetailedEmbed = async (
   message: Message,
-  action: string,
+  action: DetailedActionNames,
   gifs?: string[]
 ): Promise<APIEmbed | false> => {
   const victimIDs = message.mentions.users;
-  const data = client.constants.action_embeds[action] as DetailedAction;
+  const data = client.constants.action_embeds[action];
 
   if (!data) return;
   const { embed_details } = data;
@@ -107,7 +109,7 @@ export const prepareDetailedEmbed = async (
 };
 
 export const constructAllActions = () => {
-  const detailedActions: { [key: string]: Array<string> } = {
+  const detailedActions: Record<DetailedActionNames, string[]> = {
     bite: [],
     cuddle: [],
     dance: [],
@@ -124,6 +126,7 @@ export const constructAllActions = () => {
     shoot: [],
     stare: [],
     yeet: [],
+    punch: [],
   };
 
   const simpleActions: { [key: string]: Array<string> } = {
@@ -138,19 +141,15 @@ export const constructAllActions = () => {
 
   const actions: Array<ActionCommandType> = [];
 
-  for (const action in detailedActions) {
+  for (const a in detailedActions) {
+    const action = a as DetailedActionNames;
     const cmd: ActionCommandType = {
       name: action,
       aliases: [],
       async run({ client, message }) {
-        const cmdProps = this as ActionCommandType;
-        const embed = await prepareDetailedEmbed(
-          message,
-          cmdProps.name,
-          cmdProps.gifs
-        );
+        const embed = await prepareDetailedEmbed(message, action, this.gifs);
         const { error_messages } = client.constants.action_embeds[
-          cmdProps.name
+          this.name
         ] as DetailedAction;
 
         if (!embed) return message.reply(error_messages.NO_USER);
@@ -164,7 +163,8 @@ export const constructAllActions = () => {
     actions.push(cmd);
   }
 
-  for (const action in simpleActions) {
+  for (const a in simpleActions) {
+    const action = a as SimpleActionNames;
     actions.push({
       name: action,
       aliases: [],

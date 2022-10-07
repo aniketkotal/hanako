@@ -41,7 +41,8 @@ export default new SlashCommand({
   ],
   run: async ({ client, interaction }) => {
     const { movie_night } = client.constants;
-    const { options, user, channel, guild } = interaction;
+    const { options, user, channel } = interaction;
+    const guild = interaction.guild;
 
     const movies = [
       options.get("first_movie"),
@@ -64,7 +65,7 @@ export default new SlashCommand({
 
     const votesText = movies
       .map(
-        (movie, i) => `${movie_night.vote_emotes[i]} ${movie.value as string}`
+        (movie, i) => `${movie_night.vote_emotes[i]} ${movie?.value as string}`
       )
       .join("\n");
 
@@ -76,7 +77,7 @@ export default new SlashCommand({
       color: embedConstant.color,
       footer: {
         text: embedTexts.footer_until,
-        icon_url: guild.iconURL(),
+        icon_url: guild?.iconURL(),
       },
       timestamp: dayjs().add(time, "h").toISOString(),
     };

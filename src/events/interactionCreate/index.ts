@@ -19,7 +19,7 @@ export default new Event("interactionCreate", async (interaction) => {
   }
 
   await interaction.deferReply({ ephemeral: command.ephemeral || false });
-  command.run({
+  await command.run({
     args: interaction.options as CommandInteractionOptionResolver,
     client,
     interaction: interaction as ExtendedInteraction,

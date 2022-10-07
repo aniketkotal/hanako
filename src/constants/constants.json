@@ -318,6 +318,32 @@
       "error_messages": {
         "NO_USER": "You need to mention someone to stare at!"
       }
+    },
+    "shoot": {
+      "embed_details": {
+        "color": "786fa6",
+        "title": {
+          "normal": "{author} shoots {victim}",
+          "self": "{author} shoots themselves"
+        },
+        "footer": "You've shot {victim} {count} {t}!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to shoot!"
+      }
+    },
+    "yeet": {
+      "embed_details": {
+        "color": "e77f67",
+        "title": {
+          "normal": "{author} yeets {victim}",
+          "self": "{author} yeets themselves"
+        },
+        "footer": "You've yeeted {victim} {count} {t}!"
+      },
+      "error_messages": {
+        "NO_USER": "You need to mention someone to yeet!"
+      }
     }
   }
 }

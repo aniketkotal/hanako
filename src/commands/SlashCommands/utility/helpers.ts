@@ -53,11 +53,12 @@ const addMovieNightCollector = async (
   channelID?: string
 ): Promise<void> => {
   let message: Message;
-  if (typeof messageData === "string") {
-    message = await client.getMessage(messageData, channelID);
-    if (!message) return;
+  if (typeof messageData === "string" && channelID) {
+    const res = await client.getMessage(messageData, channelID);
+    if (!res) return;
+    else message = res;
   } else {
-    message = messageData;
+    message = messageData as Message;
   }
 
   const collector = message.createMessageComponentCollector({
@@ -106,7 +107,7 @@ const addMovieNightCollector = async (
     //Edit old movie night message
     const row = {
       type: 1,
-      components: movieData.movies.map((i) => ({
+      components: movieData?.movies.map((i) => ({
         type: 2,
         style: 1,
         label: i.name,
