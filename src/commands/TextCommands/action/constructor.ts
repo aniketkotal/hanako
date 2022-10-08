@@ -32,37 +32,70 @@ export const prepareSimpleEmbed = async (
   };
 };
 
+const getUsers = async (
+  message: Message,
+  args: Array<string>
+): Promise<Array<{ id: string; name: string }> | null> => {
+  const {
+    mentions: { members },
+  } = message;
+  if (members.size) {
+    return members.map((i) => ({
+      id: i.id,
+      name: i.nickname || i.user.username,
+    }));
+  }
+  if (!args.length) return;
+  const usr = args[0];
+  if (usr && usr.length === 18) {
+    const { id, nickname, user } = await message.guild.members.fetch(usr);
+    return [
+      {
+        id: id,
+        name: nickname || user.username,
+      },
+    ];
+  }
+  const name = args.join(" ");
+  const res = await message.guild.members.search({ query: name, limit: 1 });
+  return res.map((i) => ({
+    id: i.user.id,
+    name: i.nickname || i.user.username,
+  }));
+};
+
 export const prepareDetailedEmbed = async (
   message: Message,
   action: DetailedActionNames,
+  args: Array<string>,
   gifs?: string[]
 ): Promise<APIEmbed | false> => {
-  const victimIDs = message.mentions.users;
+  const mentions = await getUsers(message, args);
+  if (!mentions) return false;
+
   const data = client.constants.action_embeds[action];
-
   if (!data) return;
-  const { embed_details } = data;
 
-  if (victimIDs.size === 0) return false;
+  const { embed_details } = data;
 
   const gif = gifs?.length
     ? gifs[Math.floor(Math.random() * gifs.length)]
     : await client.getActionGIF(action);
-  const authorUsername = message.author.username;
+  const authorUsername = message.member.nickname || message.author.username;
 
   let embed: APIEmbed;
   const { title, footer } = embed_details;
 
-  if (victimIDs.size === 1) {
-    const isAuthor = victimIDs.first().id === message.author.id;
+  if (mentions.length === 1) {
+    const isAuthor = mentions[0].id === message.author.id;
     let user = await ActionCount.findOne({ userID: message.author.id });
     if (!user)
       user = await ActionCount.initialiseActionCountInDB(message.author.id);
-    const currentActionCount = +(await user.increaseActionCountByOne(
+    const currentActionCount = await user.increaseActionCountByOne(
       action,
-      victimIDs.first().id
-    ));
-    const victimUsername = victimIDs.first().username;
+      mentions[0].id
+    );
+    const victimUsername = mentions[0].name;
     const embed_title = isAuthor
       ? title.self.replace("{author}", authorUsername)
       : title.normal
@@ -83,9 +116,9 @@ export const prepareDetailedEmbed = async (
     };
   } else {
     const allMentionsCombined = commaFormatter.format(
-      Array.from(message.mentions.users).map(([, user]) => {
+      mentions.map((user) => {
         if (user.id === message.author.id) return "themselves";
-        return user.username;
+        return user.name;
       })
     );
 
@@ -146,8 +179,13 @@ export const constructAllActions = () => {
     const cmd: ActionCommandType = {
       name: action,
       aliases: [],
-      async run({ client, message }) {
-        const embed = await prepareDetailedEmbed(message, action, this.gifs);
+      async run({ client, message, args }) {
+        const embed = await prepareDetailedEmbed(
+          message,
+          action,
+          args,
+          this.gifs
+        );
         const { error_messages } = client.constants.action_embeds[
           this.name
         ] as DetailedAction;

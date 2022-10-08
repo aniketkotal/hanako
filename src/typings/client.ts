@@ -1,4 +1,4 @@
-import {ApplicationCommandDataResolvable} from "discord.js";
+import { ApplicationCommandDataResolvable } from "discord.js";
 
 export interface RegisterCommandsOptions {
   guildID?: string;
@@ -11,11 +11,16 @@ export interface Constant {
   error_messages: ConstantErrorMessages;
   gif_endpoints: GIFEndpoints;
   action_embeds: ActionEmbeds;
+  announce_movie_night: AnnounceMovieNight;
+}
+
+export interface AnnounceMovieNight {
+  embed_texts: AllVariation;
 }
 
 export type DetailedActions = Record<DetailedActionNames, DetailedAction>;
 
-export type SimpleActions = Record<SimpleActionNames, SimpleEmbed>
+export type SimpleActions = Record<SimpleActionNames, SimpleEmbed>;
 
 export type ActionEmbeds = DetailedActions & SimpleActions;
 
@@ -135,23 +140,23 @@ export interface Timeouts {
 
 //
 export type DetailedActionNames =
-    | "bite"
-    | "cuddle"
-    | "dance"
-    | "feed"
-    | "hug"
-    | "kiss"
-    | "pat"
-    | "poke"
-    | "slap"
-    | "tickle"
-    | "fluff"
-    | "lick"
-    | "shoot"
-    | "stare"
-    | "kick"
-    | "punch"
-    | "yeet";
+  | "bite"
+  | "cuddle"
+  | "dance"
+  | "feed"
+  | "hug"
+  | "kiss"
+  | "pat"
+  | "poke"
+  | "slap"
+  | "tickle"
+  | "fluff"
+  | "lick"
+  | "shoot"
+  | "stare"
+  | "kick"
+  | "punch"
+  | "yeet";
 
 export type SimpleActionNames = "blush" | "cry" | "smile" | "pout";
 

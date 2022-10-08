@@ -127,7 +127,7 @@ const actionCountsSchema: Schema<ActionCountDocument> = new Schema(
         actionCounts.set(victimID, Number(actionCounts.get(victimID) || 0) + 1);
         this[actionType] = actionCounts;
         const user = await this.save();
-        return user.getCount(actionType, victimID);
+        return +user.getCount(actionType, victimID);
       },
     },
     statics: {

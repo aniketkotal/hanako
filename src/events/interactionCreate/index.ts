@@ -11,6 +11,14 @@ export default new Event("interactionCreate", async (interaction) => {
   const command = client.slashCommands.get(interaction.commandName);
   if (!command) return interaction.reply("This command does not exists!");
 
+  if (command.consumeInstantly) {
+    return await command.run({
+      args: interaction.options as CommandInteractionOptionResolver,
+      client,
+      interaction: interaction as ExtendedInteraction,
+    });
+  }
+
   if (command.ownerOnly && !client.owners.includes(interaction.user.id)) {
     return interaction.reply({
       ephemeral: true,

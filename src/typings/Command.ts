@@ -34,6 +34,7 @@ export type SlashCommandType = {
   cooldown?: number;
   ownerOnly?: boolean;
   ephemeral?: boolean;
+  consumeInstantly?: boolean;
   run: SlashCommandRunFunction;
 } & ChatInputApplicationCommandData;
 

@@ -62,6 +62,13 @@
       "on_vote_update": "Your vote has been updated!"
     }
   },
+  "announce_movie_night": {
+    "embed_texts": {
+      "title": "{title} - Movie Night Announcement!",
+      "color": 13578100,
+      "description": "Tonight's Movie Night movie is **{title}**.\nIt'll be held at <t:{unix}:f>. \nClick on the `Interested` button below to get notified when the event starts! \n\n**Movie Description:**\n{description}\n\n[Trailer]({trailer}) | [IMDb]({imdb})\n\n**Additional Notes**: {notes}\n\nHoping to see you there!"
+    }
+  },
   "error_messages": {
     "OWNER_ONLY": "Only the Bot Owner(s) can use this command!",
     "GUILD_ONLY": "This command can only be used in a server!",
