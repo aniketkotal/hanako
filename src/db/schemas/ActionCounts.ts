@@ -1,10 +1,33 @@
 import { model, Schema, Model, Document, ObjectId } from "mongoose";
+<<<<<<< HEAD
 import { ActionNames } from "../../typings/client";
 
 type Actions = Record<ActionNames, Map<string, number>>;
 
 export interface ActionCounts extends Document, Actions {
   userID: string;
+=======
+
+export interface ActionCounts extends Document {
+  userID: string;
+  bite: Map<string, number>;
+  cuddle: Map<string, number>;
+  dance: Map<string, number>;
+  feed: Map<string, number>;
+  hug: Map<string, number>;
+  kiss: Map<string, number>;
+  pat: Map<string, number>;
+  poke: Map<string, number>;
+  slap: Map<string, number>;
+  tickle: Map<string, number>;
+  fluff: Map<string, number>;
+  lick: Map<string, number>;
+  kick: Map<string, number>;
+  pout: Map<string, number>;
+  shoot: Map<string, number>;
+  stare: Map<string, number>;
+  yeet: Map<string, number>;
+>>>>>>> master
 }
 
 export interface ActionCountDocument extends ActionCounts, Document {
@@ -116,6 +139,7 @@ const actionCountsSchema: Schema<ActionCountDocument> = new Schema(
   },
   {
     methods: {
+<<<<<<< HEAD
       getCount: function (actionType: ActionNames, victimID: string) {
         return this[actionType].get(victimID);
       },
@@ -128,6 +152,21 @@ const actionCountsSchema: Schema<ActionCountDocument> = new Schema(
         this[actionType] = actionCounts;
         const user = await this.save();
         return +user.getCount(actionType, victimID);
+=======
+      getCount: function (actionType: string, victimID: string) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        return this[actionType].get(victimID);
+      },
+      increaseActionCountByOne: async function (
+        actionType: string,
+        victimID: string
+      ) {
+        const actionCounts = this[actionType] as Map<string, number>;
+        actionCounts.set(victimID, Number(actionCounts.get(victimID) || 0) + 1);
+        this[actionType] = actionCounts;
+        const user = await this.save();
+        return user.getCount(actionType, victimID);
+>>>>>>> master
       },
     },
     statics: {
@@ -154,7 +193,10 @@ const actionCountsSchema: Schema<ActionCountDocument> = new Schema(
         }).save();
       },
     },
+<<<<<<< HEAD
     timestamps: true,
+=======
+>>>>>>> master
   }
 );
 

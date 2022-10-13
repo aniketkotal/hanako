@@ -14,7 +14,11 @@ export interface MovieNight {
   channelID: string;
 }
 
+<<<<<<< HEAD
 export interface MovieNightDocument extends MovieNight, Document {
+=======
+interface MovieNightDocument extends MovieNight, Document {
+>>>>>>> master
   votes: Array<MovieVote>;
   getAllVotes: () => Promise<{ [key: string]: Array<MovieVote> }>;
 }
@@ -82,7 +86,10 @@ const movieNightsSchema: Schema<MovieNightDocument> = new Schema(
     toObject: {
       virtuals: true,
     },
+<<<<<<< HEAD
     timestamps: true,
+=======
+>>>>>>> master
   }
 );
 

@@ -6,7 +6,10 @@ export class Logger {
   static errorColour = chalk.red;
   static loadedColour = chalk.greenBright;
   static eventColour = chalk.blueBright;
+<<<<<<< HEAD
   static actionColour = chalk.cyanBright;
+=======
+>>>>>>> master
 
   static info(text: string): void {
     console.log(this.infoColour("[INFO] ") + text);
@@ -29,8 +32,11 @@ export class Logger {
   static eventLoaded(eventName: string): void {
     console.log(this.eventColour("[+] Event  ") + eventName + " loaded!");
   }
+<<<<<<< HEAD
 
   static actionLoaded(actionName: string): void {
     console.log(this.actionColour("[+] Action ") + actionName + " loaded!");
   }
+=======
+>>>>>>> master
 }

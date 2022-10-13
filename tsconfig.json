@@ -1,9 +1,21 @@
 {
   "compilerOptions": {
+<<<<<<< HEAD
     "lib": [
       "ESNext"
     ],
     "baseUrl": ".",
+=======
+//    "baseUrl": "./src",
+//    "paths": {
+//      "@/*": [
+//        "*"
+//      ]
+//    },
+    "lib": [
+      "ESNext"
+    ],
+>>>>>>> master
     "module": "CommonJS",
     "moduleResolution": "node",
     "target": "ESNext",
@@ -21,7 +33,11 @@
     "strict": true
   },
   "include": [
+<<<<<<< HEAD
     "./src",
+=======
+    "src/**/*",
+>>>>>>> master
     "environment.d.ts"
   ],
   "exclude": [

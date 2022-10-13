@@ -5,6 +5,7 @@ import {
   ClientEvents,
   Collection,
   Message,
+  GatewayIntentBits,
 } from "discord.js";
 import glob from "glob-promise";
 import { Constant, RegisterCommandsOptions } from "../typings/Client";
@@ -20,6 +21,13 @@ import { updateCollectorTimings } from "../commands/SlashCommands/utility/helper
 import constants from "../constants/constants.json";
 import axios from "axios";
 import { constructAllActions } from "../commands/TextCommands/action/constructor";
+<<<<<<< HEAD
+=======
+import { ActionTextCommand } from "./Command";
+
+const { Guilds, MessageContent, GuildMessages, GuildMembers } =
+  GatewayIntentBits;
+>>>>>>> master
 
 export class ExtendedClient extends Client {
   slashCommands: Collection<string, SlashCommandType> = new Collection();
@@ -30,7 +38,11 @@ export class ExtendedClient extends Client {
 
   constructor() {
     super({
+<<<<<<< HEAD
       intents: 130863,
+=======
+      intents: [Guilds, MessageContent, GuildMessages, GuildMembers],
+>>>>>>> master
       allowedMentions: {
         repliedUser: false,
       },
@@ -51,7 +63,11 @@ export class ExtendedClient extends Client {
   async getMessage(
     messageID: string,
     channelID: string
+<<<<<<< HEAD
   ): Promise<Promise<Message> | undefined> {
+=======
+  ): Promise<Message> | undefined {
+>>>>>>> master
     const channel = (await this.channels.fetch(
       channelID
     )) as BaseGuildTextChannel;
@@ -67,7 +83,11 @@ export class ExtendedClient extends Client {
     return message;
   }
 
+<<<<<<< HEAD
   async getActionGIF(action: string): Promise<string | undefined> {
+=======
+  async getActionGIF(action: string): Promise<string> {
+>>>>>>> master
     let url: number;
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -75,7 +95,10 @@ export class ExtendedClient extends Client {
     if (common.includes(action)) url = 1;
     else if (purrbot.includes(action)) url = 2;
     else if (neko.includes(action)) url = 3;
+<<<<<<< HEAD
     else return undefined;
+=======
+>>>>>>> master
 
     const purrBotURL = `https://purrbot.site/api/img/sfw/${action}/gif`; // .link
     const nekoBestURL = `https://nekos.best/api/v2/${action}`; // .url
@@ -93,6 +116,7 @@ export class ExtendedClient extends Client {
     }
   }
 
+<<<<<<< HEAD
   toTitleCase(text: string) {
     let str = text.replace(/([^\W_]+[^\s-]*) */g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
@@ -148,17 +172,31 @@ export class ExtendedClient extends Client {
     try {
       const { DB_URL, DB_PORT, DB_NAME } = process.env;
       await mongoose.connect(`mongodb://${DB_URL}:${DB_PORT}/${DB_NAME}`);
+=======
+  private async _connectToDB() {
+    try {
+      const { dbURL, dbPort, dbName } = process.env;
+      await mongoose.connect(`mongodb://${dbURL}:${dbPort}/${dbName}`);
+>>>>>>> master
       const db = mongoose.connection;
       db.on("connecting", () => {
         Logger.info("Connecting to DB...");
       });
       db.on("open", () => {
         Logger.info("Connected to DB!");
+<<<<<<< HEAD
       });
 
       db.on("error", () => {
         throw new Error("Failed connecting to DB!");
       });
+=======
+      });
+
+      db.on("error", () => {
+        throw new Error("Failed connecting to DB!");
+      });
+>>>>>>> master
     } catch (e) {
       Logger.error(e as Error);
     }
@@ -182,6 +220,7 @@ export class ExtendedClient extends Client {
     const [eventFiles, slashCommandFiles, textCommandFiles] = await Promise.all(
       [
         glob(`/events/**/index.ts`, {
+<<<<<<< HEAD
           root: require.main?.path,
         }),
         glob(`/commands/SlashCommands/**/*.ts`, {
@@ -189,6 +228,15 @@ export class ExtendedClient extends Client {
         }),
         glob(`/commands/TextCommands/**/*.ts`, {
           root: require.main?.path,
+=======
+          root: require.main.path,
+        }),
+        glob(`/commands/SlashCommands/**/*.ts`, {
+          root: require.main.path,
+        }),
+        glob(`/commands/TextCommands/**/*.ts`, {
+          root: require.main.path,
+>>>>>>> master
         }),
       ]
     );
@@ -213,7 +261,11 @@ export class ExtendedClient extends Client {
     actionCommands.forEach((command) => {
       if (!command?.name) return;
       this.textCommands.set(command.name, command);
+<<<<<<< HEAD
       Logger.actionLoaded(command.name);
+=======
+      Logger.moduleLoaded(command.name);
+>>>>>>> master
     });
 
     this.on("ready", async () => {

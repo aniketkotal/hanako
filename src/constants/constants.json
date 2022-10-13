@@ -9,14 +9,22 @@
         {
           "color": 10192110,
           "title": "<:RAWR:815320678664241173> Movie Night Voting!",
+<<<<<<< HEAD
           "description": "Welcome to another Movie Night voting! Below are this week's selection of movies to choose from.\nYour movie could be on there next too! Go to <#736683960062574635> and let us know your favourite movie!\n\nClick on the buttons below to choose the one you'd love to watch!\n"
+=======
+          "description": "Welcome to another Movie Night voting! Below are this week's selection of movies to choose from.\nYour movie could be on there next too! Go to <#736683960062574635> and let us know your favourite movie!\n\nClick on the reactions below to choose the one you'd love to watch!\n"
+>>>>>>> master
         }
       ],
       "footer_since": "This voting ended on",
       "footer_until": "This voting ends on",
       "owner_message_texts": {
+<<<<<<< HEAD
         "title": "Movie Night Details",
         "description": "Here are the details of the requested Movie Night voting"
+=======
+        "title": "Movie Night Details"
+>>>>>>> master
       }
     },
     "messages": {
@@ -62,6 +70,7 @@
       "on_vote_update": "Your vote has been updated!"
     }
   },
+<<<<<<< HEAD
   "announce_movie_night": {
     "embed_texts": {
       "title": "{title} - Movie Night Announcement!",
@@ -69,6 +78,8 @@
       "description": "Tonight's Movie Night movie is **{title}**.\nIt'll be held at <t:{unix}:f>. \nClick on the `Interested` button below to get notified when the event starts! \n\n**Movie Description:**\n{description}\n\n[Trailer]({trailer}) | [IMDb]({imdb})\n\n**Additional Notes**: {notes}\n\nHoping to see you there!"
     }
   },
+=======
+>>>>>>> master
   "error_messages": {
     "OWNER_ONLY": "Only the Bot Owner(s) can use this command!",
     "GUILD_ONLY": "This command can only be used in a server!",
@@ -325,6 +336,7 @@
       "error_messages": {
         "NO_USER": "You need to mention someone to stare at!"
       }
+<<<<<<< HEAD
     },
     "shoot": {
       "embed_details": {
@@ -351,6 +363,8 @@
       "error_messages": {
         "NO_USER": "You need to mention someone to yeet!"
       }
+=======
+>>>>>>> master
     }
   }
 }

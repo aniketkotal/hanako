@@ -57,7 +57,10 @@ const movieVoteSchema: Schema<MovieVoteDocument> = new Schema(
         );
       },
     },
+<<<<<<< HEAD
     timestamps: true,
+=======
+>>>>>>> master
   }
 );
 
