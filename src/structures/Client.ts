@@ -9,11 +9,7 @@ import {
 } from "discord.js";
 import glob from "glob-promise";
 import { Constant, RegisterCommandsOptions } from "../typings/Client";
-import {
-  CooldownType,
-  SlashCommandType,
-  TextCommandType,
-} from "../typings/Command";
+import { SlashCommandType, TextCommandType } from "../typings/Command";
 import { Event } from "./Events";
 import mongoose from "mongoose";
 import { Logger } from "./Logger";
@@ -21,6 +17,7 @@ import { updateCollectorTimings } from "../commands/SlashCommands/utility/helper
 import constants from "../constants/constants.json";
 import axios from "axios";
 import { constructAllActions } from "../commands/TextCommands/action/constructor";
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 =======
 import { ActionTextCommand } from "./Command";
@@ -28,13 +25,24 @@ import { ActionTextCommand } from "./Command";
 const { Guilds, MessageContent, GuildMessages, GuildMembers } =
   GatewayIntentBits;
 >>>>>>> master
+=======
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import relativeTime from "dayjs/plugin/relativeTime";
+import dayjs from "dayjs";
+
+dayjs.extend(utc);
+dayjs.extend(relativeTime);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("Asia/Calcutta");
+>>>>>>> Stashed changes
 
 export class ExtendedClient extends Client {
   slashCommands: Collection<string, SlashCommandType> = new Collection();
   textCommands: Collection<string, TextCommandType> = new Collection();
-  coolDowns: Collection<string, CooldownType> = new Collection();
+  coolDowns: Collection<string, Collection<string, number>> = new Collection();
   constants: Constant = constants;
-  owners = process.env.OWNER_IDS.split(",");
+  owners = process.env.OWNER_IDS.split(",").map((owner) => owner.trim());
 
   constructor() {
     super({

@@ -366,5 +366,11 @@
 =======
 >>>>>>> master
     }
+  },
+  "client_configurations": {
+    "cooldown": {
+      "default_cooldown": 15,
+      "cooldown_message": "Please wait {cooldown} {unit} more before reusing the `{command}` command."
+    }
   }
 }

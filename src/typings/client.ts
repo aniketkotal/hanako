@@ -13,6 +13,7 @@ export interface Constant {
   action_embeds: ActionEmbeds;
 <<<<<<< HEAD
   announce_movie_night: AnnounceMovieNight;
+<<<<<<< Updated upstream
 =======
 }
 
@@ -147,6 +148,18 @@ export interface Timeouts {
   preview_embed: number;
   default: number;
 >>>>>>> master
+=======
+  client_configurations: ClientConfigurations;
+}
+
+export interface ClientConfigurations {
+  cooldown: Cooldown;
+}
+
+interface Cooldown {
+  cooldown_message: string;
+  default_cooldown: number;
+>>>>>>> Stashed changes
 }
 
 export interface AnnounceMovieNight {

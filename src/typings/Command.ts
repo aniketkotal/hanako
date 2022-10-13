@@ -53,22 +53,26 @@ interface TextCommandRunArgs {
 type SlashCommandRunFunction = (options: SlashCommandRunArgs) => any;
 type TextCommandRunFunction = (options: TextCommandRunArgs) => any;
 
+<<<<<<< Updated upstream
 export type SlashCommandType = {
 <<<<<<< HEAD
+=======
+export interface Command {
+  name: string;
+>>>>>>> Stashed changes
   userPermissions?: PermissionResolvable;
   cooldown?: number;
   ownerOnly?: boolean;
+}
+
+export type SlashCommandType = Command & {
   ephemeral?: boolean;
   consumeInstantly?: boolean;
   run: SlashCommandRunFunction;
 } & ChatInputApplicationCommandData;
 
-export type TextCommandType = {
-  name: string;
+export type TextCommandType = Command & {
   aliases?: string[];
-  userPermissions?: PermissionResolvable;
-  coolDown?: number;
-  ownerOnly?: boolean;
   run: TextCommandRunFunction;
 };
 
@@ -79,6 +83,7 @@ export interface ActionCommandAdditionalOptions {
 
 export type ActionCommandType = ActionCommandAdditionalOptions &
   TextCommandType;
+<<<<<<< Updated upstream
 
 export type CooldownType = {
   [key: string]: Collection<string, number>;
@@ -110,3 +115,5 @@ export type CooldownType = {
     [key: string]: Collection<string, number>;
 >>>>>>> master
 };
+=======
+>>>>>>> Stashed changes
