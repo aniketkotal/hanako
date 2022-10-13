@@ -12,6 +12,16 @@ export interface Constant {
   gif_endpoints: GIFEndpoints;
   action_embeds: ActionEmbeds;
   announce_movie_night: AnnounceMovieNight;
+  client_configurations: ClientConfigurations;
+}
+
+export interface ClientConfigurations {
+  cooldown: Cooldown;
+}
+
+interface Cooldown {
+  cooldown_message: string;
+  default_cooldown: number;
 }
 
 export interface AnnounceMovieNight {

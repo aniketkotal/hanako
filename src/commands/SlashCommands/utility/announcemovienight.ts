@@ -8,13 +8,7 @@ import {
   GuildScheduledEventEntityType,
   GuildScheduledEventPrivacyLevel,
 } from "discord.js";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
 import dayjs, { Dayjs } from "dayjs";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.tz.setDefault("Asia/Calcutta");
 
 export default new SlashCommand({
   name: "announce_movie_night",
