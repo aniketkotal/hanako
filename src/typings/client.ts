@@ -68,6 +68,7 @@ export interface ConstantErrorMessages {
   GUILD_ONLY: string;
   NO_VOTES: string;
   MOVIE_NIGHT_NOT_FOUND: string;
+  BOT_BANNED: string;
 }
 
 export interface GIFEndpoints {
