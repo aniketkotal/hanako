@@ -1,7 +1,7 @@
 import { ApplicationCommandOptionType } from "discord.js";
 import { SlashCommand } from "../../../structures/Command";
 import { prepareMovieNightDetailEmbed, prepareVotesEmbed } from "./helpers";
-import { MovieNights } from "../../../db/schemas/MovieNights";
+import { MovieNights } from "../../../_db/schemas/MovieNights";
 
 export default new SlashCommand({
   name: "check_movie_votes",

@@ -22,6 +22,10 @@ export class Logger {
     }
   }
 
+  static dbLogger(message: string): void {
+    console.log(this.errorColour("[DB] ") + message);
+  }
+
   static moduleLoaded(moduleName: string): void {
     console.log(this.loadedColour("[+] Module ") + moduleName + " loaded!");
   }

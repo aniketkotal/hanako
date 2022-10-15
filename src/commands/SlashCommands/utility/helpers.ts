@@ -13,8 +13,8 @@ import {
   MovieNight,
   MovieNightDocument,
   MovieNights,
-} from "../../../db/schemas/MovieNights";
-import { MovieVotes } from "../../../db/schemas/MovieVotes";
+} from "../../../_db/schemas/MovieNights";
+import { MovieVotes } from "../../../_db/schemas/MovieVotes";
 import { ExtendedClient } from "../../../structures/Client";
 import { Logger } from "../../../structures/Logger";
 import constants from "../../../constants/constants.json";
@@ -265,9 +265,9 @@ const addMovieNightToDB = async (movieNight: MovieNight) => {
 };
 
 export {
-  addMovieNightCollector,
-  updateCollectorTimings,
-  sendMovieNightEmbed,
-  addMovieNightToDB,
-  prepareVotesEmbed,
+    addMovieNightCollector,
+    updateCollectorTimings,
+    sendMovieNightEmbed,
+    addMovieNightToDB,
+    prepareVotesEmbed,
 };

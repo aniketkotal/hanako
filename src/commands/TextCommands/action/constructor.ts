@@ -1,5 +1,5 @@
 import { APIEmbed, Message } from "discord.js";
-import { ActionCount } from "../../../db/schemas/ActionCounts";
+import { ActionCount } from "../../../_db/schemas/ActionCounts";
 import { client } from "../../../index";
 import {
   DetailedAction,

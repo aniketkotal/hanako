@@ -2,6 +2,7 @@ import { Event } from "../../structures/Events";
 import { client } from "../../index";
 import parseMessage from "./modules/parseMessage";
 import checkCooldown from "./modules/cooldown";
+import { User } from "../../db/models/User";
 
 export default new Event("messageCreate", async (message) => {
   if (message.author.bot) return;
@@ -10,6 +11,14 @@ export default new Event("messageCreate", async (message) => {
   console.log(message.content);
   const { args, command } = parseMessage(message);
   if (!command) return;
+
+  let user = await User.findOne({ where: { userID: message.author.id } });
+  if (!user) user = await User.create({ userID: message.author.id });
+
+  if (user.botMeta.banned.isBanned) {
+    const { MOVIE_NIGHT_NOT_FOUND } = client.constants.error_messages;
+    return message.reply();
+  }
 
   const cmd = client.textCommands.find(
     (c) => c.name === command || c.aliases?.includes(command)

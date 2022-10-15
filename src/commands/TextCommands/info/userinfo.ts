@@ -1,5 +1,5 @@
 // import { TextCommand } from "../../../structures/Command";
-// import { MovieNights } from "../../../db/schemas/MovieNights";
+// import { MovieNights } from "../../../_db/schemas/MovieNights";
 // import { APIEmbed } from "discord.js";
 //
 // export default new TextCommand({

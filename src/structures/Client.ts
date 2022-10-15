@@ -10,7 +10,6 @@ import glob from "glob-promise";
 import { Constant, RegisterCommandsOptions } from "../typings/Client";
 import { SlashCommandType, TextCommandType } from "../typings/Command";
 import { Event } from "./Events";
-import mongoose from "mongoose";
 import { Logger } from "./Logger";
 import { updateCollectorTimings } from "../commands/SlashCommands/utility/helpers";
 import constants from "../constants/constants.json";
@@ -20,6 +19,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
+import { sequelize } from "../db";
 
 dayjs.extend(utc);
 dayjs.extend(relativeTime);
@@ -75,7 +75,6 @@ export class ExtendedClient extends Client {
   async getActionGIF(action: string): Promise<string | undefined> {
     let url: number;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const { common, purrbot, neko } = this.constants.gif_endpoints;
     if (common.includes(action)) url = 1;
     else if (purrbot.includes(action)) url = 2;
@@ -103,8 +102,6 @@ export class ExtendedClient extends Client {
       return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
     });
 
-    // Certain minor words should be left lowercase unless
-    // they are the first or last words in the string
     const lowers = [
       "A",
       "An",
@@ -137,7 +134,6 @@ export class ExtendedClient extends Client {
       );
     }
 
-    // Certain words such as initialisms or acronyms should be left uppercase
     const uppers = ["Id", "Tv"];
     for (let i = 0, j = uppers.length; i < j; i++) {
       str = str.replace(
@@ -151,21 +147,13 @@ export class ExtendedClient extends Client {
 
   private async _connectToDB() {
     try {
-      const { DB_URL, DB_PORT, DB_NAME } = process.env;
-      await mongoose.connect(`mongodb://${DB_URL}:${DB_PORT}/${DB_NAME}`);
-      const db = mongoose.connection;
-      db.on("connecting", () => {
-        Logger.info("Connecting to DB...");
-      });
-      db.on("open", () => {
-        Logger.info("Connected to DB!");
-      });
-
-      db.on("error", () => {
-        throw new Error("Failed connecting to DB!");
-      });
-    } catch (e) {
-      Logger.error(e as Error);
+      await sequelize.sync();
+      Logger.dbLogger("All models were synchronized successfully.");
+      await sequelize.authenticate();
+      Logger.dbLogger("Connection has been established successfully.");
+    } catch (error) {
+      Logger.dbLogger("Unable to connect to the database:");
+      console.log(error);
     }
   }
 
