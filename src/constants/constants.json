@@ -73,7 +73,8 @@
     "OWNER_ONLY": "Only the Bot Owner(s) can use this command!",
     "GUILD_ONLY": "This command can only be used in a server!",
     "NO_VOTES": "No votes yet!",
-    "MOVIE_NIGHT_NOT_FOUND": "No Movie Night voting found for the queried message ID!"
+    "MOVIE_NIGHT_NOT_FOUND": "No Movie Night voting found for the queried message ID!",
+    "BOT_BANNED": "You're banned from using this bot!\nIf you think this is a mistake, please contact the bot owner(s)!\nReason: {reason}"
   },
   "gif_endpoints": {
     "common": [

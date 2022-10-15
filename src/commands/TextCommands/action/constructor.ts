@@ -59,7 +59,7 @@ const getUsers = async (
   const name = args.join(" ");
   const res = await message.guild.members.search({ query: name, limit: 1 });
   if (!res.size) return null;
-  console.log(res);
+
   return res.map((i) => ({
     id: i.user.id,
     name: i.nickname || i.user.username,

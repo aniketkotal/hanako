@@ -2,22 +2,25 @@ import { Event } from "../../structures/Events";
 import { client } from "../../index";
 import parseMessage from "./modules/parseMessage";
 import checkCooldown from "./modules/cooldown";
+import basicChecks from "./modules/basicChecks";
 import { User } from "../../db/models/User";
 
 export default new Event("messageCreate", async (message) => {
-  if (message.author.bot) return;
-  if (!message.content.startsWith(process.env.DEFAULT_PREFIX)) return;
-  if (message.author.discriminator === "0000") return;
-  console.log(message.content);
+  if (!basicChecks(message)) return;
+
   const { args, command } = parseMessage(message);
   if (!command) return;
 
   let user = await User.findOne({ where: { userID: message.author.id } });
   if (!user) user = await User.create({ userID: message.author.id });
-
+  const { error_messages } = client.constants;
   if (user.botMeta.banned.isBanned) {
-    const { MOVIE_NIGHT_NOT_FOUND } = client.constants.error_messages;
-    return message.reply();
+    return message.reply(
+      error_messages.BOT_BANNED.replace(
+        "{reason}",
+        user.botMeta.banned.banReason
+      )
+    );
   }
 
   const cmd = client.textCommands.find(
