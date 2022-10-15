@@ -16,10 +16,16 @@ export default new SlashCommand({
       type: ApplicationCommandOptionType.String,
     },
   ],
-  run: async ({ interaction }) => {
+  run: async ({ interaction, client }) => {
     const messageID = interaction.options.get("message_id")?.value as string;
 
     const movieNight = await MovieNights.findOne({ messageID }).exec();
+    const { error_messages } = client.constants;
+    if (!movieNight) {
+      return interaction.followUp({
+        content: error_messages.MOVIE_NIGHT_NOT_FOUND,
+      });
+    }
 
     const votes = await prepareVotesEmbed(movieNight);
     const details = prepareMovieNightDetailEmbed(movieNight);

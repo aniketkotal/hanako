@@ -2,12 +2,12 @@ import { Event } from "../../structures/Events";
 import { client } from "../../index";
 import parseMessage from "./modules/parseMessage";
 import checkCooldown from "./modules/cooldown";
+import basicChecks from "./modules/basicChecks";
+import { User } from "../../db/schemas/User";
 
 export default new Event("messageCreate", async (message) => {
-  if (message.author.bot) return;
-  if (!message.content.startsWith(process.env.DEFAULT_PREFIX)) return;
-  if (message.author.discriminator === "0000") return;
-  console.log(message.content);
+  if (!basicChecks(message)) return;
+
   const { args, command } = parseMessage(message);
   if (!command) return;
 
@@ -15,6 +15,18 @@ export default new Event("messageCreate", async (message) => {
     (c) => c.name === command || c.aliases?.includes(command)
   );
   if (!cmd) return;
+
+  let user = await User.findOne({ userID: message.author.id }).exec();
+  if (!user) user = await new User({ userID: message.author.id }).save();
+
+  if (user.botMeta.banned.isBanned) {
+    return message.reply({
+      content: client.constants.error_messages.BOT_BANNED.replace(
+        "{reason}",
+        user.botMeta.banned.banReason
+      ),
+    });
+  }
 
   const cooldown = checkCooldown(cmd, message.author.id, client);
   const { cooldown_message } = client.constants.client_configurations.cooldown;
