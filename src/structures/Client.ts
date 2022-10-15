@@ -151,8 +151,8 @@ export class ExtendedClient extends Client {
 
   private async _connectToDB() {
     try {
-      const { DB_URL, DB_PORT, DB_NAME } = process.env;
-      await mongoose.connect(`mongodb://${DB_URL}:${DB_PORT}/${DB_NAME}`);
+      const { DB_URL } = process.env;
+      await mongoose.connect(DB_URL);
       const db = mongoose.connection;
       db.on("connecting", () => {
         Logger.info("Connecting to DB...");
