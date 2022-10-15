@@ -5,9 +5,9 @@
   "main": "index.ts",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "start:dev": "npx ts-node-dev --respawn src/index.ts",
+    "start:dev": "ts-node-dev --respawn src/index.ts",
     "start:prod": "node dist/index.js",
-    "build": "npx tsc",
+    "build": "tsc",
     "watch": "tsc -w",
     "lint": "eslint . --ext .ts"
   },
