@@ -13,8 +13,8 @@ export default new Event("messageCreate", async (message) => {
 
   let user = await User.findOne({ where: { userID: message.author.id } });
   if (!user) user = await User.create({ userID: message.author.id });
-  const { error_messages } = client.constants;
   if (user.botMeta.banned.isBanned) {
+    const { error_messages } = client.constants;
     return message.reply(
       error_messages.BOT_BANNED.replace(
         "{reason}",
