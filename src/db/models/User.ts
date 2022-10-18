@@ -1,62 +1,45 @@
-import { sequelize } from "../index";
-import {
-  DataTypes,
-  InferAttributes,
-  InferCreationAttributes,
-  Model,
-} from "sequelize";
-import { ActionNames } from "../../typings/client";
+import { Column, Model, Table } from "sequelize-typescript";
+import { Snowflake } from "discord.js";
 
-interface UserModel
-  extends Model<
-    InferAttributes<UserModel>,
-    InferCreationAttributes<UserModel>
-  > {
-  userID: string;
-  prefix: string;
-  disabledActions: ActionNames[];
-  botMeta: {
-    banned: {
-      isBanned: boolean;
-      banReason: string;
-    };
-    skipsCooldown: boolean;
+export interface BotMeta {
+  banned: {
+    isBanned: false;
+    banReason: "";
   };
-  commandsRan: Record<string, number>;
+  skipsCooldown: false;
 }
 
-export const User = sequelize.define<UserModel>(
-  "Users",
-  {
-    userID: {
-      primaryKey: true,
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    prefix: {
-      type: DataTypes.STRING,
-      defaultValue: "!",
-    },
-    disabledActions: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      defaultValue: [],
-    },
-    botMeta: {
-      type: DataTypes.JSON,
-      defaultValue: {
-        banned: {
-          isBanned: false,
-          banReason: "",
-        },
-        skipsCooldown: false,
+@Table
+export class User extends Model<User> {
+  @Column({
+    primaryKey: true,
+    unique: true,
+  })
+  userID: Snowflake;
+
+  @Column({
+    defaultValue: "!",
+  })
+  prefix: string;
+
+  @Column({
+    defaultValue: [],
+  })
+  disabledActions: string;
+
+  @Column({
+    defaultValue: JSON.stringify({
+      banned: {
+        isBanned: false,
+        banReason: "",
       },
-    },
-    commandsRan: {
-      type: DataTypes.JSON,
-      defaultValue: {},
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+      skipsCooldown: false,
+    }),
+  })
+  botMeta: string;
+
+  @Column({
+    defaultValue: {},
+  })
+  commandsRan: string;
+}

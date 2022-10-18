@@ -120,10 +120,12 @@ export default new SlashCommand({
             movies
           );
           await addMovieNightToDB({
-            movies: movies.map((movie) => ({
-              movieID: movie.name,
-              name: String(movie.value),
-            })),
+            movies: JSON.stringify(
+              movies.map((movie) => ({
+                movieID: movie.name,
+                name: String(movie.value),
+              }))
+            ),
             timeEnds: timeVoteEnds,
             createdBy: user.id,
             channelID: channel.id,

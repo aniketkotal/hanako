@@ -3,8 +3,7 @@ import { client } from "../../index";
 import parseMessage from "./modules/parseMessage";
 import checkCooldown from "./modules/cooldown";
 import basicChecks from "./modules/basicChecks";
-import { User } from "../../db/models/User";
-import { sequelize } from "../../db";
+import { BotMeta, User } from "../../db/models/User";
 
 export default new Event("messageCreate", async (message) => {
   if (!basicChecks(message)) return;
@@ -14,13 +13,11 @@ export default new Event("messageCreate", async (message) => {
 
   let user = await User.findOne({ where: { userID: message.author.id } });
   if (!user) user = await User.create({ userID: message.author.id });
-  if (user.botMeta.banned.isBanned) {
+  const botmeta = JSON.parse(user.botMeta) as BotMeta;
+  if (botmeta.banned.isBanned) {
     const { error_messages } = client.constants;
     return message.reply(
-      error_messages.BOT_BANNED.replace(
-        "{reason}",
-        user.botMeta.banned.banReason
-      )
+      error_messages.BOT_BANNED.replace("{reason}", botmeta.banned.banReason)
     );
   }
 

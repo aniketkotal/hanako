@@ -147,7 +147,7 @@ export class ExtendedClient extends Client {
 
   private async _connectToDB() {
     try {
-      await sequelize.sync();
+      await sequelize.sync({ force: true });
       await sequelize.authenticate();
       Logger.dbLogger("Connection has been established successfully.");
     } catch (error) {

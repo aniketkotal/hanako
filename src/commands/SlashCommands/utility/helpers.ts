@@ -3,29 +3,35 @@ import {
   CommandInteraction,
   CommandInteractionOption,
   ComponentType,
+  EmbedBuilder,
   Message,
   MessageReaction,
   User,
 } from "discord.js";
 import dayjs from "dayjs";
-import {
-  MovieNight,
-  MovieNightDocument,
-} from "../../../_db/schemas/MovieNights";
-import { MovieNights } from "../../../db/models/MovieNights";
-import { MovieVotes } from "../../../_db/schemas/MovieVotes";
+import { Movie, MovieNight } from "../../../db/models/MovieNights";
 import { ExtendedClient } from "../../../structures/Client";
 import { Logger } from "../../../structures/Logger";
 import constants from "../../../constants/constants.json";
 import { Constant } from "../../../typings/client";
-import { Op } from "sequelize";
+import { Op, Optional } from "sequelize";
+import { MovieVote } from "../../../db/models/MovieVotes";
+import { client } from "../../../index";
+import { NullishPropertiesOf } from "sequelize/types/utils";
 
 const { movie_night, movie_votes, error_messages } = constants as Constant;
 
 const updateCollectorTimings = async (): Promise<void> => {
   const currentTime = dayjs().unix();
 
-  const aliveNights = await MovieNights.getAliveMovieNights(currentTime);
+  const aliveNights = await MovieNight.findAll({
+    where: {
+      timeEnds: {
+        [Op.gte]: currentTime,
+      },
+    },
+  });
+
   if (!aliveNights.length) return;
 
   const movieNights = aliveNights.map(async (night) => {
@@ -79,13 +85,9 @@ const addMovieNightCollector = async (
   collector.on("collect", async (i) => {
     await i.deferReply({ ephemeral: true });
 
-    const vote = await MovieVotes.addMovieVote({
+    const vote = await MovieVote.create({
       messageID: message.id,
-      user: {
-        userID: i.user.id,
-        username: i.user.username,
-        hash: i.user.discriminator,
-      },
+      userID: i.user.id,
       movieID: i.customId,
     });
 
@@ -101,43 +103,49 @@ const addMovieNightCollector = async (
   });
 
   collector.on("end", async () => {
-    // const movieData = await MovieNights.findOne({ messageID: message.id });
-    //
-    // //Edit old movie night message
-    // const row = {
-    //   type: 1,
-    //   components: movieData?.movies.map((i) => ({
-    //     type: 2,
-    //     style: 1,
-    //     label: i.name,
-    //     custom_id: i.movieID,
-    //     disabled: true,
-    //   })),
-    // };
-    // const embed = new EmbedBuilder(message.embeds[0].data).setFooter({
-    //   text: movie_night.embed_texts.footer_since,
-    // });
-    // await message.edit({
-    //   content: movie_night.messages.message_on_finish,
-    //   components: [row],
-    //   embeds: [embed],
-    // });
-    // Send message to owners
-    // const movieNight = await MovieNights.findOne({
-    //   messageID: message.id,
-    // }).exec();
-    // if (!movieNight) {
-    //   return await sendMessageToOwners(
-    //     [{ description: error_messages.MOVIE_NIGHT_NOT_FOUND }],
-    //     client
-    //   );
-    // }
-    //
-    // const embeds = [
-    //   prepareMovieNightDetailEmbed(movieNight),
-    //   await prepareVotesEmbed(movieNight),
-    // ];
-    // await sendMessageToOwners(embeds, client);
+    const { movies: moviesJSON } = await MovieNight.findOne({
+      include: [MovieVote],
+      where: {
+        messageID: message.id,
+      },
+    });
+    const movies = JSON.parse(moviesJSON) as Array<Movie>;
+
+    //Edit old movie night message
+    const row = {
+      type: 1,
+      components: movies.map((i) => ({
+        type: 2,
+        style: 1,
+        label: i.name,
+        custom_id: i.movieID,
+        disabled: true,
+      })),
+    };
+    const embed = new EmbedBuilder(message.embeds[0].data).setFooter({
+      text: movie_night.embed_texts.footer_since,
+    });
+    await message.edit({
+      content: movie_night.messages.message_on_finish,
+      components: [row],
+      embeds: [embed],
+    });
+
+    const movieNight = await MovieNight.findOne({
+      where: { messageID: message.id },
+    });
+    if (!movieNight) {
+      return await sendMessageToOwners(
+        [{ description: error_messages.MOVIE_NIGHT_NOT_FOUND }],
+        client
+      );
+    }
+
+    const embeds = [
+      prepareMovieNightDetailEmbed(movieNight),
+      prepareVotesEmbed(movieNight),
+    ];
+    await sendMessageToOwners(embeds, client);
   });
 };
 
@@ -163,9 +171,7 @@ const sendMessageToOwners = async (
   }
 };
 
-export const prepareMovieNightDetailEmbed = (
-  movieNight: MovieNightDocument
-) => {
+export const prepareMovieNightDetailEmbed = (movieNight: MovieNight) => {
   const { title, description } = movie_night.embed_texts.owner_message_texts;
   const { channelID, createdBy, timeEnds } = movieNight;
 
@@ -200,18 +206,25 @@ export const prepareMovieNightDetailEmbed = (
   return embed;
 };
 
-const prepareVotesEmbed = async (
-  movieNight: MovieNightDocument
-): Promise<APIEmbed> => {
-  const { movies } = movieNight;
-  const movieVotes = await movieNight.getAllVotes();
+const getAllVotes = (votes: Array<MovieVote>) => {
+  const movies: { [key: string]: Array<MovieVote> } = {};
+  votes.forEach((vote) => {
+    if (!movies[vote.movieID]) movies[vote.movieID] = [];
+    movies[vote.movieID].push(vote);
+  });
+  return movies;
+};
+
+const prepareVotesEmbed = (movieNight: MovieNight): APIEmbed => {
+  const { movies: moviesJSON, votes } = movieNight;
+  const movies = JSON.parse(moviesJSON) as Array<Movie>;
+  const movieVotes = getAllVotes(votes);
 
   const movieDataFields = movies.map(({ movieID }) => {
     const votes = movieVotes[movieID] || [];
+    const users = votes.map((vote) => `<@${vote.userID}>`);
 
-    const voters =
-      votes.map(({ user }) => `${user.username}#${user.hash}`).join(", ") ||
-      error_messages.NO_VOTES;
+    const voters = users.join(", ") || error_messages.NO_VOTES;
     const movieName = movies.find((i) => i.movieID === movieID)?.name;
 
     return {
@@ -252,17 +265,11 @@ const sendMovieNightEmbed = async (
     ],
   });
 
-const addMovieNightToDB = async (movieNight: MovieNight) => {
+const addMovieNightToDB = async (
+  movieNight: Optional<MovieNight, NullishPropertiesOf<MovieNight>>
+) => {
   try {
-    const b = await MovieNights.findOne({
-      where: {
-        timeEnds: {
-          [Op.gte]: 1666028368,
-        },
-      },
-    });
-    console.log(b);
-    return (await MovieNights.create(movieNight)).save();
+    return MovieNight.create(movieNight);
   } catch (e) {
     Logger.error(e as Error);
   }

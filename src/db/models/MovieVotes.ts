@@ -1,42 +1,28 @@
 import {
-  DataTypes,
-  InferAttributes,
-  InferCreationAttributes,
+  BelongsTo,
+  Column,
+  ForeignKey,
   Model,
-} from "sequelize";
-import { sequelize } from "../index";
+  Table,
+} from "sequelize-typescript";
+import { MovieNight } from "./MovieNights";
 
-export interface MovieVote
-  extends Model<
-    InferAttributes<MovieVote>,
-    InferCreationAttributes<MovieVote>
-  > {
-  user: {
-    userID: string;
-    username: string;
-    hash: string;
-  };
+@Table
+export class MovieVote extends Model<MovieVote> {
+  @Column({
+    primaryKey: true,
+    unique: true,
+    allowNull: false,
+  })
+  userID: string;
+
+  @Column
   movieID: string;
-  messageID: string;
-}
 
-export const MovieNights = sequelize.define<MovieVote>(
-  "MovieVotes",
-  {
-    user: {
-      type: DataTypes.JSON,
-      allowNull: false,
-    },
-    movieID: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    messageID: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+  @ForeignKey(() => MovieNight)
+  @Column
+  messageID: string;
+
+  @BelongsTo(() => MovieNight)
+  movieNight: MovieNight;
+}

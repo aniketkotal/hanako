@@ -25,11 +25,14 @@
     "mongoose": "^6.5.3",
     "pg": "^8.8.0",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.25.1"
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^6.25.2",
+    "sequelize-typescript": "^2.1.5"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
-    "@types/node": "^18.7.13",
+    "@types/node": "^18.11.0",
+    "@types/validator": "^13.7.8",
     "@typescript-eslint/eslint-plugin": "^5.35.1",
     "@typescript-eslint/parser": "^5.35.1",
     "eslint": "8.22.0",

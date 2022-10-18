@@ -1,7 +1,7 @@
 import { ApplicationCommandOptionType } from "discord.js";
 import { SlashCommand } from "../../../structures/Command";
 import { prepareMovieNightDetailEmbed, prepareVotesEmbed } from "./helpers";
-import { MovieNights } from "../../../_db/schemas/MovieNights";
+import { MovieNight } from "../../../db/models/MovieNights";
 
 export default new SlashCommand({
   name: "check_movie_votes",
@@ -19,7 +19,7 @@ export default new SlashCommand({
   run: async ({ interaction, client }) => {
     const messageID = interaction.options.get("message_id")?.value as string;
 
-    const movieNight = await MovieNights.findOne({ messageID }).exec();
+    const movieNight = await MovieNight.findOne({ where: { messageID } });
     const { error_messages } = client.constants;
     if (!movieNight) {
       return interaction.followUp({
@@ -27,7 +27,7 @@ export default new SlashCommand({
       });
     }
 
-    const votes = await prepareVotesEmbed(movieNight);
+    const votes = prepareVotesEmbed(movieNight);
     const details = prepareMovieNightDetailEmbed(movieNight);
     await interaction.followUp({
       embeds: [details, votes],
