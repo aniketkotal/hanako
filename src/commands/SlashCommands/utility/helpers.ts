@@ -3,7 +3,6 @@ import {
   CommandInteraction,
   CommandInteractionOption,
   ComponentType,
-  EmbedBuilder,
   Message,
   MessageReaction,
   User,
@@ -12,14 +11,14 @@ import dayjs from "dayjs";
 import {
   MovieNight,
   MovieNightDocument,
-  MovieNights,
 } from "../../../_db/schemas/MovieNights";
+import { MovieNights } from "../../../db/models/MovieNights";
 import { MovieVotes } from "../../../_db/schemas/MovieVotes";
 import { ExtendedClient } from "../../../structures/Client";
 import { Logger } from "../../../structures/Logger";
 import constants from "../../../constants/constants.json";
 import { Constant } from "../../../typings/client";
-import { client } from "../../../index";
+import { Op } from "sequelize";
 
 const { movie_night, movie_votes, error_messages } = constants as Constant;
 
@@ -102,45 +101,43 @@ const addMovieNightCollector = async (
   });
 
   collector.on("end", async () => {
-    const movieData = await MovieNights.findOne({ messageID: message.id });
-
-    //Edit old movie night message
-    const row = {
-      type: 1,
-      components: movieData?.movies.map((i) => ({
-        type: 2,
-        style: 1,
-        label: i.name,
-        custom_id: i.movieID,
-        disabled: true,
-      })),
-    };
-    const embed = new EmbedBuilder(message.embeds[0].data).setFooter({
-      text: movie_night.embed_texts.footer_since,
-    });
-    await message.edit({
-      content: movie_night.messages.message_on_finish,
-      components: [row],
-      embeds: [embed],
-    });
-
+    // const movieData = await MovieNights.findOne({ messageID: message.id });
+    //
+    // //Edit old movie night message
+    // const row = {
+    //   type: 1,
+    //   components: movieData?.movies.map((i) => ({
+    //     type: 2,
+    //     style: 1,
+    //     label: i.name,
+    //     custom_id: i.movieID,
+    //     disabled: true,
+    //   })),
+    // };
+    // const embed = new EmbedBuilder(message.embeds[0].data).setFooter({
+    //   text: movie_night.embed_texts.footer_since,
+    // });
+    // await message.edit({
+    //   content: movie_night.messages.message_on_finish,
+    //   components: [row],
+    //   embeds: [embed],
+    // });
     // Send message to owners
-    const movieNight = await MovieNights.findOne({
-      messageID: message.id,
-    }).exec();
-    if (!movieNight) {
-      return await sendMessageToOwners(
-        [{ description: error_messages.MOVIE_NIGHT_NOT_FOUND }],
-        client
-      );
-    }
-
-    const embeds = [
-      prepareMovieNightDetailEmbed(movieNight),
-      await prepareVotesEmbed(movieNight),
-    ];
-
-    await sendMessageToOwners(embeds, client);
+    // const movieNight = await MovieNights.findOne({
+    //   messageID: message.id,
+    // }).exec();
+    // if (!movieNight) {
+    //   return await sendMessageToOwners(
+    //     [{ description: error_messages.MOVIE_NIGHT_NOT_FOUND }],
+    //     client
+    //   );
+    // }
+    //
+    // const embeds = [
+    //   prepareMovieNightDetailEmbed(movieNight),
+    //   await prepareVotesEmbed(movieNight),
+    // ];
+    // await sendMessageToOwners(embeds, client);
   });
 };
 
@@ -257,17 +254,24 @@ const sendMovieNightEmbed = async (
 
 const addMovieNightToDB = async (movieNight: MovieNight) => {
   try {
-    const mnight = new MovieNights(movieNight);
-    return mnight.save();
+    const b = await MovieNights.findOne({
+      where: {
+        timeEnds: {
+          [Op.gte]: 1666028368,
+        },
+      },
+    });
+    console.log(b);
+    return (await MovieNights.create(movieNight)).save();
   } catch (e) {
     Logger.error(e as Error);
   }
 };
 
 export {
-    addMovieNightCollector,
-    updateCollectorTimings,
-    sendMovieNightEmbed,
-    addMovieNightToDB,
-    prepareVotesEmbed,
+  addMovieNightCollector,
+  updateCollectorTimings,
+  sendMovieNightEmbed,
+  addMovieNightToDB,
+  prepareVotesEmbed,
 };

@@ -1,4 +1,5 @@
 import { TextCommand } from "../../../structures/Command";
+import { addMovieNightToDB } from "../../SlashCommands/utility/helpers";
 
 export default new TextCommand({
   name: "ping",

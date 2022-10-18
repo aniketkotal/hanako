@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { SlashCommand } from "../../../structures/Command";
 import { Logger } from "../../../structures/Logger";
 import {
-  addMovieNightCollector,
+  // addMovieNightCollector,
   addMovieNightToDB,
   sendMovieNightEmbed,
 } from "./helpers";
@@ -129,8 +129,8 @@ export default new SlashCommand({
             channelID: channel.id,
             messageID: sentMessage.id,
           });
-          const timeUntilEnd: number = time * 3600000;
-          await addMovieNightCollector(sentMessage, client, timeUntilEnd);
+          // const timeUntilEnd: number = time * 3600000;
+          // await addMovieNightCollector(sentMessage, client, timeUntilEnd);
           await interaction.editReply({
             content: movie_night.messages.on_ok,
             components: [],

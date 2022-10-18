@@ -4,6 +4,7 @@ import parseMessage from "./modules/parseMessage";
 import checkCooldown from "./modules/cooldown";
 import basicChecks from "./modules/basicChecks";
 import { User } from "../../db/models/User";
+import { sequelize } from "../../db";
 
 export default new Event("messageCreate", async (message) => {
   if (!basicChecks(message)) return;

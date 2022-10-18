@@ -3,6 +3,7 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
+  Op,
 } from "sequelize";
 import { sequelize } from "../index";
 
@@ -21,6 +22,7 @@ export interface MovieNight
   timeEnds: number;
   createdBy: string;
   channelID: string;
+  // votes: Array<MovieVote>;
 }
 
 export const MovieNights = sequelize.define<MovieNight>(
@@ -30,14 +32,13 @@ export const MovieNights = sequelize.define<MovieNight>(
       type: DataTypes.STRING,
       primaryKey: true,
       unique: true,
-      allowNull: false,
     },
     movies: {
       type: DataTypes.ARRAY(DataTypes.JSON),
       allowNull: false,
     },
     timeEnds: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
     },
     createdBy: {
@@ -48,8 +49,25 @@ export const MovieNights = sequelize.define<MovieNight>(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    // votes: {
+    //   type: DataTypes.ARRAY(DataTypes.JSON),
+    //   references: {
+    //     key: "messageID",
+    //     model: "MovieVotes",
+    //   },
+    // },
   },
   {
     timestamps: true,
   }
 );
+
+// MovieNights.prototype.getAliveMovieNights = async function (timeUntil: number) {
+//   return await this.findAll({
+//     where: {
+//       timeEnds: {
+//         [Op.gt]: timeUntil,
+//       },
+//     },
+//   });
+// };
