@@ -44,19 +44,21 @@ const getUsers = async (
     }));
   } else {
     const query = args.join(" ");
-    const queriedUser = (
-      await client.helpers.findUsersFromGuild({
-        query,
-        guild: message.guild,
-      })
-    ).first();
-    if (queriedUser) {
-      users = [
-        {
-          id: queriedUser.id,
-          name: queriedUser.nickname || queriedUser.user.username,
-        },
-      ];
+    if (query) {
+      const queriedUser = (
+        await client.helpers.findUsersFromGuild({
+          query,
+          guild: message.guild,
+        })
+      ).first();
+      if (queriedUser) {
+        users = [
+          {
+            id: queriedUser.id,
+            name: queriedUser.nickname || queriedUser.user.username,
+          },
+        ];
+      }
     }
   }
   if (!users) {

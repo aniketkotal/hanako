@@ -364,5 +364,13 @@
   },
   "embed_colours": {
     "default": "ff7675"
+  },
+  "global_messages": {
+    "afk": {
+      "afk_message": "{user} is now AFK.",
+      "not_afk_message": "AFK status removed!\nYou were AFK for {time}",
+      "user_afk_message": "{user} is **AFK**!\nReason: {reason}\nAFK since **{time}**",
+      "no_links": "You can't have links in your AFK message."
+    }
   }
 }

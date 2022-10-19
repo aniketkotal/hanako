@@ -128,6 +128,9 @@ const deleteReactionCollector = async (
   reactionCollector.on("end", () => message.reactions.removeAll());
 };
 
+const addAutoDeleteTimer = (message: Message, time: number = 10000) =>
+  setTimeout(() => message.delete(), time);
+
 export default {
   toTitleCase,
   getMessage,
@@ -135,4 +138,5 @@ export default {
   getActionGIF,
   replyMessageWithError,
   deleteReactionCollector,
+  addAutoDeleteTimer,
 };

@@ -7,7 +7,17 @@ import { client } from "../../../index";
 export default new TextCommand({
   name: "afk",
   aliases: ["setafk"],
-  run: async ({ message, args }) => {
+  run: async ({ message, args, client }) => {
+    const urlRegex =
+      /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
+
+    if (args.join(" ").match(urlRegex)) {
+      return client.helpers.addAutoDeleteTimer(
+        await message.reply(client.constants.global_messages.afk.no_links),
+        25000
+      );
+    }
+
     const afk = await AFK.findOne({
       userID: message.author.id,
       guildID: message.guildId,

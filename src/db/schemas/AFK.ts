@@ -1,4 +1,4 @@
-import { model, Schema, Model, Document } from "mongoose";
+import { model, Schema, Document } from "mongoose";
 
 interface AFK extends Document {
   userID: string;
