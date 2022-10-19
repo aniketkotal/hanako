@@ -74,7 +74,9 @@
     "GUILD_ONLY": "This command can only be used in a server!",
     "NO_VOTES": "No votes yet!",
     "MOVIE_NIGHT_NOT_FOUND": "No Movie Night voting found for the queried message ID!",
-    "BOT_BANNED": "You're banned from using this bot!\nIf you think this is a mistake, please contact the bot owner(s)!\nReason: {reason}"
+    "BOT_BANNED": "You're banned from using this bot!\nIf you think this is a mistake, please contact the bot owner(s)!\nReason: {reason}",
+    "NO_USER_FOUND": "No user found for the queried ID!",
+    "INVALID_USER_ID": "The given query is invalid! Please try again."
   },
   "gif_endpoints": {
     "common": [
