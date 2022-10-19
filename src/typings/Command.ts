@@ -24,6 +24,7 @@ interface TextCommandRunArgs {
   client: ExtendedClient;
   message: Message;
   args: string[];
+  command: string;
 }
 
 type SlashCommandRunFunction = (options: SlashCommandRunArgs) => any;
@@ -34,6 +35,8 @@ export interface Command {
   userPermissions?: PermissionResolvable;
   cooldown?: number;
   ownerOnly?: boolean;
+  guildOnly?: boolean;
+  dmOnly?: boolean;
 }
 
 export type SlashCommandType = Command & {

@@ -54,7 +54,7 @@ const addMovieNightCollector = async (
 ): Promise<void> => {
   let message: Message;
   if (typeof messageData === "string" && channelID) {
-    const res = await client.getMessage(messageData, channelID);
+    const res = await client.helpers.getMessage(messageData, channelID);
     if (!res) return;
     else message = res;
   } else {
@@ -265,9 +265,9 @@ const addMovieNightToDB = async (movieNight: MovieNight) => {
 };
 
 export {
-  addMovieNightCollector,
-  updateCollectorTimings,
-  sendMovieNightEmbed,
-  addMovieNightToDB,
-  prepareVotesEmbed,
+    addMovieNightCollector,
+    updateCollectorTimings,
+    sendMovieNightEmbed,
+    addMovieNightToDB,
+    prepareVotesEmbed,
 };
