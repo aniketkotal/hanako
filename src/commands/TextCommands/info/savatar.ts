@@ -3,17 +3,22 @@ import { APIEmbed } from "discord.js";
 import dayjs from "dayjs";
 
 export default new TextCommand({
-  name: "avatar",
-  aliases: ["av", "pfp"],
+  name: "sav",
+  aliases: ["savatar", "spfp", "serveravatar"],
   async run({ message, args, client }) {
     let query = args[0]?.match(/\d{17,19}/)?.[0];
-    if (!query) {
+
+    if (!query && args[0]) {
       return client.helpers.replyMessageWithError(
         message,
         client.constants.error_messages.INVALID_USER_ID
       );
     }
-    const user = await client.users.fetch(query, { force: true });
+    query = message.member.id;
+    const user = await message.guild.members.fetch({
+      force: true,
+      user: query,
+    });
 
     if (!user && args[0]) {
       return client.helpers.replyMessageWithError(
@@ -21,11 +26,11 @@ export default new TextCommand({
         client.constants.error_messages.NO_USER_FOUND
       );
     } else {
-      query = message.author.id;
+      query = message.member.id;
     }
 
     const embed: APIEmbed = {
-      title: `${user.username}'s avatar`,
+      title: `${user.nickname || user.user.username}'s Server Avatar`,
       image: { url: user.displayAvatarURL({ size: 4096 }) },
       footer: {
         text: `Requested By: ${message.author.username}`,
