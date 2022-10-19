@@ -83,7 +83,7 @@ export default new SlashCommand({
       options.get("additional_notes"),
     ];
 
-    movie_title.value = client.toTitleCase(String(movie_title.value));
+    movie_title.value = client.helpers.toTitleCase(String(movie_title.value));
 
     const url = msg.attachments.first()?.url || msg.content;
     let time: Dayjs;

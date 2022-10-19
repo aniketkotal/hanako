@@ -42,7 +42,7 @@ export default new Event("messageCreate", async (message) => {
     return message.reply(client.constants.error_messages.OWNER_ONLY);
 
   try {
-    await cmd.run({ client, message, args });
+    await cmd.run({ client, message, args, command });
   } catch (e) {
     console.log(e);
   }
