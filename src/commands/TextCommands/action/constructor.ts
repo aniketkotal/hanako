@@ -22,7 +22,7 @@ export const prepareSimpleEmbed = async (
   const { color, title } = embed_details;
   const gif = gifs?.length
     ? gifs[Math.floor(Math.random() * gifs.length)]
-    : await client.getActionGIF(action);
+    : await client.helpers.getActionGIF(action);
   return {
     title: title.replace("{author}", message.author.username),
     color: parseInt(color, 16),
@@ -36,34 +36,44 @@ const getUsers = async (
   message: Message,
   args: Array<string>
 ): Promise<Array<{ id: string; name: string }> | null> => {
-  const {
-    mentions: { members },
-  } = message;
-  if (members.size) {
-    return members.map((i) => ({
-      id: i.id,
-      name: i.nickname || i.user.username,
+  let users: Array<{ id: string; name: string }>;
+  if (message.mentions.users.size) {
+    users = message.mentions.members.map((u) => ({
+      id: u.id,
+      name: u.nickname || u.user.username,
     }));
+  } else {
+    const query = args.join(" ");
+    const queriedUser = (
+      await client.helpers.findUsersFromGuild({
+        query,
+        guild: message.guild,
+      })
+    ).first();
+    if (queriedUser) {
+      users = [
+        {
+          id: queriedUser.id,
+          name: queriedUser.nickname || queriedUser.user.username,
+        },
+      ];
+    }
   }
-  if (!args.length) return;
-  const usr = args[0];
-  if (usr && usr.length === 18) {
-    const { id, nickname, user } = await message.guild.members.fetch(usr);
-    return [
-      {
-        id: id,
-        name: nickname || user.username,
-      },
-    ];
+  if (!users) {
+    const user = args[0];
+    if (user && user.length === 18) {
+      const fetchedUser = await client.users.fetch(user);
+      if (fetchedUser) {
+        users = [
+          {
+            id: fetchedUser.id,
+            name: fetchedUser.username,
+          },
+        ];
+      }
+    }
   }
-  const name = args.join(" ");
-  const res = await message.guild.members.search({ query: name, limit: 1 });
-  if (!res.size) return null;
-
-  return res.map((i) => ({
-    id: i.user.id,
-    name: i.nickname || i.user.username,
-  }));
+  return users;
 };
 
 export const prepareDetailedEmbed = async (
@@ -82,7 +92,7 @@ export const prepareDetailedEmbed = async (
 
   const gif = gifs?.length
     ? gifs[Math.floor(Math.random() * gifs.length)]
-    : await client.getActionGIF(action);
+    : await client.helpers.getActionGIF(action);
   const authorUsername = message.member.nickname || message.author.username;
 
   let embed: APIEmbed;
