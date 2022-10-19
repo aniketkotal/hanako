@@ -361,5 +361,8 @@
       "default_cooldown": 15,
       "cooldown_message": "Please wait {cooldown} {unit} more before reusing the `{command}` command."
     }
+  },
+  "embed_colours": {
+    "default": "ff7675"
   }
 }
