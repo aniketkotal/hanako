@@ -3,10 +3,12 @@ import { client } from "../../index";
 import parseMessage from "./modules/parseMessage";
 import checkCooldown from "./modules/cooldown";
 import basicChecks from "./modules/basicChecks";
+import checkAFK from "./modules/checkAFK";
 import { User } from "../../db/schemas/User";
 
 export default new Event("messageCreate", async (message) => {
   if (!basicChecks(message)) return;
+  await checkAFK(message).catch(console.log);
 
   const { args, command } = parseMessage(message);
   if (!command) return;
