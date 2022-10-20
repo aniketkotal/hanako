@@ -2,9 +2,10 @@ import { Event } from "../../structures/Events";
 import { client } from "../../index";
 import parseMessage from "./modules/parseMessage";
 import checkCooldown from "./modules/cooldown";
-import basicChecks from "./modules/basicChecks";
 import checkAFK from "./modules/checkAFK";
 import { User } from "../../db/schemas/User";
+import { Message } from "discord.js";
+import { TextCommandType } from "../../typings/Command";
 
 export default new Event("messageCreate", async (message) => {
   if (!basicChecks(message)) return;
@@ -17,6 +18,8 @@ export default new Event("messageCreate", async (message) => {
     (c) => c.name === command || c.aliases?.includes(command)
   );
   if (!cmd) return;
+  if (!(await checkIfProperChannel(message, cmd))) return;
+  if (!(await checkIfHasPermissions(message, cmd))) return;
 
   let user = await User.findOne({ userID: message.author.id }).exec();
   if (!user) user = await new User({ userID: message.author.id }).save();
@@ -49,3 +52,42 @@ export default new Event("messageCreate", async (message) => {
     console.log(e);
   }
 });
+
+const basicChecks = (message: Message) =>
+  !(
+    message.author.bot ||
+    !message.content.startsWith(process.env.DEFAULT_PREFIX) ||
+    message.author.discriminator === "0000"
+  );
+
+const checkIfProperChannel = async (
+  message: Message,
+  command: TextCommandType
+) => {
+  if (command.dmOnly && message.inGuild()) {
+    client.helpers.addAutoDeleteTimer(
+      await message.reply(client.constants.error_messages.DM_ONLY)
+    );
+    return false;
+  }
+  if (command.guildOnly && !message.inGuild()) {
+    client.helpers.addAutoDeleteTimer(
+      await message.reply(client.constants.error_messages.GUILD_ONLY)
+    );
+    return false;
+  }
+  return true;
+};
+
+const checkIfHasPermissions = async (
+  message: Message,
+  command: TextCommandType
+) => {
+  if (!command.userPermissions) return true;
+  if (message.member.permissions.has(command.userPermissions)) {
+    return true;
+  } else {
+    await message.reply(client.constants.error_messages.NO_PERMISSIONS);
+    return false;
+  }
+};
