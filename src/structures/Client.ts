@@ -5,7 +5,7 @@ import {
   Collection,
 } from "discord.js";
 import glob from "glob-promise";
-import { Constant, RegisterCommandsOptions } from "../typings/Client";
+import { RegisterCommandsOptions } from "../typings/Client";
 import { SlashCommandType, TextCommandType } from "../typings/Command";
 import { Event } from "./Events";
 import mongoose from "mongoose";
@@ -87,15 +87,16 @@ export class ExtendedClient extends Client {
   private async _registerModules() {
     const start = process.hrtime();
     const slashCommands: Array<ApplicationCommandDataResolvable> = [];
+    const fileType = process.env.ENVIRONMENT === "dev" ? "ts" : "js";
     const [eventFiles, slashCommandFiles, textCommandFiles] = await Promise.all(
       [
-        glob(`/events/**/index.ts`, {
+        glob(`/events/**/index.${fileType}`, {
           root: require.main?.path,
         }),
-        glob(`/commands/SlashCommands/**/*.ts`, {
+        glob(`/commands/SlashCommands/**/*.${fileType}`, {
           root: require.main?.path,
         }),
-        glob(`/commands/TextCommands/**/*.ts`, {
+        glob(`/commands/TextCommands/**/*.${fileType}`, {
           root: require.main?.path,
         }),
       ]

@@ -2,8 +2,8 @@ declare global {
   namespace NodeJS {
     interface ProcessEnv {
       TOKEN: string;
-      guildID: string;
-      environment: "dev" | "prod" | "debug";
+      GUILD_ID: string;
+      ENVIRONMENT: "dev" | "prod";
       DB_URL: string;
       DB_PORT: string;
       DB_NAME: string;

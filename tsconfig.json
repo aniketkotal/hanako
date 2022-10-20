@@ -6,7 +6,7 @@
     "baseUrl": ".",
     "module": "CommonJS",
     "moduleResolution": "node",
-    "target": "ESNext",
+    "target": "ES2022",
     "strictNullChecks": false,
     "outDir": "dist",
     "sourceMap": false,
