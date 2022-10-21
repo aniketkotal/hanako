@@ -1,27 +1,72 @@
 {
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts"
+      ]
+    },
+    "import/resolver": {
+      "typescript": {}
+    }
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "prettier"
+  ],
   "env": {
     "browser": true,
     "es2021": true
   },
   "extends": [
+    "airbnb-base",
+    "plugin:prettier/recommended",
+    "airbnb",
     "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    "plugin:@typescript-eslint/recommended"
   ],
-  "overrides": [],
-  "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
-  "rules": {
-    "func-style": ["error", "expression"],
-    "curly": ["error", "multi-or-nest", "consistent"],
-    "eqeqeq": ["error", "always"],
-    "@typescript-eslint/no-misused-promises": "off",
-    "@typescript-eslint/no-unsafe-member-access": "off",
-    "@typescript-eslint/no-unsafe-return": "off"
-  },
   "parserOptions": {
-    "project": ["tsconfig.json"]
+    "requireConfigFile": false,
+    "ecmaVersion": "latest",
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    }
+  },
+  "rules": {
+    "linebreak-style": "off",
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
+    "no-use-before-define": "off",
+    "no-bitwise": "off",
+    "no-param-reassign": "off",
+    "no-underscore-dangle": "off",
+    "no-confusing-arrow": "off",
+    "implicit-arrow-linebreak": "off",
+    "indent": "off",
+    "function-paren-newline": "off",
+    "operator-linebreak": "off",
+    "nonblock-statement-body-position": "off",
+    "padded-blocks": "off",
+    "quotes": "off",
+    "object-curly-newline": "off",
+    "lines-between-class-members": "off",
+    "no-shadow": [
+      "error",
+      {
+        "builtinGlobals": false,
+        "hoist": "functions",
+        "allow": [],
+        "ignoreOnInitialization": false
+      }
+    ],
+    "no-new": "off"
   }
 }

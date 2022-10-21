@@ -1,22 +1,19 @@
-import { Event } from "../../structures/Events";
+import { Message } from "discord.js";
+import { Event } from "../../structures/Events.js";
 import { client } from "../../index";
 import parseMessage from "./modules/parseMessage";
 import checkCooldown from "./modules/cooldown";
 import checkAFK from "./modules/checkAFK";
 import { User } from "../../db/schemas/User";
-import { Message } from "discord.js";
 import { TextCommandType } from "../../typings/Command";
 
 export default new Event("messageCreate", async (message) => {
   if (!basicChecks(message)) return;
-  await checkAFK(message).catch(console.log);
-
   const { args, command } = parseMessage(message);
+  if (command !== "afk") await checkAFK(message).catch(console.log);
   if (!command) return;
 
-  const cmd = client.textCommands.find(
-    (c) => c.name === command || c.aliases?.includes(command)
-  );
+  const cmd = client.textCommands.find((c) => c.name === command || c.aliases?.includes(command));
   if (!cmd) return;
   if (!(await checkIfProperChannel(message, cmd))) return;
   if (!(await checkIfHasPermissions(message, cmd))) return;
@@ -25,12 +22,13 @@ export default new Event("messageCreate", async (message) => {
   if (!user) user = await new User({ userID: message.author.id }).save();
 
   if (user.botMeta.banned.isBanned) {
-    return message.reply({
+    await message.reply({
       content: client.constants.error_messages.BOT_BANNED.replace(
         "{reason}",
-        user.botMeta.banned.banReason
+        user.botMeta.banned.banReason,
       ),
     });
+    return;
   }
 
   const cooldown = checkCooldown(cmd, message.author.id, client);
@@ -40,11 +38,14 @@ export default new Event("messageCreate", async (message) => {
       .replace("{cooldown}", String(cooldown))
       .replace("{command}", cmd.name)
       .replace("{unit}", cooldown > 1 ? "seconds" : "second");
-    return message.reply(cooldownMessage);
+    await message.reply(cooldownMessage);
+    return;
   }
 
-  if (cmd.ownerOnly && !client.owners.includes(message.author.id))
-    return message.reply(client.constants.error_messages.OWNER_ONLY);
+  if (cmd.ownerOnly && !client.owners.includes(message.author.id)) {
+    await message.reply(client.constants.error_messages.OWNER_ONLY);
+    return;
+  }
 
   try {
     await cmd.run({ client, message, args, command });
@@ -60,34 +61,25 @@ const basicChecks = (message: Message) =>
     message.author.discriminator === "0000"
   );
 
-const checkIfProperChannel = async (
-  message: Message,
-  command: TextCommandType
-) => {
+const checkIfProperChannel = async (message: Message, command: TextCommandType) => {
   if (command.dmOnly && message.inGuild()) {
-    client.helpers.addAutoDeleteTimer(
-      await message.reply(client.constants.error_messages.DM_ONLY)
-    );
+    client.helpers.addAutoDeleteTimer(await message.reply(client.constants.error_messages.DM_ONLY));
     return false;
   }
   if (command.guildOnly && !message.inGuild()) {
     client.helpers.addAutoDeleteTimer(
-      await message.reply(client.constants.error_messages.GUILD_ONLY)
+      await message.reply(client.constants.error_messages.GUILD_ONLY),
     );
     return false;
   }
   return true;
 };
 
-const checkIfHasPermissions = async (
-  message: Message,
-  command: TextCommandType
-) => {
+const checkIfHasPermissions = async (message: Message, command: TextCommandType) => {
   if (!command.userPermissions) return true;
   if (message.member.permissions.has(command.userPermissions)) {
     return true;
-  } else {
-    await message.reply(client.constants.error_messages.NO_PERMISSIONS);
-    return false;
   }
+  await message.reply(client.constants.error_messages.NO_PERMISSIONS);
+  return false;
 };

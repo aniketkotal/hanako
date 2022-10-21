@@ -1,8 +1,7 @@
 import { TextCommand } from "../../../structures/Command";
 import { AFK } from "../../../db/schemas/AFK";
 import dayjs from "dayjs";
-import { APIEmbed } from "discord.js";
-import { client } from "../../../index";
+import { APIEmbed, Message } from "discord.js";
 
 export default new TextCommand({
   name: "afk",
@@ -43,7 +42,18 @@ export default new TextCommand({
       embed.description += afk.message;
       await afk.save();
     }
-
+    await setAFKNickname(message);
     return message.reply({ embeds: [embed] });
   },
 });
+
+const setAFKNickname = async (message: Message) => {
+  if (
+    !message.guild.members.me.permissions.has(134217728n) ||
+    !message.member.manageable
+  )
+    return;
+  const displayName = message.member.displayName;
+  if (displayName.endsWith(" [AFK]")) return;
+  await message.member.setNickname(`${displayName} [AFK]`);
+};
