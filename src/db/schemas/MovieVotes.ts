@@ -50,19 +50,19 @@ const movieVoteSchema: Schema<MovieVoteDocument> = new Schema(
               username: user.username,
               hash: user.hash,
             },
-            messageID: messageID,
+            messageID,
           },
           movieVote,
-          { upsert: true }
+          { upsert: true },
         );
       },
     },
     timestamps: true,
-  }
+  },
 );
 
 export const MovieVotes = model<MovieVoteDocument, MovieVoteModel>(
   "MovieVotes",
   movieVoteSchema,
-  "MovieVotes"
+  "MovieVotes",
 );

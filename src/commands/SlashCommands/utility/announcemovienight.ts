@@ -1,4 +1,3 @@
-import { SlashCommand } from "../../../structures/Command";
 import {
   APIActionRowComponent,
   APIButtonComponent,
@@ -9,8 +8,9 @@ import {
   GuildScheduledEventPrivacyLevel,
 } from "discord.js";
 import dayjs, { Dayjs } from "dayjs";
+import { SlashCommandType } from "../../../typings/command";
 
-export default new SlashCommand({
+const command: SlashCommandType = {
   name: "announce_movie_night",
   description: "Announce a movie night!",
   ownerOnly: true,
@@ -42,8 +42,7 @@ export default new SlashCommand({
     },
     {
       name: "hours_until_start",
-      description:
-        "How many hours until the movie night starts? Default: 7pm today",
+      description: "How many hours until the movie night starts? Default: 7pm today",
       type: ApplicationCommandOptionType.String,
     },
     {
@@ -133,7 +132,7 @@ export default new SlashCommand({
         "Click the Interested button to be reminded of the event!";
 
       const guildEvent: GuildScheduledEventCreateOptions = {
-        name: String(movie_title.value) + " - Movie Night",
+        name: `${String(movie_title.value)} - Movie Night`,
         description: guildEventDescription,
         scheduledStartTime: time.toISOString(),
         scheduledEndTime: time.add(2, "hours").toISOString(),
@@ -146,9 +145,9 @@ export default new SlashCommand({
 
       const channel = await guild.channels.fetch("869065266699579454");
       if (channel.isTextBased()) {
-        const msg = await channel.send({ embeds: [embed] });
-        await msg.react("🎉");
-        await msg.channel.send(event.url);
+        const movieNightAnnouncementMessage = await channel.send({ embeds: [embed] });
+        await movieNightAnnouncementMessage.react("🎉");
+        await movieNightAnnouncementMessage.channel.send(event.url);
         await interaction.editReply({
           content: "Movie Night has been announced! 🎉",
         });
@@ -160,4 +159,6 @@ export default new SlashCommand({
       });
     }
   },
-});
+};
+
+export default command;

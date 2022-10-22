@@ -1,21 +1,21 @@
-import { TextCommand } from "../../../structures/Command";
-import { AFK } from "../../../db/schemas/AFK";
+import { APIEmbed, Message } from "discord.js";
 import dayjs from "dayjs";
-import { APIEmbed } from "discord.js";
-import { client } from "../../../index";
+import { AFK } from "../../../db/schemas/AFK";
+import { TextCommandType } from "../../../typings/command";
 
-export default new TextCommand({
+const command: TextCommandType = {
   name: "afk",
   aliases: ["setafk"],
   run: async ({ message, args, client }) => {
     const urlRegex =
-      /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
+      /[(htps)?:/w.a-zA-Z0-9@%_+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)/;
 
     if (args.join(" ").match(urlRegex)) {
-      return client.helpers.addAutoDeleteTimer(
+      await client.helpers.addAutoDeleteTimer(
         await message.reply(client.constants.global_messages.afk.no_links),
-        25000
+        25000,
       );
+      return;
     }
 
     const afk = await AFK.findOne({
@@ -43,7 +43,15 @@ export default new TextCommand({
       embed.description += afk.message;
       await afk.save();
     }
-
-    return message.reply({ embeds: [embed] });
+    await setAFKNickname(message);
+    await message.reply({ embeds: [embed] });
   },
-});
+};
+export default command;
+
+const setAFKNickname = async (message: Message) => {
+  if (!message.guild.members.me.permissions.has(134217728n) || !message.member.manageable) return;
+  const { displayName } = message.member;
+  if (displayName.endsWith(" [AFK]")) return;
+  await message.member.setNickname(`${displayName} [AFK]`);
+};

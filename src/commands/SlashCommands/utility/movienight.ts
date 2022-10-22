@@ -1,14 +1,10 @@
 import { APIEmbed, ApplicationCommandOptionType } from "discord.js";
 import dayjs from "dayjs";
-import { SlashCommand } from "../../../structures/Command";
-import { Logger } from "../../../structures/Logger";
-import {
-  addMovieNightCollector,
-  addMovieNightToDB,
-  sendMovieNightEmbed,
-} from "./helpers";
+import { addMovieNightCollector, addMovieNightToDB, sendMovieNightEmbed } from "./helpers";
+import { SlashCommandType } from "../../../typings/command";
+import logger from "../../../structures/Logger";
 
-export default new SlashCommand({
+const command: SlashCommandType = {
   name: "movie_night",
   description: "Create a movie night!",
   ownerOnly: true,
@@ -34,15 +30,14 @@ export default new SlashCommand({
     },
     {
       name: "time",
-      description:
-        "Enter the time to wait before announcing results in hours (Default: 24)",
+      description: "Enter the time to wait before announcing results in hours (Default: 24)",
       type: ApplicationCommandOptionType.Number,
     },
   ],
   run: async ({ client, interaction }) => {
     const { movie_night } = client.constants;
     const { options, user, channel } = interaction;
-    const guild = interaction.guild;
+    const { guild } = interaction;
 
     const movies = [
       options.get("first_movie"),
@@ -54,19 +49,13 @@ export default new SlashCommand({
 
     const embedTexts = movie_night.embed_texts;
     const embedConstant =
-      embedTexts.all_variations[
-        Math.floor(Math.random() * embedTexts.all_variations.length)
-      ];
+      embedTexts.all_variations[Math.floor(Math.random() * embedTexts.all_variations.length)];
 
     const buttonText =
-      movie_night.button_text[
-        Math.floor(Math.random() * movie_night.button_text.length)
-      ];
+      movie_night.button_text[Math.floor(Math.random() * movie_night.button_text.length)];
 
     const votesText = movies
-      .map(
-        (movie, i) => `${movie_night.vote_emotes[i]} ${movie?.value as string}`
-      )
+      .map((movie, i) => `${movie_night.vote_emotes[i]} ${movie?.value as string}`)
       .join("\n");
 
     const timeVoteEnds: number = dayjs().add(time, "h").unix();
@@ -114,11 +103,7 @@ export default new SlashCommand({
 
       collector.on("collect", async (i) => {
         if (i.customId === "send") {
-          const sentMessage = await sendMovieNightEmbed(
-            interaction,
-            movieEmbed,
-            movies
-          );
+          const sentMessage = await sendMovieNightEmbed(interaction, movieEmbed, movies);
           await addMovieNightToDB({
             movies: movies.map((movie) => ({
               movieID: movie.name,
@@ -161,10 +146,16 @@ export default new SlashCommand({
         }
       });
     } catch (e) {
-      Logger.error(e as Error);
+      const error = e as Error;
+      logger.log({
+        message: error.message,
+        level: "error",
+      });
       await interaction.followUp({
         content: "An unknown error occurred! Please try again later.",
       });
     }
   },
-});
+};
+
+export default command;

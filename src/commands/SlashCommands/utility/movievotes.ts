@@ -1,9 +1,9 @@
 import { ApplicationCommandOptionType } from "discord.js";
-import { SlashCommand } from "../../../structures/Command";
 import { prepareMovieNightDetailEmbed, prepareVotesEmbed } from "./helpers";
 import { MovieNights } from "../../../db/schemas/MovieNights";
+import { SlashCommandType } from "../../../typings/command";
 
-export default new SlashCommand({
+const command: SlashCommandType = {
   name: "check_movie_votes",
   description: "Get votes for a movie night",
   ownerOnly: true,
@@ -22,9 +22,10 @@ export default new SlashCommand({
     const movieNight = await MovieNights.findOne({ messageID }).exec();
     const { error_messages } = client.constants;
     if (!movieNight) {
-      return interaction.followUp({
+      await interaction.followUp({
         content: error_messages.MOVIE_NIGHT_NOT_FOUND,
       });
+      return;
     }
 
     const votes = await prepareVotesEmbed(movieNight);
@@ -33,4 +34,6 @@ export default new SlashCommand({
       embeds: [details, votes],
     });
   },
-});
+};
+
+export default command;

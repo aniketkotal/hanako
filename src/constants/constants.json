@@ -72,11 +72,14 @@
   "error_messages": {
     "OWNER_ONLY": "Only the Bot Owner(s) can use this command!",
     "GUILD_ONLY": "This command can only be used in a server!",
+    "DM_ONLY": "This command can only be used in DMs!",
     "NO_VOTES": "No votes yet!",
     "MOVIE_NIGHT_NOT_FOUND": "No Movie Night voting found for the queried message ID!",
     "BOT_BANNED": "You're banned from using this bot!\nIf you think this is a mistake, please contact the bot owner(s)!\nReason: {reason}",
     "NO_USER_FOUND": "No user found for the queried ID!",
-    "INVALID_USER_ID": "The given query is invalid! Please try again."
+    "INVALID_USER_ID": "The given query is invalid! Please try again.",
+    "NOT_AFK": "The user is not AFK.",
+    "NO_PERMISSIONS": "You don't have the required permissions to use this command!"
   },
   "gif_endpoints": {
     "common": [

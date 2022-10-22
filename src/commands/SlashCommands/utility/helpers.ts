@@ -9,21 +9,16 @@ import {
   User,
 } from "discord.js";
 import dayjs from "dayjs";
-import {
-  MovieNight,
-  MovieNightDocument,
-  MovieNights,
-} from "../../../db/schemas/MovieNights";
+import { MovieNight, MovieNightDocument, MovieNights } from "../../../db/schemas/MovieNights";
 import { MovieVotes } from "../../../db/schemas/MovieVotes";
 import { ExtendedClient } from "../../../structures/Client";
-import { Logger } from "../../../structures/Logger";
 import constants from "../../../constants/constants.json";
 import { Constant } from "../../../typings/client";
-import { client } from "../../../index";
+import logger from "../../../structures/Logger";
 
 const { movie_night, movie_votes, error_messages } = constants as Constant;
 
-const updateCollectorTimings = async (): Promise<void> => {
+const updateCollectorTimings = async (client: ExtendedClient): Promise<void> => {
   const currentTime = dayjs().unix();
 
   const aliveNights = await MovieNights.getAliveMovieNights(currentTime);
@@ -31,18 +26,17 @@ const updateCollectorTimings = async (): Promise<void> => {
 
   const movieNights = aliveNights.map(async (night) => {
     const remainingTime = dayjs.unix(night.timeEnds).diff(dayjs(), "ms");
-    return addMovieNightCollector(
-      night.messageID,
-      client,
-      remainingTime,
-      night.channelID
-    );
+    return addMovieNightCollector(night.messageID, client, remainingTime, night.channelID);
   });
 
   try {
     await Promise.all(movieNights);
   } catch (e) {
-    Logger.error(e as Error);
+    const error = e as Error;
+    logger.log({
+      message: error.message,
+      level: "error",
+    });
   }
 };
 
@@ -50,13 +44,13 @@ const addMovieNightCollector = async (
   messageData: string | Message,
   client: ExtendedClient,
   time: number,
-  channelID?: string
+  channelID?: string,
 ): Promise<void> => {
   let message: Message;
   if (typeof messageData === "string" && channelID) {
     const res = await client.helpers.getMessage(messageData, channelID);
     if (!res) return;
-    else message = res;
+    message = res;
   } else {
     message = messageData as Message;
   }
@@ -104,7 +98,7 @@ const addMovieNightCollector = async (
   collector.on("end", async () => {
     const movieData = await MovieNights.findOne({ messageID: message.id });
 
-    //Edit old movie night message
+    // Edit old movie night message
     const row = {
       type: 1,
       components: movieData?.movies.map((i) => ({
@@ -129,46 +123,38 @@ const addMovieNightCollector = async (
       messageID: message.id,
     }).exec();
     if (!movieNight) {
-      return await sendMessageToOwners(
-        [{ description: error_messages.MOVIE_NIGHT_NOT_FOUND }],
-        client
-      );
+      await sendMessageToOwners([{ description: error_messages.MOVIE_NIGHT_NOT_FOUND }], client);
+      return;
     }
 
-    const embeds = [
-      prepareMovieNightDetailEmbed(movieNight),
-      await prepareVotesEmbed(movieNight),
-    ];
+    const embeds = [prepareMovieNightDetailEmbed(movieNight), await prepareVotesEmbed(movieNight)];
 
     await sendMessageToOwners(embeds, client);
   });
 };
 
-const sendMessageToOwners = async (
-  embed: Array<APIEmbed>,
-  client: ExtendedClient
-) => {
+const sendMessageToOwners = async (embed: Array<APIEmbed>, client: ExtendedClient) => {
   try {
-    const owners = process.env.OWNER_IDS.split(",").map((owner) =>
-      client.users.fetch(owner)
-    );
+    const owners = process.env.OWNER_IDS.split(",").map((owner) => client.users.fetch(owner));
     const ownersFetched = await Promise.all(owners);
     await Promise.all(
       ownersFetched.map((owner) =>
         owner.send({
           content: movie_night.messages.owner_message_on_finish,
           embeds: embed,
-        })
-      )
+        }),
+      ),
     );
   } catch (e) {
-    Logger.error(e as Error);
+    const error = e as Error;
+    logger.log({
+      message: error.message,
+      level: "error",
+    });
   }
 };
 
-export const prepareMovieNightDetailEmbed = (
-  movieNight: MovieNightDocument
-) => {
+export const prepareMovieNightDetailEmbed = (movieNight: MovieNightDocument) => {
   const { title, description } = movie_night.embed_texts.owner_message_texts;
   const { channelID, createdBy, timeEnds } = movieNight;
 
@@ -180,7 +166,7 @@ export const prepareMovieNightDetailEmbed = (
     title,
     description,
     url: "https://www.youtube.com/watch?v=2Vv-BfVoq4g",
-    color: parseInt("a29bfe", 16),
+    color: 0xa29bfe,
     fields: [
       {
         inline: true,
@@ -203,9 +189,7 @@ export const prepareMovieNightDetailEmbed = (
   return embed;
 };
 
-const prepareVotesEmbed = async (
-  movieNight: MovieNightDocument
-): Promise<APIEmbed> => {
+const prepareVotesEmbed = async (movieNight: MovieNightDocument): Promise<APIEmbed> => {
   const { movies } = movieNight;
   const movieVotes = await movieNight.getAllVotes();
 
@@ -231,14 +215,14 @@ const prepareVotesEmbed = async (
   return {
     title: embed_texts.title,
     fields: movieDataFields,
-    color: parseInt("ff7675", 16),
+    color: 0xff7675,
   };
 };
 
 const sendMovieNightEmbed = async (
   interaction: CommandInteraction,
   embedData: APIEmbed,
-  movies: readonly CommandInteractionOption[]
+  movies: readonly CommandInteractionOption[],
 ): Promise<Message> =>
   interaction.channel.send({
     embeds: [embedData],
@@ -258,16 +242,21 @@ const sendMovieNightEmbed = async (
 const addMovieNightToDB = async (movieNight: MovieNight) => {
   try {
     const mnight = new MovieNights(movieNight);
-    return mnight.save();
+    mnight.save();
+    return;
   } catch (e) {
-    Logger.error(e as Error);
+    const error = e as Error;
+    logger.log({
+      message: error.message,
+      level: "error",
+    });
   }
 };
 
 export {
-    addMovieNightCollector,
-    updateCollectorTimings,
-    sendMovieNightEmbed,
-    addMovieNightToDB,
-    prepareVotesEmbed,
+  addMovieNightCollector,
+  updateCollectorTimings,
+  sendMovieNightEmbed,
+  addMovieNightToDB,
+  prepareVotesEmbed,
 };

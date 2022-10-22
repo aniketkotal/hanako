@@ -10,10 +10,7 @@ export interface ActionCounts extends Document, Actions {
 export interface ActionCountDocument extends ActionCounts, Document {
   _id: ObjectId;
   getCount: (actionType: string, victimID: string) => Map<string, number>;
-  increaseActionCountByOne: (
-    actionType: string,
-    victimID: string
-  ) => Promise<number>;
+  increaseActionCountByOne: (actionType: string, victimID: string) => Promise<number>;
 }
 
 interface ActionCountModel extends Model<ActionCountDocument> {
@@ -116,13 +113,10 @@ const actionCountsSchema: Schema<ActionCountDocument> = new Schema(
   },
   {
     methods: {
-      getCount: function (actionType: ActionNames, victimID: string) {
+      getCount(actionType: ActionNames, victimID: string) {
         return this[actionType].get(victimID);
       },
-      increaseActionCountByOne: async function (
-        actionType: ActionNames,
-        victimID: string
-      ) {
+      async increaseActionCountByOne(actionType: ActionNames, victimID: string) {
         const actionCounts = this[actionType];
         actionCounts.set(victimID, Number(actionCounts.get(victimID) || 0) + 1);
         this[actionType] = actionCounts;
@@ -155,11 +149,11 @@ const actionCountsSchema: Schema<ActionCountDocument> = new Schema(
       },
     },
     timestamps: true,
-  }
+  },
 );
 
 export const ActionCount = model<ActionCountDocument, ActionCountModel>(
   "ActionCounts",
   actionCountsSchema,
-  "ActionCounts"
+  "ActionCounts",
 );

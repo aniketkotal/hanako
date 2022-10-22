@@ -83,11 +83,11 @@ const movieNightsSchema: Schema<MovieNightDocument> = new Schema(
       virtuals: true,
     },
     timestamps: true,
-  }
+  },
 );
 
 export const MovieNights = model<MovieNightDocument, MovieNightModel>(
   "MovieNights",
   movieNightsSchema,
-  "MovieNights"
+  "MovieNights",
 );

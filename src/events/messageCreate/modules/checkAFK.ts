@@ -1,6 +1,6 @@
 import { APIEmbed, Message } from "discord.js";
-import { AFK } from "../../../db/schemas/AFK";
 import dayjs from "dayjs";
+import { AFK } from "../../../db/schemas/AFK";
 import { client } from "../../../index";
 
 const { embed_colours, global_messages } = client.constants;
@@ -25,17 +25,14 @@ const selfAFKCheck = async (message: Message) => {
   const timeDiff = afkTime.from(currentTime, true);
   const embed: APIEmbed = {
     color: parseInt(embed_colours.default, 16),
-    description: global_messages.afk.not_afk_message.replace(
-      "{time}",
-      timeDiff
-    ),
+    description: global_messages.afk.not_afk_message.replace("{time}", timeDiff),
   };
   const msg = await message.reply({ embeds: [embed] });
   await AFK.deleteOne({
     userID: message.author.id,
     guildID: message.guildId,
   }).exec();
-  return client.helpers.deleteReactionCollector(msg, message.author.id);
+  await client.helpers.deleteReactionCollector(msg, message.author.id);
 };
 const mentionAFKCheck = async (message: Message) => {
   const {
@@ -44,9 +41,7 @@ const mentionAFKCheck = async (message: Message) => {
 
   if (!users.size) return;
   const AFKs = await Promise.all(
-    users.map((user) =>
-      AFK.findOne({ userID: user.id, guildID: message.guildId }).exec()
-    )
+    users.map((user) => AFK.findOne({ userID: user.id, guildID: message.guildId }).exec()),
   );
   const filteredAFKs = AFKs.filter((afk) => afk);
   const embeds = filteredAFKs.map((afk) => {
@@ -60,7 +55,5 @@ const mentionAFKCheck = async (message: Message) => {
     };
     return embed;
   });
-
-  embeds.length &&
-    client.helpers.addAutoDeleteTimer(await message.reply({ embeds }), 60000);
+  if (embeds.length) client.helpers.addAutoDeleteTimer(await message.reply({ embeds }), 60000);
 };
