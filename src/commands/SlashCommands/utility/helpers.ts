@@ -12,9 +12,9 @@ import dayjs from "dayjs";
 import { MovieNight, MovieNightDocument, MovieNights } from "../../../db/schemas/MovieNights";
 import { MovieVotes } from "../../../db/schemas/MovieVotes";
 import { ExtendedClient } from "../../../structures/Client";
-import { Logger } from "../../../structures/Logger";
 import constants from "../../../constants/constants.json";
 import { Constant } from "../../../typings/client";
+import logger from "../../../structures/Logger";
 
 const { movie_night, movie_votes, error_messages } = constants as Constant;
 
@@ -32,7 +32,11 @@ const updateCollectorTimings = async (client: ExtendedClient): Promise<void> => 
   try {
     await Promise.all(movieNights);
   } catch (e) {
-    Logger.error(e as Error);
+    const error = e as Error;
+    logger.log({
+      message: error.message,
+      level: "error",
+    });
   }
 };
 
@@ -142,7 +146,11 @@ const sendMessageToOwners = async (embed: Array<APIEmbed>, client: ExtendedClien
       ),
     );
   } catch (e) {
-    Logger.error(e as Error);
+    const error = e as Error;
+    logger.log({
+      message: error.message,
+      level: "error",
+    });
   }
 };
 
@@ -237,7 +245,11 @@ const addMovieNightToDB = async (movieNight: MovieNight) => {
     mnight.save();
     return;
   } catch (e) {
-    Logger.error(e as Error);
+    const error = e as Error;
+    logger.log({
+      message: error.message,
+      level: "error",
+    });
   }
 };
 

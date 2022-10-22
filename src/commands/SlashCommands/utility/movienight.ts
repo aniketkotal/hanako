@@ -1,8 +1,8 @@
 import { APIEmbed, ApplicationCommandOptionType } from "discord.js";
 import dayjs from "dayjs";
-import { Logger } from "../../../structures/Logger";
 import { addMovieNightCollector, addMovieNightToDB, sendMovieNightEmbed } from "./helpers";
 import { SlashCommandType } from "../../../typings/command";
+import logger from "../../../structures/Logger";
 
 const command: SlashCommandType = {
   name: "movie_night",
@@ -146,7 +146,11 @@ const command: SlashCommandType = {
         }
       });
     } catch (e) {
-      Logger.error(e as Error);
+      const error = e as Error;
+      logger.log({
+        message: error.message,
+        level: "error",
+      });
       await interaction.followUp({
         content: "An unknown error occurred! Please try again later.",
       });

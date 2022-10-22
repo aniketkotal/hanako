@@ -7,12 +7,12 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
 import { RegisterCommandsOptions } from "../typings/client";
 import { SlashCommandType, TextCommandType } from "../typings/command";
-import { Logger } from "./Logger";
 import { updateCollectorTimings } from "../commands/SlashCommands/utility/helpers";
 import constants from "../constants/constants.json";
 import { constructAllActions } from "../commands/TextCommands/action/constructor";
 import ClientHelpers from "./ClientHelper";
 import { Event } from "../typings/event";
+import logger from "./Logger";
 
 dayjs.extend(utc);
 dayjs.extend(relativeTime);
@@ -43,7 +43,11 @@ export class ExtendedClient extends Client {
       await this.login(process.env.TOKEN);
       await updateCollectorTimings(this);
     } catch (e) {
-      Logger.error(e as Error);
+      const error = e as Error;
+      logger.log({
+        message: error.message,
+        level: "error",
+      });
     }
   }
 
@@ -53,17 +57,27 @@ export class ExtendedClient extends Client {
       await mongoose.connect(DB_URL);
       const db = mongoose.connection;
       db.on("connecting", () => {
-        Logger.info("Connecting to DB...");
+        logger.log({
+          message: "Connecting to DB...",
+          level: "info",
+        });
       });
       db.on("open", () => {
-        Logger.info("Connected to DB!");
+        logger.log({
+          message: "Connected to DB!",
+          level: "info",
+        });
       });
 
       db.on("error", () => {
         throw new Error("Failed connecting to DB!");
       });
     } catch (e) {
-      Logger.error(e as Error);
+      const error = e as Error;
+      logger.log({
+        message: error.message,
+        level: "error",
+      });
     }
   }
 
@@ -98,7 +112,10 @@ export class ExtendedClient extends Client {
         const command = await ExtendedClient._importFile<TextCommandType>(filePath);
         if (!command?.name) return;
         this.textCommands.set(command.name, command);
-        Logger.moduleLoaded(command.name);
+        logger.log({
+          message: `Command ${command.name}`,
+          level: "LOADED",
+        });
       }),
     );
 
@@ -108,7 +125,10 @@ export class ExtendedClient extends Client {
         if (!command?.name) return;
         this.slashCommands.set(command.name, command);
         slashCommands.push(command);
-        Logger.moduleLoaded(command.name);
+        logger.log({
+          message: `Command ${command.name}`,
+          level: "LOADED",
+        });
       }),
     );
 
@@ -117,7 +137,10 @@ export class ExtendedClient extends Client {
     actionCommands.forEach((command) => {
       if (!command?.name) return;
       this.textCommands.set(command.name, command);
-      Logger.actionLoaded(command.name);
+      logger.log({
+        message: `Command ${command.name}`,
+        level: "LOADED",
+      });
     });
     this.on("ready", async () => {
       await this._registerSlashCommands({
@@ -130,12 +153,15 @@ export class ExtendedClient extends Client {
         const { event, run } = await ExtendedClient._importFile<Event<keyof ClientEvents>>(
           filePath,
         );
-        Logger.eventLoaded(event);
+        logger.log({
+          message: `Event ${event}`,
+          level: "LOADED",
+        });
         this.on(event, run);
       }),
     );
 
     const end = process.hrtime(start);
-    Logger.info(`Loaded all modules in ${end[0]}.${Math.floor(end[1] / 1000000)}s`);
+    logger.info(`Loaded all modules in ${end[0]}.${Math.floor(end[1] / 1000000)}s`);
   }
 }

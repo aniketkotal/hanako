@@ -1,10 +1,13 @@
 import { Event } from "../../typings/event";
-import { Logger } from "../../structures/Logger";
+import logger from "../../structures/Logger";
 
 export const event: Event<"ready"> = {
   event: "ready",
   run: async () => {
-    Logger.info("The bot is connected and ready!");
+    logger.log({
+      message: "The bot is connected and ready!",
+      level: "http",
+    });
   },
 };
 
