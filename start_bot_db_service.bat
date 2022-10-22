@@ -1,1 +1,0 @@
-D:\mongodb\bin\mongod.exe --dbpath=D:\portfolio\hanako\dbdata --logpath=D:\portfolio\hanako\logs\log.txt --install
