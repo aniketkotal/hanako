@@ -114,7 +114,7 @@ export class ExtendedClient extends Client {
         this.textCommands.set(command.name, command);
         logger.log({
           message: `Command ${command.name}`,
-          level: "LOADED",
+          level: "loaded",
         });
       }),
     );
@@ -127,7 +127,7 @@ export class ExtendedClient extends Client {
         slashCommands.push(command);
         logger.log({
           message: `Command ${command.name}`,
-          level: "LOADED",
+          level: "loaded",
         });
       }),
     );
@@ -139,7 +139,7 @@ export class ExtendedClient extends Client {
       this.textCommands.set(command.name, command);
       logger.log({
         message: `Command ${command.name}`,
-        level: "LOADED",
+        level: "loaded",
       });
     });
     this.on("ready", async () => {
@@ -155,7 +155,7 @@ export class ExtendedClient extends Client {
         );
         logger.log({
           message: `Event ${event}`,
-          level: "LOADED",
+          level: "loaded",
         });
         this.on(event, run);
       }),

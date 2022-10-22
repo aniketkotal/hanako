@@ -7,15 +7,15 @@ const customLevels = {
     info: 2,
     http: 3,
     debug: 4,
-    LOADED: 5,
+    loaded: 5,
   },
   colors: {
     error: "red",
     warn: "yellow",
     info: "bgBlue",
-    http: "bgGray black",
+    http: "bgBlack",
     debug: "blue",
-    LOADED: "bgMagenta",
+    loaded: "bgMagenta",
   },
 };
 
@@ -34,7 +34,7 @@ const logger = createLogger({
     new transports.Console({ level: "error" }),
     new transports.File({ filename: "error.log", dirname: "/bot_logs/", level: "error" }),
     new transports.Console({
-      level: "LOADED",
+      level: "loaded",
     }),
   ],
 });
