@@ -1,8 +1,8 @@
-import { TextCommand } from "../../../structures/Command";
 import { APIEmbed } from "discord.js";
 import dayjs from "dayjs";
+import { TextCommandType } from "../../../typings/command";
 
-export default new TextCommand({
+const command: TextCommandType = {
   name: "avatar",
   aliases: ["av", "pfp"],
   async run({ message, args, client }) {
@@ -10,7 +10,7 @@ export default new TextCommand({
     if (!query) {
       return client.helpers.replyMessageWithError(
         message,
-        client.constants.error_messages.INVALID_USER_ID
+        client.constants.error_messages.INVALID_USER_ID,
       );
     }
     const user = await client.users.fetch(query, { force: true });
@@ -18,11 +18,10 @@ export default new TextCommand({
     if (!user && args[0]) {
       return client.helpers.replyMessageWithError(
         message,
-        client.constants.error_messages.NO_USER_FOUND
+        client.constants.error_messages.NO_USER_FOUND,
       );
-    } else {
-      query = message.author.id;
     }
+    query = message.author.id;
 
     const embed: APIEmbed = {
       title: `${user.username}'s avatar`,
@@ -37,4 +36,6 @@ export default new TextCommand({
     const msg = await message.reply({ embeds: [embed] });
     return client.helpers.deleteReactionCollector(msg, message.author.id);
   },
-});
+};
+
+export default command;

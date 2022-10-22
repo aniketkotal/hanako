@@ -81,7 +81,7 @@ const userSchema: Schema<UserDocument> = new Schema(
       virtuals: true,
     },
     timestamps: true,
-  }
+  },
 );
 
 export const User = model<UserDocument>("Users", userSchema, "Users");

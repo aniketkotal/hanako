@@ -28,7 +28,7 @@ const afkSchema = new Schema<AFK>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const AFK = model<AFK>("AFK", afkSchema, "AFK");

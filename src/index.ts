@@ -1,9 +1,8 @@
-import "module-alias/register";
 import dotenv from "dotenv";
 
-dotenv.config();
-
 import { ExtendedClient } from "./structures/Client";
+
+dotenv.config();
 
 export const client = new ExtendedClient();
 

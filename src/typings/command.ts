@@ -1,6 +1,5 @@
 import {
   ChatInputApplicationCommandData,
-  Collection,
   CommandInteraction,
   CommandInteractionOptionResolver,
   GuildMember,
@@ -27,8 +26,8 @@ interface TextCommandRunArgs {
   command: string;
 }
 
-type SlashCommandRunFunction = (options: SlashCommandRunArgs) => any;
-type TextCommandRunFunction = (options: TextCommandRunArgs) => any;
+type SlashCommandRunFunction = (options: SlashCommandRunArgs) => Promise<void>;
+type TextCommandRunFunction = (options: TextCommandRunArgs) => Promise<void>;
 
 export interface Command {
   name: string;
@@ -55,5 +54,4 @@ export interface ActionCommandAdditionalOptions {
   gifs?: Array<string>;
 }
 
-export type ActionCommandType = ActionCommandAdditionalOptions &
-  TextCommandType;
+export type ActionCommandType = ActionCommandAdditionalOptions & TextCommandType;

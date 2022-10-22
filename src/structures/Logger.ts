@@ -23,14 +23,14 @@ export class Logger {
   }
 
   static moduleLoaded(moduleName: string): void {
-    console.log(this.loadedColour("[+] Module ") + moduleName + " loaded!");
+    console.log(`${this.loadedColour("[+] Module ") + moduleName} loaded!`);
   }
 
   static eventLoaded(eventName: string): void {
-    console.log(this.eventColour("[+] Event  ") + eventName + " loaded!");
+    console.log(`${this.eventColour("[+] Event  ") + eventName} loaded!`);
   }
 
   static actionLoaded(actionName: string): void {
-    console.log(this.actionColour("[+] Action ") + actionName + " loaded!");
+    console.log(`${this.actionColour("[+] Action ") + actionName} loaded!`);
   }
 }

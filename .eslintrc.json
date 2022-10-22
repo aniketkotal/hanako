@@ -26,6 +26,7 @@
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
+    "project": "./tsconfig.json",
     "requireConfigFile": false,
     "ecmaVersion": "latest",
     "ecmaFeatures": {
@@ -34,16 +35,18 @@
   },
   "rules": {
     "linebreak-style": "off",
+    "import/prefer-default-export": "off",
     "import/extensions": [
       "error",
       "ignorePackages",
       {
         "js": "never",
-        "jsx": "never",
+        "jsx": "always",
         "ts": "never",
-        "tsx": "never"
+        "tsx": "always"
       }
     ],
+    "camelcase": "off",
     "no-use-before-define": "off",
     "no-bitwise": "off",
     "no-param-reassign": "off",
