@@ -100,7 +100,7 @@ const deleteReactionCollector = async (message: Message, ownerID: string, emoji 
     max: 1,
   });
   reactionCollector.on("collect", () => message.delete());
-  reactionCollector.on("end", () => message.reactions.removeAll());
+  reactionCollector.on("end", () => message.reactions.removeAll().catch(() => null));
 };
 
 const addAutoDeleteTimer = (message: Message, time = 10000) =>

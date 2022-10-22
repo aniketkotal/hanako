@@ -6,13 +6,23 @@ import checkAFK from "./modules/checkAFK";
 import { User } from "../../db/schemas/User";
 import { TextCommandType } from "../../typings/command";
 import { Event } from "../../typings/event";
+import logger from "../../structures/Logger";
 
 const event: Event<"messageCreate"> = {
   event: "messageCreate",
   run: async (message) => {
     if (!basicChecks(message)) return;
     const { args, command } = parseMessage(message);
-    if (command !== "afk") await checkAFK(message).catch(console.log);
+    if (command !== "afk") {
+      await checkAFK(message).catch((e) => {
+        const error = e as Error;
+        logger.log({
+          message: error.message,
+          level: "error",
+        });
+      });
+    }
+    if (!message.content.startsWith(process.env.DEFAULT_PREFIX)) return;
     if (!command) return;
 
     const cmd = client.textCommands.find((c) => c.name === command || c.aliases?.includes(command));
@@ -52,17 +62,17 @@ const event: Event<"messageCreate"> = {
     try {
       await cmd.run({ client, message, args, command });
     } catch (e) {
-      console.log(e);
+      const error = e as Error;
+      logger.log({
+        message: error.message,
+        level: "error",
+      });
     }
   },
 };
 
 const basicChecks = (message: Message) =>
-  !(
-    message.author.bot ||
-    !message.content.startsWith(process.env.DEFAULT_PREFIX) ||
-    message.author.discriminator === "0000"
-  );
+  !(message.author.bot || message.author.discriminator === "0000");
 
 const checkIfProperChannel = async (message: Message, command: TextCommandType) => {
   if (command.dmOnly && message.inGuild()) {

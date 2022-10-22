@@ -31,15 +31,25 @@ const logger = createLogger({
     customFormat,
   ),
   transports: [
-    new transports.Console({ level: "error" }),
-    new transports.File({ filename: "error.log", dirname: "/bot_logs/", level: "error" }),
+    new transports.Console({
+      level: "error",
+      format: format.combine(format.errors({ stack: true })),
+      handleExceptions: true,
+    }),
+    new transports.File({
+      filename: "error.log",
+      dirname: `${__dirname}/../logs/`,
+      level: "error",
+      format: format.combine(format.errors({ stack: true })),
+      handleExceptions: true,
+    }),
     new transports.Console({
       level: "loaded",
     }),
   ],
 });
 
-if (process.env.ENVIRONMENT !== "prod") {
-}
+// if (process.env.ENVIRONMENT !== "prod") {
+// }
 
 export default logger;

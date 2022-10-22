@@ -70,6 +70,12 @@
         "ignoreOnInitialization": false
       }
     ],
-    "no-new": "off"
+    "no-new": "off",
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ]
   }
 }

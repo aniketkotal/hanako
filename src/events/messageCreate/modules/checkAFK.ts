@@ -20,7 +20,7 @@ const selfAFKCheck = async (message: Message) => {
   const afkTime = dayjs.unix(afk.timestampSince);
 
   const difference = currentTime.diff(afkTime, "minutes");
-  if (difference < 3) return;
+  if (difference < 1) return;
 
   const timeDiff = afkTime.from(currentTime, true);
   const embed: APIEmbed = {
@@ -32,6 +32,7 @@ const selfAFKCheck = async (message: Message) => {
     userID: message.author.id,
     guildID: message.guildId,
   }).exec();
+  await clearAFKNickname(message);
   await client.helpers.deleteReactionCollector(msg, message.author.id);
 };
 const mentionAFKCheck = async (message: Message) => {
@@ -56,4 +57,13 @@ const mentionAFKCheck = async (message: Message) => {
     return embed;
   });
   if (embeds.length) client.helpers.addAutoDeleteTimer(await message.reply({ embeds }), 60000);
+};
+
+const clearAFKNickname = async (message: Message) => {
+  const nickname = message.member?.nickname;
+  if (!nickname) return;
+  if (!message.guild.members.me.permissions.has(134217728n) || !message.member.manageable) return;
+  const { displayName } = message.member;
+  if (!displayName.endsWith("[AFK]")) return;
+  await message.member.setNickname(displayName.replace("[AFK]", ""));
 };
