@@ -10,6 +10,7 @@ import { SlashCommandType, TextCommandType } from "../typings/command";
 import { updateCollectorTimings } from "../commands/SlashCommands/utility/helpers";
 import constants from "../constants/constants.json";
 import { constructAllActions } from "../commands/TextCommands/action/constructor";
+// eslint-disable-next-line import/no-cycle
 import ClientHelpers from "./ClientHelper";
 import { Event } from "../typings/event";
 import logger from "./Logger";
@@ -165,3 +166,7 @@ export class ExtendedClient extends Client {
     logger.info(`Loaded all modules in ${end[0]}.${Math.floor(end[1] / 1000000)}s`);
   }
 }
+
+export type ExtendedClientClass = typeof ExtendedClient;
+
+// const convertCommandsIntoObject = (commands: Collection<string, TextCommandType>) => {};

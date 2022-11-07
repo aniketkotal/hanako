@@ -1,10 +1,11 @@
 import { APIEmbed } from "discord.js";
 import dayjs from "dayjs";
-import { TextCommandType } from "../../../typings/command";
+import { CommandCategory, TextCommandType } from "../../../typings/command";
 
 const command: TextCommandType = {
   name: "sav",
   aliases: ["savatar", "spfp", "serveravatar"],
+  category: CommandCategory.INFO,
   async run({ message, args, client }) {
     let query = args[0]?.match(/\d{17,19}/)?.[0];
 

@@ -11,7 +11,7 @@ import {
 import dayjs from "dayjs";
 import { MovieNight, MovieNightDocument, MovieNights } from "../../../db/schemas/MovieNights";
 import { MovieVotes } from "../../../db/schemas/MovieVotes";
-import { ExtendedClient } from "../../../structures/Client";
+import type { ExtendedClient } from "../../../structures/Client";
 import constants from "../../../constants/constants.json";
 import { Constant } from "../../../typings/client";
 import logger from "../../../structures/Logger";

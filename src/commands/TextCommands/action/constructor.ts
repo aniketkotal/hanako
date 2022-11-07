@@ -1,8 +1,8 @@
 import { APIEmbed, Message } from "discord.js";
 import { ActionCount } from "../../../db/schemas/ActionCounts";
-import { client } from "../../../index";
-import { DetailedAction, DetailedActionNames, SimpleActionNames } from "../../../typings/client";
-import { ActionCommandType } from "../../../typings/command";
+import { ActionNames, DetailedAction, DetailedActionNames, SimpleActionNames } from "../../../typings/client";
+import { ActionCommandType, CommandCategory } from "../../../typings/command";
+import type { ExtendedClient } from "../../../structures/Client";
 
 const commaFormatter = new Intl.ListFormat("en", {
   style: "long",
@@ -12,6 +12,7 @@ const commaFormatter = new Intl.ListFormat("en", {
 export const prepareSimpleEmbed = async (
   message: Message,
   action: SimpleActionNames,
+  client: ExtendedClient,
   gifs?: Array<string>,
 ): Promise<APIEmbed> => {
   const { embed_details } = client.constants.action_embeds[action];
@@ -31,6 +32,7 @@ export const prepareSimpleEmbed = async (
 const getUsers = async (
   message: Message,
   args: Array<string>,
+  client: ExtendedClient,
 ): Promise<Array<{ id: string; name: string }> | null> => {
   let users: Array<{ id: string; name: string }>;
   if (message.mentions.users.size) {
@@ -78,9 +80,10 @@ export const prepareDetailedEmbed = async (
   message: Message,
   action: DetailedActionNames,
   args: Array<string>,
+  client: ExtendedClient,
   gifs?: string[],
 ): Promise<APIEmbed | false> => {
-  const mentions = await getUsers(message, args);
+  const mentions = await getUsers(message, args, client);
   if (!mentions) return false;
 
   const data = client.constants.action_embeds[action];
@@ -166,6 +169,10 @@ export const constructAllActions = () => {
     punch: [],
   };
 
+  const actionAliases: Partial<Record<ActionNames, string[]>> = {
+    kiss: ["kith", "kissu"],
+  };
+
   const simpleActions: { [key: string]: Array<string> } = {
     blush: [],
     cry: [],
@@ -182,9 +189,10 @@ export const constructAllActions = () => {
     const action = a as DetailedActionNames;
     const cmd: ActionCommandType = {
       name: action,
-      aliases: [],
-      async run({ message, args }) {
-        const embed = await prepareDetailedEmbed(message, action, args, this.gifs);
+      category: CommandCategory.ACTION,
+      aliases: actionAliases[action] || [],
+      async run({ message, args, client }) {
+        const embed = await prepareDetailedEmbed(message, action, args, client, this.gifs);
 
         const { error_messages } = client.constants.action_embeds[this.name] as DetailedAction;
 
@@ -204,9 +212,10 @@ export const constructAllActions = () => {
     const action = a as SimpleActionNames;
     actions.push({
       name: action,
+      category: CommandCategory.ACTION,
       aliases: [],
-      run: async ({ message }) => {
-        const embed = await prepareSimpleEmbed(message, action);
+      run: async ({ message, client }) => {
+        const embed = await prepareSimpleEmbed(message, action, client);
         await message.reply({ embeds: [embed] });
       },
     });

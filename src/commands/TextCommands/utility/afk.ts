@@ -1,11 +1,12 @@
 import { APIEmbed, Message } from "discord.js";
 import dayjs from "dayjs";
 import { AFK } from "../../../db/schemas/AFK";
-import { TextCommandType } from "../../../typings/command";
+import { CommandCategory, TextCommandType } from "../../../typings/command";
 
 const command: TextCommandType = {
   name: "afk",
   aliases: ["setafk"],
+  category: CommandCategory.INFO,
   run: async ({ message, args, client }) => {
     const urlRegex =
       /[(htps)?:/w.a-zA-Z0-9@%_+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)/;

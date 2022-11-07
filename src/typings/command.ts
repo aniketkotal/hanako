@@ -6,7 +6,7 @@ import {
   Message,
   PermissionResolvable,
 } from "discord.js";
-import { ExtendedClient } from "../structures/Client";
+import type { ExtendedClient } from "../structures/Client";
 import { DetailedActionNames, SimpleActionNames } from "./client";
 
 export interface ExtendedInteraction extends CommandInteraction {
@@ -29,8 +29,18 @@ interface TextCommandRunArgs {
 type SlashCommandRunFunction = (options: SlashCommandRunArgs) => Promise<void>;
 type TextCommandRunFunction = (options: TextCommandRunArgs) => Promise<void>;
 
+export enum CommandCategory {
+  ACTION = "Action",
+  ADMIN = "Admin",
+  FUN = "Fun",
+  UTILITY = "Utility",
+  OWNER = "Owner",
+  INFO = "Info",
+}
+
 export interface Command {
   name: string;
+  description?: string;
   userPermissions?: PermissionResolvable;
   cooldown?: number;
   ownerOnly?: boolean;
@@ -45,6 +55,7 @@ export type SlashCommandType = Command & {
 } & ChatInputApplicationCommandData;
 
 export type TextCommandType = Command & {
+  category: CommandCategory;
   aliases?: string[];
   run: TextCommandRunFunction;
 };

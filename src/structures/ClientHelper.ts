@@ -1,5 +1,6 @@
 import { BaseGuildTextChannel, Guild, Message } from "discord.js";
 import axios from "axios";
+// eslint-disable-next-line import/no-cycle
 import { client } from "../index";
 
 const toTitleCase = (text: string) => {

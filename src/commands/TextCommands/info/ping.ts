@@ -1,8 +1,9 @@
-import { TextCommandType } from "../../../typings/command";
+import { CommandCategory, TextCommandType } from "../../../typings/command";
 
 const command: TextCommandType = {
   name: "ping",
   aliases: ["pong"],
+  category: CommandCategory.INFO,
   run: async ({ message }) => {
     const msg = await message.reply("🏓");
     await msg.react("🏓");
