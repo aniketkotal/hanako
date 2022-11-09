@@ -1,7 +1,7 @@
 import { model, Schema, Model, Document, ObjectId } from "mongoose";
-import { ActionNames } from "../../typings/client";
+import { DetailedActionNames } from "../../typings/client";
 
-type Actions = Record<ActionNames, Map<string, number>>;
+type Actions = Record<DetailedActionNames, Map<string, number>>;
 
 export interface ActionCounts extends Document, Actions {
   userID: string;
@@ -10,7 +10,10 @@ export interface ActionCounts extends Document, Actions {
 export interface ActionCountDocument extends ActionCounts, Document {
   _id: ObjectId;
   getCount: (actionType: string, victimID: string) => Map<string, number>;
-  increaseActionCountByOne: (actionType: string, victimID: string) => Promise<number>;
+  increaseActionCountByOne: (
+    actionType: string,
+    victimID: string,
+  ) => Promise<number>;
 }
 
 interface ActionCountModel extends Model<ActionCountDocument> {
@@ -90,11 +93,6 @@ const actionCountsSchema: Schema<ActionCountDocument> = new Schema(
       of: String,
       required: false,
     },
-    pout: {
-      type: Map,
-      of: String,
-      required: false,
-    },
     shoot: {
       type: Map,
       of: String,
@@ -110,14 +108,26 @@ const actionCountsSchema: Schema<ActionCountDocument> = new Schema(
       of: String,
       required: false,
     },
+    punch: {
+      type: Map,
+      of: String,
+      required: false,
+    },
   },
   {
     methods: {
-      getCount(actionType: ActionNames, victimID: string) {
+      getCount(actionType: DetailedActionNames, victimID: string) {
         return this[actionType].get(victimID);
       },
-      async increaseActionCountByOne(actionType: ActionNames, victimID: string) {
-        const actionCounts = this[actionType];
+      async increaseActionCountByOne(
+        actionType: DetailedActionNames,
+        victimID: string,
+      ) {
+        let actionCounts = this[actionType];
+        if (!actionCounts) {
+          this[actionType] = new Map<string, number>();
+          actionCounts = this[actionType];
+        }
         actionCounts.set(victimID, Number(actionCounts.get(victimID) || 0) + 1);
         this[actionType] = actionCounts;
         const user = await this.save();
@@ -126,26 +136,7 @@ const actionCountsSchema: Schema<ActionCountDocument> = new Schema(
     },
     statics: {
       async initialiseActionCountInDB(userID: string) {
-        return new ActionCount({
-          userID,
-          bite: new Map(),
-          cuddle: new Map(),
-          dance: new Map(),
-          feed: new Map(),
-          hug: new Map(),
-          kiss: new Map(),
-          pat: new Map(),
-          poke: new Map(),
-          slap: new Map(),
-          tickle: new Map(),
-          fluff: new Map(),
-          lick: new Map(),
-          kick: new Map(),
-          pout: new Map(),
-          shoot: new Map(),
-          stare: new Map(),
-          yeet: new Map(),
-        }).save();
+        return new ActionCount({ userID }).save();
       },
     },
     timestamps: true,

@@ -6,7 +6,7 @@ const command: TextCommandType = {
   name: "avatar",
   aliases: ["av", "pfp"],
   async run({ message, args, client }) {
-    let query = args[0]?.match(/\d{17,19}/)?.[0];
+    const query = args[0]?.match(/\d{17,19}/)?.[0] || message.author.id;
     if (!query) {
       return client.helpers.replyMessageWithError(
         message,
@@ -21,7 +21,6 @@ const command: TextCommandType = {
         client.constants.error_messages.NO_USER_FOUND,
       );
     }
-    query = message.author.id;
 
     const embed: APIEmbed = {
       title: `${user.username}'s avatar`,
