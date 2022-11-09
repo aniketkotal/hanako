@@ -118,6 +118,8 @@ const actionCountsSchema: Schema<ActionCountDocument> = new Schema(
       },
       async increaseActionCountByOne(actionType: ActionNames, victimID: string) {
         const actionCounts = this[actionType];
+        if (!actionCounts) this[actionType] = new Map();
+
         actionCounts.set(victimID, Number(actionCounts.get(victimID) || 0) + 1);
         this[actionType] = actionCounts;
         const user = await this.save();
@@ -128,23 +130,6 @@ const actionCountsSchema: Schema<ActionCountDocument> = new Schema(
       async initialiseActionCountInDB(userID: string) {
         return new ActionCount({
           userID,
-          bite: new Map(),
-          cuddle: new Map(),
-          dance: new Map(),
-          feed: new Map(),
-          hug: new Map(),
-          kiss: new Map(),
-          pat: new Map(),
-          poke: new Map(),
-          slap: new Map(),
-          tickle: new Map(),
-          fluff: new Map(),
-          lick: new Map(),
-          kick: new Map(),
-          pout: new Map(),
-          shoot: new Map(),
-          stare: new Map(),
-          yeet: new Map(),
         }).save();
       },
     },

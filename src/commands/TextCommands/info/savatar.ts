@@ -6,8 +6,11 @@ const command: TextCommandType = {
   name: "sav",
   aliases: ["savatar", "spfp", "serveravatar"],
   category: CommandCategory.INFO,
+  examples: ["sav", "sav @user", "sav 123456789012345678"],
+  usage: "sav [user]",
+  description: "Shows the server avatar of a user",
   async run({ message, args, client }) {
-    let query = args[0]?.match(/\d{17,19}/)?.[0];
+    const query = args[0]?.match(/\d{17,19}/)?.[0] || message.member.id;
 
     if (!query && args[0]) {
       return client.helpers.replyMessageWithError(
@@ -15,7 +18,6 @@ const command: TextCommandType = {
         client.constants.error_messages.INVALID_USER_ID,
       );
     }
-    query = message.member.id;
     const user = await message.guild.members.fetch({
       force: true,
       user: query,
@@ -27,7 +29,6 @@ const command: TextCommandType = {
         client.constants.error_messages.NO_USER_FOUND,
       );
     }
-    query = message.member.id;
 
     const embed: APIEmbed = {
       title: `${user.nickname || user.user.username}'s Server Avatar`,

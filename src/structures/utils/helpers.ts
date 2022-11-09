@@ -1,7 +1,6 @@
 import { BaseGuildTextChannel, Guild, Message } from "discord.js";
 import axios from "axios";
-// eslint-disable-next-line import/no-cycle
-import { client } from "../index";
+import type { ExtendedClient } from "../Client";
 
 const toTitleCase = (text: string) => {
   let str = text.replace(
@@ -47,6 +46,7 @@ const toTitleCase = (text: string) => {
 const getMessage = async (
   messageID: string,
   channelID: string,
+  client: ExtendedClient,
 ): Promise<Promise<Message> | undefined> => {
   const channel = (await client.channels.fetch(channelID)) as BaseGuildTextChannel;
 
@@ -59,7 +59,8 @@ const getMessage = async (
   return message;
 };
 
-const getActionGIF = async (action: string): Promise<string | undefined> => {
+const getActionGIF = async (action: string, client: ExtendedClient):
+  Promise<string | undefined> => {
   let url: number;
   const { common, purrbot, neko } = client.constants.gif_endpoints;
   if (common.includes(action)) url = 1;

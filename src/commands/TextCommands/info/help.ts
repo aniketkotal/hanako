@@ -17,7 +17,7 @@ const command: TextCommandType = {
       helpers: { deleteReactionCollector, addAutoDeleteTimer },
     } = client;
 
-    // IF HAS COMMAND ARGUMENT
+    // IF IT HAS COMMAND ARGUMENT
     if (args[0]) {
       const cmd = textCommands.get(args[0]) || textCommands.find(
         ({ aliases }) => aliases.includes(args[0]),
@@ -96,7 +96,7 @@ const createCommandHelpEmbed = (cmd: TextCommandType, client: ExtendedClient) =>
       { name: "Aliases", value: aliases.map((i) => `\`${i}\``).join(", ") || "None", inline: true },
       {
         name: "Examples",
-        value: examples.map((i) => `${process.env.DEFAULT_PREFIX}${i}`).join(", ") || "None provided",
+        value: examples.map((i) => `\`${process.env.DEFAULT_PREFIX}${i}\``).join(", ") || "None provided",
         inline: false,
       },
     ],
