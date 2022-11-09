@@ -18,28 +18,6 @@ import logger from "../../../structures/Logger";
 
 const { movie_night, movie_votes, error_messages } = constants as Constant;
 
-const updateCollectorTimings = async (client: ExtendedClient): Promise<void> => {
-  const currentTime = dayjs().unix();
-
-  const aliveNights = await MovieNights.getAliveMovieNights(currentTime);
-  if (!aliveNights.length) return;
-
-  const movieNights = aliveNights.map(async (night) => {
-    const remainingTime = dayjs.unix(night.timeEnds).diff(dayjs(), "ms");
-    return addMovieNightCollector(night.messageID, client, remainingTime, night.channelID);
-  });
-
-  try {
-    await Promise.all(movieNights);
-  } catch (e) {
-    const error = e as Error;
-    logger.log({
-      message: error.message,
-      level: "error",
-    });
-  }
-};
-
 const addMovieNightCollector = async (
   messageData: string | Message,
   client: ExtendedClient,
@@ -253,10 +231,4 @@ const addMovieNightToDB = async (movieNight: MovieNight) => {
   }
 };
 
-export {
-  addMovieNightCollector,
-  updateCollectorTimings,
-  sendMovieNightEmbed,
-  addMovieNightToDB,
-  prepareVotesEmbed,
-};
+export { addMovieNightCollector, sendMovieNightEmbed, addMovieNightToDB, prepareVotesEmbed };

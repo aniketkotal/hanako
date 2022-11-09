@@ -1,8 +1,6 @@
 import { APIEmbed, Message } from "discord.js";
 import { ActionCount } from "../../../db/schemas/ActionCounts";
-import { ActionNames, DetailedAction, DetailedActionNames, SimpleActionNames } from "../../../typings/client";
-import { ActionCommandType, CommandCategory } from "../../../typings/command";
-import type { ExtendedClient } from "../../../structures/Client";
+import { DetailedActionNames, SimpleActionNames } from "../../../typings/client";
 
 const commaFormatter = new Intl.ListFormat("en", {
   style: "long",
@@ -146,86 +144,4 @@ export const prepareDetailedEmbed = async (
     }
   }
   return embed;
-};
-
-export const constructAllActions = () => {
-  const detailedActions: Record<DetailedActionNames, string[]> = {
-    bite: [],
-    cuddle: [],
-    dance: [],
-    feed: [],
-    hug: [],
-    kiss: [],
-    pat: [],
-    poke: [],
-    slap: [],
-    tickle: [],
-    fluff: [],
-    lick: [],
-    kick: [],
-    shoot: [],
-    stare: [],
-    yeet: [],
-    punch: [],
-  };
-
-  const actionAliases: Partial<Record<ActionNames, string[]>> = {
-    kiss: ["kith", "kissu"],
-  };
-
-  const simpleActions: { [key: string]: Array<string> } = {
-    blush: [],
-    cry: [],
-    smile: [],
-    pout: [],
-    sleep: [],
-    think: [],
-    wave: [],
-  };
-
-  const actions: Array<ActionCommandType> = [];
-
-  Object.keys(detailedActions).forEach((a) => {
-    const action = a as DetailedActionNames;
-    const cmd: ActionCommandType = {
-      name: action,
-      category: CommandCategory.ACTION,
-      usage: `${action} <mention/nickname/username>`,
-      description: `${action} someone(or yourself?)!`,
-      examples: [`${action} <@932928356041768990>`, `${action} hanako`],
-      aliases: actionAliases[action] || [],
-      async run({ message, args, client: cmdCLient }) {
-        const embed = await prepareDetailedEmbed(message, action, args, cmdCLient, this.gifs);
-
-        const { error_messages } = cmdCLient.constants.action_embeds[this.name] as DetailedAction;
-
-        if (!embed) {
-          await message.reply(error_messages.NO_USER);
-          return;
-        }
-
-        await message.reply({ embeds: [embed] });
-      },
-    };
-    if (detailedActions[action].length) cmd.gifs = [...detailedActions[action]];
-    actions.push(cmd);
-  });
-
-  Object.keys(simpleActions).forEach((a) => {
-    const action = a as SimpleActionNames;
-    actions.push({
-      name: action,
-      category: CommandCategory.ACTION,
-      aliases: [],
-      usage: `${action} <mention/nickname/username>`,
-      description: `${action} someone(or yourself?)!`,
-      examples: [`${action} <@932928356041768990>`, `${action} hanako`],
-      run: async ({ message, client: cmdClient }) => {
-        const embed = await prepareSimpleEmbed(message, action, cmdClient);
-        await message.reply({ embeds: [embed] });
-      },
-    });
-  });
-
-  return actions;
 };
