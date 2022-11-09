@@ -93,11 +93,11 @@ const replyMessageWithError = async (message: Message, error: string): Promise<v
   setTimeout(() => msg.delete(), 5000);
 };
 
-const deleteReactionCollector = async (message: Message, ownerID: string, emoji = "❌") => {
+const deleteReactionCollector = async (message: Message, ownerID: string, time = 30000, emoji = "❌") => {
   await message.react(emoji);
   const reactionCollector = message.createReactionCollector({
     filter: (reaction, user) => reaction.emoji.name === emoji && user.id === ownerID,
-    time: 30000,
+    time,
     max: 1,
   });
   reactionCollector.on("collect", () => message.delete());

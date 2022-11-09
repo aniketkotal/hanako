@@ -190,11 +190,14 @@ export const constructAllActions = () => {
     const cmd: ActionCommandType = {
       name: action,
       category: CommandCategory.ACTION,
+      usage: `${action} <mention/nickname/username>`,
+      description: `${action} someone(or yourself?)!`,
+      examples: [`${action} <@932928356041768990>`, `${action} hanako`],
       aliases: actionAliases[action] || [],
-      async run({ message, args, client }) {
-        const embed = await prepareDetailedEmbed(message, action, args, client, this.gifs);
+      async run({ message, args, client: cmdCLient }) {
+        const embed = await prepareDetailedEmbed(message, action, args, cmdCLient, this.gifs);
 
-        const { error_messages } = client.constants.action_embeds[this.name] as DetailedAction;
+        const { error_messages } = cmdCLient.constants.action_embeds[this.name] as DetailedAction;
 
         if (!embed) {
           await message.reply(error_messages.NO_USER);
@@ -214,8 +217,11 @@ export const constructAllActions = () => {
       name: action,
       category: CommandCategory.ACTION,
       aliases: [],
-      run: async ({ message, client }) => {
-        const embed = await prepareSimpleEmbed(message, action, client);
+      usage: `${action} <mention/nickname/username>`,
+      description: `${action} someone(or yourself?)!`,
+      examples: [`${action} <@932928356041768990>`, `${action} hanako`],
+      run: async ({ message, client: cmdClient }) => {
+        const embed = await prepareSimpleEmbed(message, action, cmdClient);
         await message.reply({ embeds: [embed] });
       },
     });

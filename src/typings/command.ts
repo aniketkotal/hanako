@@ -30,12 +30,12 @@ type SlashCommandRunFunction = (options: SlashCommandRunArgs) => Promise<void>;
 type TextCommandRunFunction = (options: TextCommandRunArgs) => Promise<void>;
 
 export enum CommandCategory {
-  ACTION = "Action",
-  ADMIN = "Admin",
-  FUN = "Fun",
-  UTILITY = "Utility",
-  OWNER = "Owner",
-  INFO = "Info",
+  ACTION = "🤗 Action",
+  ADMIN = "⚒️ Admin",
+  FUN = "🎱 Fun",
+  UTILITY = "🔧 Utility",
+  OWNER = "🔐 Owner",
+  INFO = "ℹ️ Info",
 }
 
 export interface Command {
@@ -56,7 +56,9 @@ export type SlashCommandType = Command & {
 
 export type TextCommandType = Command & {
   category: CommandCategory;
-  aliases?: string[];
+  usage: string;
+  examples: string[];
+  aliases: string[];
   run: TextCommandRunFunction;
 };
 

@@ -67,6 +67,7 @@ const event: Event<"messageCreate"> = {
         message: error.message,
         level: "error",
       });
+      console.log(e);
     }
   },
 };
