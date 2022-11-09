@@ -1,17 +1,13 @@
 {
   "settings": {
     "import/parsers": {
-      "@typescript-eslint/parser": [
-        ".ts"
-      ]
+      "@typescript-eslint/parser": [".ts"]
     },
     "import/resolver": {
       "typescript": {}
     }
   },
-  "plugins": [
-    "@typescript-eslint"
-  ],
+  "plugins": ["@typescript-eslint"],
   "env": {
     "browser": true,
     "es2021": true
@@ -60,10 +56,9 @@
     "object-curly-newline": "off",
     "lines-between-class-members": "off",
     "no-shadow": "off",
-    "@typescript-eslint/no-shadow": [
-      "error"
-    ],
+    "@typescript-eslint/no-shadow": ["error"],
     "no-trailing-spaces": "off",
-    "no-new": "off"
+    "no-new": "off",
+    "arrow-parens": "off"
   }
 }
