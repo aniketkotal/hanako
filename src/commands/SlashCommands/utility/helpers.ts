@@ -11,34 +11,12 @@ import {
 import dayjs from "dayjs";
 import { MovieNight, MovieNightDocument, MovieNights } from "../../../db/schemas/MovieNights";
 import { MovieVotes } from "../../../db/schemas/MovieVotes";
-import { ExtendedClient } from "../../../structures/Client";
+import type { ExtendedClient } from "../../../structures/Client";
 import constants from "../../../constants/constants.json";
 import { Constant } from "../../../typings/client";
 import logger from "../../../structures/Logger";
 
 const { movie_night, movie_votes, error_messages } = constants as Constant;
-
-const updateCollectorTimings = async (client: ExtendedClient): Promise<void> => {
-  const currentTime = dayjs().unix();
-
-  const aliveNights = await MovieNights.getAliveMovieNights(currentTime);
-  if (!aliveNights.length) return;
-
-  const movieNights = aliveNights.map(async (night) => {
-    const remainingTime = dayjs.unix(night.timeEnds).diff(dayjs(), "ms");
-    return addMovieNightCollector(night.messageID, client, remainingTime, night.channelID);
-  });
-
-  try {
-    await Promise.all(movieNights);
-  } catch (e) {
-    const error = e as Error;
-    logger.log({
-      message: error.message,
-      level: "error",
-    });
-  }
-};
 
 const addMovieNightCollector = async (
   messageData: string | Message,
@@ -48,7 +26,7 @@ const addMovieNightCollector = async (
 ): Promise<void> => {
   let message: Message;
   if (typeof messageData === "string" && channelID) {
-    const res = await client.helpers.getMessage(messageData, channelID);
+    const res = await client.helpers.getMessage(messageData, channelID, client);
     if (!res) return;
     message = res;
   } else {
@@ -255,7 +233,6 @@ const addMovieNightToDB = async (movieNight: MovieNight) => {
 
 export {
   addMovieNightCollector,
-  updateCollectorTimings,
   sendMovieNightEmbed,
   addMovieNightToDB,
   prepareVotesEmbed,

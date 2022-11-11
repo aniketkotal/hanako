@@ -1,25 +1,19 @@
 {
   "settings": {
     "import/parsers": {
-      "@typescript-eslint/parser": [
-        ".ts"
-      ]
+      "@typescript-eslint/parser": [".ts"]
     },
     "import/resolver": {
       "typescript": {}
     }
   },
-  "plugins": [
-    "@typescript-eslint",
-    "prettier"
-  ],
+  "plugins": ["@typescript-eslint"],
   "env": {
     "browser": true,
     "es2021": true
   },
   "extends": [
     "airbnb-base",
-    "plugin:prettier/recommended",
     "airbnb",
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended"
@@ -61,21 +55,10 @@
     "quotes": "off",
     "object-curly-newline": "off",
     "lines-between-class-members": "off",
-    "no-shadow": [
-      "error",
-      {
-        "builtinGlobals": false,
-        "hoist": "functions",
-        "allow": [],
-        "ignoreOnInitialization": false
-      }
-    ],
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["error"],
+    "no-trailing-spaces": "off",
     "no-new": "off",
-    "prettier/prettier": [
-      "error",
-      {
-        "endOfLine": "auto"
-      }
-    ]
+    "arrow-parens": "off"
   }
 }

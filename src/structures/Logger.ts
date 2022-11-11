@@ -23,6 +23,15 @@ const customFormat = format.printf(
   ({ level, message, timestamp }) => `${timestamp} ${level} ${message}`,
 );
 
+const errorStackFormat = format((info) => {
+  if (info instanceof Error) {
+    return { ...info,
+stack: info.stack,
+      message: info.message };
+  }
+  return info;
+});
+
 const logger = createLogger({
   levels: customLevels.levels,
   format: format.combine(
@@ -33,15 +42,14 @@ const logger = createLogger({
   transports: [
     new transports.Console({
       level: "error",
-      format: format.combine(format.errors({ stack: true })),
-      handleExceptions: true,
+      // format: format.combine(format.errors({ stack: true }), format.splat()),
+      format: format.combine(errorStackFormat(), customFormat),
     }),
     new transports.File({
       filename: "error.log",
       dirname: `${__dirname}/../logs/`,
       level: "error",
       format: format.combine(format.errors({ stack: true })),
-      handleExceptions: true,
     }),
     new transports.Console({
       level: "loaded",

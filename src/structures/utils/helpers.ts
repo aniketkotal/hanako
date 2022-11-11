@@ -1,6 +1,6 @@
 import { BaseGuildTextChannel, Guild, Message } from "discord.js";
 import axios from "axios";
-import { client } from "../index";
+import type { ExtendedClient } from "../Client";
 
 const toTitleCase = (text: string) => {
   let str = text.replace(
@@ -46,6 +46,7 @@ const toTitleCase = (text: string) => {
 const getMessage = async (
   messageID: string,
   channelID: string,
+  client: ExtendedClient,
 ): Promise<Promise<Message> | undefined> => {
   const channel = (await client.channels.fetch(channelID)) as BaseGuildTextChannel;
 
@@ -58,7 +59,8 @@ const getMessage = async (
   return message;
 };
 
-const getActionGIF = async (action: string): Promise<string | undefined> => {
+const getActionGIF = async (action: string, client: ExtendedClient):
+  Promise<string | undefined> => {
   let url: number;
   const { common, purrbot, neko } = client.constants.gif_endpoints;
   if (common.includes(action)) url = 1;
@@ -92,11 +94,11 @@ const replyMessageWithError = async (message: Message, error: string): Promise<v
   setTimeout(() => msg.delete(), 5000);
 };
 
-const deleteReactionCollector = async (message: Message, ownerID: string, emoji = "❌") => {
+const deleteReactionCollector = async (message: Message, ownerID: string, time = 30000, emoji = "❌") => {
   await message.react(emoji);
   const reactionCollector = message.createReactionCollector({
     filter: (reaction, user) => reaction.emoji.name === emoji && user.id === ownerID,
-    time: 30000,
+    time,
     max: 1,
   });
   reactionCollector.on("collect", () => message.delete());

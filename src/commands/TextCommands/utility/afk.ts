@@ -1,11 +1,15 @@
 import { APIEmbed, Message } from "discord.js";
 import dayjs from "dayjs";
 import { AFK } from "../../../db/schemas/AFK";
-import { TextCommandType } from "../../../typings/command";
+import { CommandCategory, TextCommandType } from "../../../typings/command";
 
 const command: TextCommandType = {
   name: "afk",
   aliases: ["setafk"],
+  usage: "afk <reason>",
+  examples: ["afk", "afk I'm busy(not really i dont have friends)"],
+  description: "Sets your AFK status",
+  category: CommandCategory.INFO,
   run: async ({ message, args, client }) => {
     const urlRegex =
       /[(htps)?:/w.a-zA-Z0-9@%_+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)/;
@@ -35,12 +39,12 @@ const command: TextCommandType = {
         timestampSince: dayjs().unix(),
       }).save();
       embed.description = `<@${nAfk.userID}> is going AFK!\n`;
-      embed.description += nAfk.message;
+      if (nAfk.message) embed.description += `Reason: ${nAfk.message}`;
     } else {
       afk.timestampSince = dayjs().unix();
       afk.message = args.join(" ");
       embed.description = `Updated <@${afk.userID}>'s AFK message\n`;
-      embed.description += afk.message;
+      if (afk.message) embed.description += `Reason: ${afk.message}`;
       await afk.save();
     }
     await setAFKNickname(message);
