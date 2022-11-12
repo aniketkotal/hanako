@@ -9,10 +9,10 @@ const arg: CommandArgument = {
   run: async ({ message, guild, client, args }) => {
     const {
       constants: {
-        embed_colours: { default: embedColor },
         client_configurations: { cooldown: { default_cooldown } },
+        embed_colours: { default: embedColor },
       },
-      helpers: { addAutoDeleteTimer },
+      helpers: { errorEmbedBuilder },
     } = client;
 
     const secondOrSeconds = (num: number) => num === 1 ? "second" : "seconds";
@@ -20,17 +20,22 @@ const arg: CommandArgument = {
     if (input) {
       const customCooldown = parseInt(input, 10);
       if (Number.isNaN(customCooldown)) {
-        addAutoDeleteTimer(await message.reply("Please input a number in seconds to set the cooldown to."));
-        return;
+        throw errorEmbedBuilder("Please input a number in seconds to set the cooldown to.");
+        // addAutoDeleteTimer(await message.reply("Please input a number
+        // in seconds to set the cooldown to."));
+        // return;
       }
       if (customCooldown > 500) {
-        addAutoDeleteTimer(await message.reply("Cooldown cannot be more than 500 seconds."));
-        return;
+        throw errorEmbedBuilder("Cooldown cannot be more than 500 seconds.");
+        // addAutoDeleteTimer(await message.reply("Cooldown cannot be more than 500 seconds."));
+        // return;
       }
       const oldCooldown = +guild.cooldown;
       if (oldCooldown === customCooldown) {
-        addAutoDeleteTimer(await message.reply("Cooldown is already set to that. No changes were made."));
-        return;
+        throw errorEmbedBuilder("Selected cooldown is same as current cooldown. Nothing changed.");
+        // addAutoDeleteTimer(await message.reply("Cooldown is already
+        // set to that. No changes were made."));
+        // return;
       }
       guild.cooldown = customCooldown;
       await guild.save();
@@ -52,8 +57,9 @@ const arg: CommandArgument = {
         ],
       };
 
-      await message.reply({ embeds: [cooldownUpdateEmbed] });
-      return;
+      return cooldownUpdateEmbed;
+      // await message.reply({ embeds: [cooldownUpdateEmbed] });
+      // return;
     }
 
     const { cooldown } = guild;
@@ -76,7 +82,8 @@ const arg: CommandArgument = {
       ],
     };
 
-    await message.reply({ embeds: [embed] });
+    return embed;
+    // await message.reply({ embeds: [embed] });
   },
 };
 

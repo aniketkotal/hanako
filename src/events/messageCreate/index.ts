@@ -70,14 +70,20 @@ const event: Event<"messageCreate"> = {
     }
 
     try {
-      await cmd.run({ client, message, args, command, guild });
+      const embed = await cmd.run({ client, message, args, command, guild });
+      if (!embed) return;
+      await message.reply({ embeds: [embed] });
     } catch (e) {
-      const error = e as Error;
-      logger.log({
-        message: error.message,
-        level: "error",
-      });
-      console.log(e);
+      if (e instanceof Error) {
+        logger.log({
+          message: e.message,
+          level: "error",
+        });
+        console.log(e);
+      } else {
+        const error = e as APIEmbed;
+        client.helpers.addAutoDeleteTimer(await message.reply({ embeds: [error] }));
+      }
     }
   },
 };

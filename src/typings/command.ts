@@ -1,12 +1,11 @@
 import {
-  BitFieldResolvable,
+  APIEmbed,
   ChatInputApplicationCommandData,
   CommandInteraction,
-  CommandInteractionOptionResolver, GatewayIntentBits,
+  CommandInteractionOptionResolver,
   GuildMember,
-  Message, PermissionFlags,
-  PermissionFlagsBits,
-  PermissionResolvable, PermissionsBitField,
+  Message,
+  PermissionResolvable,
 } from "discord.js";
 import type { ExtendedClient } from "../structures/Client";
 import { DetailedActionNames, SimpleActionNames } from "./client";
@@ -30,8 +29,8 @@ interface TextCommandRunArgs {
   guild: GuildInterface,
 }
 
-type SlashCommandRunFunction = (options: SlashCommandRunArgs) => Promise<void>;
-type TextCommandRunFunction = (options: TextCommandRunArgs) => Promise<void>;
+type SlashCommandRunFunction = (options: SlashCommandRunArgs) => Promise<APIEmbed | void>;
+type TextCommandRunFunction = (options: TextCommandRunArgs) => Promise<APIEmbed | void>;
 
 export enum CommandCategory {
   ACTION = "🤗 Action",
@@ -57,7 +56,7 @@ export interface CommandArgument {
   category: SettingCategories;
   description: string;
   usage: Array<string>;
-  run: (options: TextCommandRunArgs) => Promise<void>;
+  run: TextCommandRunFunction;
 }
 
 export enum SettingCategories {

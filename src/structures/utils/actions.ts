@@ -28,6 +28,7 @@ export default () => {
       examples: [`${action} @mention`, `${action} hanako`],
       aliases: actionAliases[action] || [],
       async run({ message, args, client: cmdCLient }) {
+        const { helpers: { errorEmbedBuilder } } = cmdCLient;
         const embed = await prepareDetailedEmbed(
           message,
           action,
@@ -41,10 +42,12 @@ export default () => {
         const { error_messages } = cmdCLient.constants.action_embeds[this.name];
 
         if (!embed) {
-          await message.reply(error_messages.NO_USER);
-          return;
+          throw errorEmbedBuilder({ error: error_messages.NO_USER });
+          // await message.reply(error_messages.NO_USER);
+          // return;
         }
-        await message.reply({ embeds: [embed] });
+        return embed;
+        // await message.reply({ embeds: [embed] });
       },
     };
     if (additionalActionGIFs[action]?.length) {
@@ -68,7 +71,8 @@ export default () => {
           cmdClient,
           this.gifs,
         );
-        await message.reply({ embeds: [embed] });
+        return embed;
+        // await message.reply({ embeds: [embed] });
       },
     };
     if (additionalActionGIFs[action]?.length) {

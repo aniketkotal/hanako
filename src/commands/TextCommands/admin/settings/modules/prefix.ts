@@ -9,26 +9,30 @@ const arg: CommandArgument = {
   run: async ({ message, args, client, guild }) => {
     const {
       constants: { embed_colours: { default: embedColor } },
-      helpers: { addAutoDeleteTimer },
+      helpers: { errorEmbedBuilder },
     } = client;
 
     const [argument, customPrefix] = args;
     if (argument) {
       if (!["set", "clear"].includes(argument)) {
-        addAutoDeleteTimer(await message.reply(`\`${argument}\` is not a valid command. `
-          + "Available arguments: `set` and `clear`"));
-        return;
+        throw errorEmbedBuilder(`\`${argument}\` is not a valid command. `
+          + "Available arguments: `set` and `clear`");
+        // addAutoDeleteTimer(await message.reply());
+        // return;
       }
       if (argument === "set") {
         if (!customPrefix) {
-          addAutoDeleteTimer(await message.reply("Please run the command again, except this time with a "
-            + "prefix you want to set to."));
-          return;
+          throw errorEmbedBuilder("Please run the command again, except this time with a "
+            + "prefix you want to set to.");
+          // addAutoDeleteTimer(await message.reply());
+          // return;
         }
         const oldPrefix = `${guild.prefix}`;
         if (guild.prefix === customPrefix) {
-          addAutoDeleteTimer(await message.reply("Selected prefix is same as current prefix. Nothing changed."));
-          return;
+          throw errorEmbedBuilder("Selected prefix is same as current prefix. Nothing changed.");
+          // addAutoDeleteTimer(await message.reply("Selected prefix is same
+          // as current prefix. Nothing changed."));
+          // return;
         }
         guild.prefix = customPrefix;
         await guild.save();
@@ -50,8 +54,9 @@ const arg: CommandArgument = {
           ],
         };
 
-        await message.reply({ embeds: [prefixUpdateEmbed] });
-        return;
+        return prefixUpdateEmbed;
+        // await message.reply({ embeds: [prefixUpdateEmbed] });
+        // return;
       }
       if (argument === "clear") {
         const oldPrefix = `${guild.prefix}`;
@@ -75,8 +80,9 @@ const arg: CommandArgument = {
           ],
         };
 
-        await message.reply({ embeds: [prefixUpdateEmbed] });
-        return;
+        return prefixUpdateEmbed;
+        // await message.reply({ embeds: [prefixUpdateEmbed] });
+        // return;
       }
     }
 
@@ -101,7 +107,8 @@ const arg: CommandArgument = {
       ],
     };
 
-    await message.reply({ embeds: [embed] });
+    return embed;
+    // await message.reply({ embeds: [embed] });
   },
 };
 

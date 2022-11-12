@@ -12,11 +12,10 @@ import dayjs from "dayjs";
 import { MovieNight, MovieNightDocument, MovieNights } from "../../../db/schemas/MovieNights";
 import { MovieVotes } from "../../../db/schemas/MovieVotes";
 import type { ExtendedClient } from "../../../structures/Client";
-import constants from "../../../constants/constants.json";
-import { Constant } from "../../../typings/client";
 import logger from "../../../structures/Logger";
+import constants from "../../../constants/constants.json";
 
-const { movie_night, movie_votes, error_messages } = constants as Constant;
+const { movie_night, movie_votes, error_messages } = constants as typeof constants;
 
 const addMovieNightCollector = async (
   messageData: string | Message,

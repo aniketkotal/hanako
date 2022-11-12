@@ -13,19 +13,17 @@ const command: TextCommandType = {
     const { message, args, client } = inputs;
     const {
       constants: { embed_colours: { default: embedColor } },
-      helpers: { deleteReactionCollector, addAutoDeleteTimer },
+      helpers: { deleteReactionCollector, addAutoDeleteTimer, errorEmbedBuilder },
     } = client;
     const { guild } = message;
     const [arg] = args;
 
     if (arg) {
       if (!client.settingModules.has(arg)) {
-        addAutoDeleteTimer(await message.reply(`Setting for \`${args[0]}\` not found`));
-        return;
+        throw errorEmbedBuilder({ error: `Setting for \`${args[0]}\` not found` });
       }
       const setting = client.settingModules.get(arg);
-      await setting.run({ ...inputs, args: inputs.args.slice(1) });
-      return;
+      return setting.run({ ...inputs, args: inputs.args.slice(1) });
     }
 
     const mainEmbed: APIEmbed = {
@@ -60,9 +58,11 @@ const command: TextCommandType = {
       mainEmbed.fields.push({ name: category, value: commandsList.join(", "), inline: true });
     });
 
-    await deleteReactionCollector(
-      await message.reply({ embeds: [mainEmbed] }), message.author.id, 60000,
-    );
+    return mainEmbed;
+
+    // await deleteReactionCollector(
+    //   await message.reply({ embeds: [mainEmbed] }), message.author.id, 60000,
+    // );
   },
 };
 
