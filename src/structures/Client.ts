@@ -49,6 +49,19 @@ export class ExtendedClient extends Client {
       allowedMentions: {
         repliedUser: false,
       },
+      presence: {
+        status: "idle",
+        activities: [
+          {
+            name: ",help",
+            type: 2,
+          },
+          {
+            name: "with myself",
+            type: 0,
+          },
+        ],
+      },
     });
   }
 
