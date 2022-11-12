@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { APIEmbed, Message, PermissionsBitField } from "discord.js";
 import { client } from "../../index";
 import parseMessage from "./modules/parseMessage";
 import checkCooldown from "./modules/cooldown";
@@ -9,9 +9,12 @@ import { Event } from "../../typings/event";
 import logger from "../../structures/Logger";
 import { Guild } from "../../db/schemas/Guild";
 
+const { Flags } = PermissionsBitField;
+
 const event: Event<"messageCreate"> = {
   event: "messageCreate",
   run: async (message) => {
+    if (!await checkIfBotHasPermissions(message)) return;
     if (!basicChecks(message)) return;
     const { args, command } = parseMessage(message);
     if (command !== "afk") {
@@ -50,7 +53,7 @@ const event: Event<"messageCreate"> = {
       return;
     }
 
-    const cooldown = checkCooldown(cmd, message.author.id, client);
+    const cooldown = checkCooldown(cmd, message.author.id, client, guild);
     const { cooldown_message } = client.constants.client_configurations.cooldown;
     if (cooldown) {
       const cooldownMessage = cooldown_message
@@ -105,11 +108,36 @@ const checkIfHasPermissions = async (message: Message, command: TextCommandType)
   return false;
 };
 
-const checkIfBotHasPermissions = async (message: Message, command: TextCommandType) => {
-  if (message.guild.members.me.permissions.has(command.permissions)) {
+const checkIfBotHasPermissions = async (message: Message) => {
+  const {
+    constants: { embed_colours: { default: embedColor } },
+  } = client;
+  if (!message.inGuild()) return true;
+  const botPermissions = message.channel.permissionsFor(client.user.id);
+
+  const requiredPermissions = [
+    Flags.SendMessages,
+    Flags.EmbedLinks,
+    Flags.ReadMessageHistory,
+    Flags.UseExternalEmojis,
+    Flags.AddReactions,
+    Flags.ReadMessageHistory,
+    Flags.AttachFiles,
+  ];
+
+  if (botPermissions.has(requiredPermissions)) {
     return true;
   }
-  await message.member.send(client.constants.error_messages.NO_PERMISSIONS_BOT);
+  const missingPermissions = botPermissions.missing(requiredPermissions)
+    .map((p) => `\`${p.replace(/_/g, " ")}\``)
+    .join(", ");
+  const embed: APIEmbed = {
+    title: "Hanako is missing permissions!",
+    description: `I am missing the following permissions: ${missingPermissions}.\n` +
+      `Please give me the required permissions to function properly.`,
+    color: parseInt(embedColor, 16),
+  };
+  await message.member.send({ embeds: [embed] });
   return false;
 };
 

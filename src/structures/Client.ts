@@ -19,6 +19,7 @@ import constants from "../constants/constants.json";
 import utils from "./utils/index";
 import { Event } from "../typings/event";
 import logger from "./Logger";
+import { sayHi } from "../events/messageCreate/modules/message";
 
 dayjs.extend(utc);
 dayjs.extend(relativeTime);

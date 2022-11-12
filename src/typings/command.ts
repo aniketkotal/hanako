@@ -1,10 +1,12 @@
 import {
+  BitFieldResolvable,
   ChatInputApplicationCommandData,
   CommandInteraction,
-  CommandInteractionOptionResolver,
+  CommandInteractionOptionResolver, GatewayIntentBits,
   GuildMember,
-  Message,
-  PermissionResolvable,
+  Message, PermissionFlags,
+  PermissionFlagsBits,
+  PermissionResolvable, PermissionsBitField,
 } from "discord.js";
 import type { ExtendedClient } from "../structures/Client";
 import { DetailedActionNames, SimpleActionNames } from "./client";
@@ -75,7 +77,6 @@ export type TextCommandType = Command & {
   usage: string;
   examples: string[];
   aliases: string[];
-  permissions: PermissionResolvable;
   run: TextCommandRunFunction;
 };
 
