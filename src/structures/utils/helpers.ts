@@ -105,6 +105,7 @@ const deleteReactionCollector = async (message: Message, ownerID: string, time =
   reactionCollector.on("end", () => message.reactions.removeAll().catch(() => null));
 };
 
+
 const addAutoDeleteTimer = (message: Message, time = 10000) =>
   setTimeout(() => message.delete(), time);
 

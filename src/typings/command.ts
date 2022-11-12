@@ -8,6 +8,7 @@ import {
 } from "discord.js";
 import type { ExtendedClient } from "../structures/Client";
 import { DetailedActionNames, SimpleActionNames } from "./client";
+import { GuildInterface } from "../db/schemas/Guild";
 
 export interface ExtendedInteraction extends CommandInteraction {
   member: GuildMember;
@@ -24,6 +25,7 @@ interface TextCommandRunArgs {
   message: Message;
   args: string[];
   command: string;
+  guild: GuildInterface,
 }
 
 type SlashCommandRunFunction = (options: SlashCommandRunArgs) => Promise<void>;
@@ -48,6 +50,20 @@ export interface Command {
   dmOnly?: boolean;
 }
 
+export interface CommandArgument {
+  argument: string;
+  category: SettingCategories;
+  description: string;
+  usage: Array<string>;
+  run: (options: TextCommandRunArgs) => Promise<void>;
+}
+
+export enum SettingCategories {
+  UTILITY = "Utility",
+  MODERATION = "Moderation",
+  OTHER = "Other",
+}
+
 export type SlashCommandType = Command & {
   ephemeral?: boolean;
   consumeInstantly?: boolean;
@@ -59,6 +75,7 @@ export type TextCommandType = Command & {
   usage: string;
   examples: string[];
   aliases: string[];
+  permissions: PermissionResolvable;
   run: TextCommandRunFunction;
 };
 
@@ -67,4 +84,5 @@ export interface ActionCommandAdditionalOptions {
   gifs?: Array<string>;
 }
 
-export type ActionCommandType = ActionCommandAdditionalOptions & TextCommandType;
+export type ActionCommandType = ActionCommandAdditionalOptions &
+  TextCommandType;

@@ -7,6 +7,7 @@ import { User } from "../../db/schemas/User";
 import { TextCommandType } from "../../typings/command";
 import { Event } from "../../typings/event";
 import logger from "../../structures/Logger";
+import { Guild } from "../../db/schemas/Guild";
 
 const event: Event<"messageCreate"> = {
   event: "messageCreate",
@@ -22,7 +23,13 @@ const event: Event<"messageCreate"> = {
         });
       });
     }
-    if (!message.content.startsWith(process.env.DEFAULT_PREFIX)) return;
+    let guild = await Guild.findOne({ guildID: message.guildId });
+    if (!guild) {
+      guild = new Guild({ guildID: message.guildId });
+      await guild.save();
+    }
+
+    if (!message.content.startsWith(guild.prefix || process.env.DEFAULT_PREFIX)) return;
     if (!command) return;
 
     const cmd = client.textCommands.find((c) => c.name === command || c.aliases?.includes(command));
@@ -60,7 +67,7 @@ const event: Event<"messageCreate"> = {
     }
 
     try {
-      await cmd.run({ client, message, args, command });
+      await cmd.run({ client, message, args, command, guild });
     } catch (e) {
       const error = e as Error;
       logger.log({
@@ -95,6 +102,14 @@ const checkIfHasPermissions = async (message: Message, command: TextCommandType)
     return true;
   }
   await message.reply(client.constants.error_messages.NO_PERMISSIONS);
+  return false;
+};
+
+const checkIfBotHasPermissions = async (message: Message, command: TextCommandType) => {
+  if (message.guild.members.me.permissions.has(command.permissions)) {
+    return true;
+  }
+  await message.member.send(client.constants.error_messages.NO_PERMISSIONS_BOT);
   return false;
 };
 

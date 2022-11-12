@@ -118,7 +118,6 @@ const command: SlashCommandType = {
         "Check if you want any changes. After confirming, " +
         "A message will be sent to <#743748100367187999> and a movie night will be scheduled.",
       components: [row],
-      ephemeral: true,
     });
 
     const response = await previewEmbedMessage.awaitMessageComponent({

@@ -12,7 +12,7 @@ export default async () => {
         level: "info",
       });
     });
-    db.on("connected", () => {
+    db.once("connected", () => {
       logger.log({
         message: "Connected to DB!",
         level: "info",
