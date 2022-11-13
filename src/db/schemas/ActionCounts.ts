@@ -117,8 +117,8 @@ const actionCountsSchema: Schema<ActionCountDocument> = new Schema(
         return this[actionType].get(victimID);
       },
       async increaseActionCountByOne(actionType: ActionNames, victimID: string) {
+        if (!this[actionType]) this[actionType] = new Map();
         const actionCounts = this[actionType];
-        if (!actionCounts) this[actionType] = new Map();
 
         actionCounts.set(victimID, Number(actionCounts.get(victimID) || 0) + 1);
         this[actionType] = actionCounts;
