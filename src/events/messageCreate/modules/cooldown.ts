@@ -2,11 +2,13 @@ import { Collection, Snowflake } from "discord.js";
 import dayjs from "dayjs";
 import { ExtendedClient } from "../../../structures/Client";
 import { Command } from "../../../typings/command";
+import { GuildInterface } from "../../../db/schemas/Guild";
 
 export default function checkCooldown(
   command: Command,
   authorID: Snowflake,
   client: ExtendedClient,
+  guild: GuildInterface,
 ) {
   const { coolDowns, constants } = client;
   const { cooldown } = constants.client_configurations;
@@ -18,7 +20,7 @@ export default function checkCooldown(
 
   const now = dayjs();
   const cooldownsForCurrentCommand = coolDowns.get(name);
-  const cooldownAmount = (command.cooldown || cooldown.default_cooldown) * 1000;
+  const cooldownAmount = (command.cooldown || guild.cooldown || cooldown.default_cooldown) * 1000;
 
   if (!cooldownsForCurrentCommand.has(authorID)) {
     cooldownsForCurrentCommand.set(authorID, now.add(cooldownAmount, "ms").unix());

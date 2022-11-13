@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { APIEmbed, Message, PermissionsBitField } from "discord.js";
 import { client } from "../../index";
 import parseMessage from "./modules/parseMessage";
 import checkCooldown from "./modules/cooldown";
@@ -7,10 +7,14 @@ import { User } from "../../db/schemas/User";
 import { TextCommandType } from "../../typings/command";
 import { Event } from "../../typings/event";
 import logger from "../../structures/Logger";
+import { Guild } from "../../db/schemas/Guild";
+
+const { Flags } = PermissionsBitField;
 
 const event: Event<"messageCreate"> = {
   event: "messageCreate",
   run: async (message) => {
+    if (!await checkIfBotHasPermissions(message)) return;
     if (!basicChecks(message)) return;
     const { args, command } = parseMessage(message);
     if (command !== "afk") {
@@ -22,7 +26,13 @@ const event: Event<"messageCreate"> = {
         });
       });
     }
-    if (!message.content.startsWith(process.env.DEFAULT_PREFIX)) return;
+    let guild = await Guild.findOne({ guildID: message.guildId });
+    if (!guild) {
+      guild = new Guild({ guildID: message.guildId });
+      await guild.save();
+    }
+
+    if (!message.content.startsWith(guild.prefix || process.env.DEFAULT_PREFIX)) return;
     if (!command) return;
 
     const cmd = client.textCommands.find((c) => c.name === command || c.aliases?.includes(command));
@@ -43,7 +53,7 @@ const event: Event<"messageCreate"> = {
       return;
     }
 
-    const cooldown = checkCooldown(cmd, message.author.id, client);
+    const cooldown = checkCooldown(cmd, message.author.id, client, guild);
     const { cooldown_message } = client.constants.client_configurations.cooldown;
     if (cooldown) {
       const cooldownMessage = cooldown_message
@@ -60,14 +70,20 @@ const event: Event<"messageCreate"> = {
     }
 
     try {
-      await cmd.run({ client, message, args, command });
+      const embed = await cmd.run({ client, message, args, command, guild });
+      if (!embed) return;
+      await message.reply({ embeds: [embed] });
     } catch (e) {
-      const error = e as Error;
-      logger.log({
-        message: error.message,
-        level: "error",
-      });
-      console.log(e);
+      if (e instanceof Error) {
+        logger.log({
+          message: e.message,
+          level: "error",
+        });
+        console.log(e);
+      } else {
+        const error = e as APIEmbed;
+        client.helpers.addAutoDeleteTimer(await message.reply({ embeds: [error] }));
+      }
     }
   },
 };
@@ -95,6 +111,39 @@ const checkIfHasPermissions = async (message: Message, command: TextCommandType)
     return true;
   }
   await message.reply(client.constants.error_messages.NO_PERMISSIONS);
+  return false;
+};
+
+const checkIfBotHasPermissions = async (message: Message) => {
+  const {
+    constants: { embed_colours: { default: embedColor } },
+  } = client;
+  if (!message.inGuild()) return true;
+  const botPermissions = message.channel.permissionsFor(client.user.id);
+
+  const requiredPermissions = [
+    Flags.SendMessages,
+    Flags.EmbedLinks,
+    Flags.ReadMessageHistory,
+    Flags.UseExternalEmojis,
+    Flags.AddReactions,
+    Flags.ReadMessageHistory,
+    Flags.AttachFiles,
+  ];
+
+  if (botPermissions.has(requiredPermissions)) {
+    return true;
+  }
+  const missingPermissions = botPermissions.missing(requiredPermissions)
+    .map((p) => `\`${p.replace(/_/g, " ")}\``)
+    .join(", ");
+  const embed: APIEmbed = {
+    title: "Hanako is missing permissions!",
+    description: `I am missing the following permissions: ${missingPermissions}.\n` +
+      `Please give me the required permissions to function properly.`,
+    color: parseInt(embedColor, 16),
+  };
+  await message.member.send({ embeds: [embed] });
   return false;
 };
 

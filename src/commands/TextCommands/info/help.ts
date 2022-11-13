@@ -14,7 +14,7 @@ const command: TextCommandType = {
     const {
       textCommands,
       constants: { embed_colours: { default: embedColor } },
-      helpers: { deleteReactionCollector, addAutoDeleteTimer },
+      helpers: { errorEmbedBuilder },
     } = client;
 
     // IF IT HAS COMMAND ARGUMENT
@@ -24,13 +24,13 @@ const command: TextCommandType = {
       );
 
       if (!cmd) {
-        addAutoDeleteTimer(await message.reply(`Command \`${args[0]}\` not found`));
-        return;
+        throw errorEmbedBuilder({ error: `Command \`${args[0]}\` not found` });
+        // addAutoDeleteTimer(await message.reply(`Command \`${args[0]}\` not found`));
+        // return;
       }
-      const embed = createCommandHelpEmbed(cmd, client);
-      const msg = await message.reply({ embeds: [embed] });
-      await deleteReactionCollector(msg, message.author.id);
-      return;
+      return createCommandHelpEmbed(cmd, client);
+      // const msg = await message.reply({ embeds: [embed] });
+      // await deleteReactionCollector(msg, message.author.id);
     }
 
     // IF NO COMMAND ARGUMENT SHOW HELP MENU
@@ -66,9 +66,11 @@ const command: TextCommandType = {
       embed.fields.push({ name: category, value: commandsList.join(", ") });
     });
 
-    await deleteReactionCollector(
-      await message.reply({ embeds: [embed] }), message.author.id, 60000,
-    );
+    return embed;
+
+    // await deleteReactionCollector(
+    //   await message.reply({ embeds: [embed] }), message.author.id, 60000,
+    // );
   },
 };
 

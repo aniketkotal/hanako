@@ -1,6 +1,9 @@
-import { BaseGuildTextChannel, Guild, Message } from "discord.js";
+import { APIEmbed, BaseGuildTextChannel, Guild, Message } from "discord.js";
 import axios from "axios";
 import type { ExtendedClient } from "../Client";
+import constants from "../../constants/constants.json";
+
+const { gif_endpoints, embed_colours: { default: default_colour } } = constants as typeof constants;
 
 const toTitleCase = (text: string) => {
   let str = text.replace(
@@ -59,10 +62,10 @@ const getMessage = async (
   return message;
 };
 
-const getActionGIF = async (action: string, client: ExtendedClient):
+const getActionGIF = async (action: string):
   Promise<string | undefined> => {
   let url: number;
-  const { common, purrbot, neko } = client.constants.gif_endpoints;
+  const { common, purrbot, neko } = gif_endpoints;
   if (common.includes(action)) url = 1;
   else if (purrbot.includes(action)) url = 2;
   else if (neko.includes(action)) url = 3;
@@ -108,6 +111,21 @@ const deleteReactionCollector = async (message: Message, ownerID: string, time =
 const addAutoDeleteTimer = (message: Message, time = 10000) =>
   setTimeout(() => message.delete(), time);
 
+const errorEmbedBuilder = (error: { title?: string, error: string } | string): APIEmbed => {
+  const embed: APIEmbed = {
+    title: "Error",
+    color: parseInt(default_colour, 16),
+  };
+
+  if (typeof error === "string") {
+    embed.description = error;
+  } else {
+    embed.title = error.title;
+    embed.description = error.error;
+  }
+  return embed;
+};
+
 export default {
   toTitleCase,
   getMessage,
@@ -116,4 +134,5 @@ export default {
   replyMessageWithError,
   deleteReactionCollector,
   addAutoDeleteTimer,
+  errorEmbedBuilder,
 };

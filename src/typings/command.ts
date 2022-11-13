@@ -1,4 +1,5 @@
 import {
+  APIEmbed,
   ChatInputApplicationCommandData,
   CommandInteraction,
   CommandInteractionOptionResolver,
@@ -8,6 +9,7 @@ import {
 } from "discord.js";
 import type { ExtendedClient } from "../structures/Client";
 import { DetailedActionNames, SimpleActionNames } from "./client";
+import { GuildInterface } from "../db/schemas/Guild";
 
 export interface ExtendedInteraction extends CommandInteraction {
   member: GuildMember;
@@ -24,10 +26,11 @@ interface TextCommandRunArgs {
   message: Message;
   args: string[];
   command: string;
+  guild: GuildInterface,
 }
 
-type SlashCommandRunFunction = (options: SlashCommandRunArgs) => Promise<void>;
-type TextCommandRunFunction = (options: TextCommandRunArgs) => Promise<void>;
+type SlashCommandRunFunction = (options: SlashCommandRunArgs) => Promise<APIEmbed | void>;
+type TextCommandRunFunction = (options: TextCommandRunArgs) => Promise<APIEmbed | void>;
 
 export enum CommandCategory {
   ACTION = "🤗 Action",
@@ -46,6 +49,20 @@ export interface Command {
   ownerOnly?: boolean;
   guildOnly?: boolean;
   dmOnly?: boolean;
+}
+
+export interface CommandArgument {
+  argument: string;
+  category: SettingCategories;
+  description: string;
+  usage: Array<string>;
+  run: TextCommandRunFunction;
+}
+
+export enum SettingCategories {
+  UTILITY = "Utility",
+  MODERATION = "Moderation",
+  OTHER = "Other",
 }
 
 export type SlashCommandType = Command & {
@@ -67,4 +84,5 @@ export interface ActionCommandAdditionalOptions {
   gifs?: Array<string>;
 }
 
-export type ActionCommandType = ActionCommandAdditionalOptions & TextCommandType;
+export type ActionCommandType = ActionCommandAdditionalOptions &
+  TextCommandType;

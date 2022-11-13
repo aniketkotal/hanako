@@ -10,13 +10,15 @@ const command: TextCommandType = {
   usage: "sav [user]",
   description: "Shows the server avatar of a user",
   async run({ message, args, client }) {
+    const { helpers: { errorEmbedBuilder }, constants: { error_messages } } = client;
     const query = args[0]?.match(/\d{17,19}/)?.[0] || message.member.id;
 
     if (!query && args[0]) {
-      return client.helpers.replyMessageWithError(
-        message,
-        client.constants.error_messages.INVALID_USER_ID,
-      );
+      throw errorEmbedBuilder({ error: error_messages.INVALID_USER_ID });
+      // return client.helpers.replyMessageWithError(
+      //   message,
+      //   client.constants.error_messages.INVALID_USER_ID,
+      // );
     }
     const user = await message.guild.members.fetch({
       force: true,
@@ -24,10 +26,11 @@ const command: TextCommandType = {
     });
 
     if (!user && args[0]) {
-      return client.helpers.replyMessageWithError(
-        message,
-        client.constants.error_messages.NO_USER_FOUND,
-      );
+      throw errorEmbedBuilder({ error: error_messages.NO_USER_FOUND });
+      // return client.helpers.replyMessageWithError(
+      //   message,
+      //   client.constants.error_messages.NO_USER_FOUND,
+      // );
     }
 
     const embed: APIEmbed = {
@@ -40,8 +43,9 @@ const command: TextCommandType = {
       timestamp: dayjs().toISOString(),
     };
 
-    const msg = await message.reply({ embeds: [embed] });
-    return client.helpers.deleteReactionCollector(msg, message.author.id);
+    return embed;
+    // const msg = await message.reply({ embeds: [embed] });
+    // return client.helpers.deleteReactionCollector(msg, message.author.id);
   },
 };
 

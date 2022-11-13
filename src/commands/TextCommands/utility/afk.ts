@@ -11,15 +11,17 @@ const command: TextCommandType = {
   description: "Sets your AFK status",
   category: CommandCategory.INFO,
   run: async ({ message, args, client }) => {
+    const { helpers: { errorEmbedBuilder }, constants: { error_messages } } = client;
     const urlRegex =
       /[(htps)?:/w.a-zA-Z0-9@%_+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)/;
 
     if (args.join(" ").match(urlRegex)) {
-      await client.helpers.addAutoDeleteTimer(
-        await message.reply(client.constants.global_messages.afk.no_links),
-        25000,
-      );
-      return;
+      throw errorEmbedBuilder({ error: client.constants.global_messages.afk.no_links });
+      // await client.helpers.addAutoDeleteTimer(
+      //   await message.reply(client.constants.global_messages.afk.no_links),
+      //   25000,
+      // );
+      // return;
     }
 
     const afk = await AFK.findOne({
@@ -48,7 +50,8 @@ const command: TextCommandType = {
       await afk.save();
     }
     await setAFKNickname(message);
-    await message.reply({ embeds: [embed] });
+    return embed;
+    // await message.reply({ embeds: [embed] });
   },
 };
 export default command;

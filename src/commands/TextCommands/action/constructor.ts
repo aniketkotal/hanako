@@ -21,7 +21,7 @@ export const prepareSimpleEmbed = async (
   const { color, title } = embed_details;
   const gif = gifs?.length
     ? gifs[Math.floor(Math.random() * gifs.length)]
-    : await client.helpers.getActionGIF(action, client);
+    : await client.helpers.getActionGIF(action);
   return {
     title: title.replace("{author}", message.author.username),
     color: parseInt(color, 16),
@@ -95,7 +95,7 @@ export const prepareDetailedEmbed = async (
 
   const gif = gifs?.length
     ? gifs[Math.floor(Math.random() * gifs.length)]
-    : await client.helpers.getActionGIF(action, client);
+    : await client.helpers.getActionGIF(action);
   const authorUsername = message.member.nickname || message.author.username;
 
   let embed: APIEmbed;

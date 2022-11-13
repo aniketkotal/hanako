@@ -79,7 +79,8 @@
     "NO_USER_FOUND": "No user found for the queried ID!",
     "INVALID_USER_ID": "The given query is invalid! Please try again.",
     "NOT_AFK": "The user is not AFK.",
-    "NO_PERMISSIONS": "You don't have the required permissions to use this command!"
+    "NO_PERMISSIONS": "You don't have the required permissions to use this command!",
+    "NO_PERMISSIONS_BOT": "I don't have the required permissions to use this command. Please ask a moderator to give me the required permissions!"
   },
   "gif_endpoints": {
     "common": [
