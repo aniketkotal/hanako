@@ -49,6 +49,7 @@ const event: Event<"interactionCreate"> = {
     }
     try {
       await interaction.deferReply({ ephemeral: command.ephemeral || false });
+
       await command.run({
         args: interaction.options as CommandInteractionOptionResolver,
         client,

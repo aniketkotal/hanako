@@ -1,5 +1,5 @@
 import {
-  APIEmbed,
+  APIEmbed, ApplicationCommandSubCommand,
   ChatInputApplicationCommandData,
   CommandInteraction,
   CommandInteractionOptionResolver,
@@ -87,3 +87,7 @@ export interface ActionCommandAdditionalOptions {
 
 export type ActionCommandType = ActionCommandAdditionalOptions &
   TextCommandType;
+export type InteractionActionCommandType = ActionCommandAdditionalOptions &
+  ApplicationCommandSubCommand & {
+  run: SlashCommandRunFunction;
+}

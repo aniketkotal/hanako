@@ -1,5 +1,4 @@
 import {
-  ApplicationCommandDataResolvable,
   Client,
   ClientEvents,
   Collection,
@@ -10,7 +9,7 @@ import timezone from "dayjs/plugin/timezone";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
 import {
-  CommandArgument,
+  CommandArgument, InteractionActionCommandType,
   SlashCommandType,
   TextCommandType,
 } from "../typings/command";
@@ -18,7 +17,7 @@ import constants from "../constants/constants.json";
 import utils from "./utils/index";
 import { Event } from "../typings/event";
 import logger from "./Logger";
-import { sayHi } from "../events/messageCreate/modules/message";
+import interactionActionConstructor from "./utils/interactionAction";
 
 dayjs.extend(utc);
 dayjs.extend(relativeTime);
@@ -36,6 +35,7 @@ const {
 export class ExtendedClient extends Client {
   slashCommands: Collection<string, SlashCommandType> = new Collection();
   textCommands: Collection<string, TextCommandType> = new Collection();
+  slashActionCommands: Collection<string, InteractionActionCommandType> = new Collection();
   settingModules: Collection<string, CommandArgument> = new Collection();
   coolDowns: Collection<string, Collection<string, number>> = new Collection();
   constants: Constants = constants;
@@ -93,9 +93,7 @@ export class ExtendedClient extends Client {
       if (!guild) return;
       await guild.commands.set(ownerOnlyCommands);
     }
-    if (guildCommands.length) {
-      await this.application?.commands.set(guildCommands);
-    }
+    await this.application?.commands.set(guildCommands);
   }
 
   private async _registerModules() {
@@ -146,6 +144,11 @@ export class ExtendedClient extends Client {
       }),
     );
 
+    // REGISTERING CODED SLASH ACTION COMMANDS
+    const interactionActions = interactionActionConstructor();
+    const slashActionCommandCount = interactionActions.length;
+    interactionActions.forEach(action => this.slashActionCommands.set(action.name, action));
+
     // REGISTERING CODED ACTION COMMANDS
     let actionCount = 0;
     const actionCommands = constructAllActions();
@@ -177,7 +180,8 @@ export class ExtendedClient extends Client {
       level: "loaded",
     });
     logger.log({
-      message: `Registered ${slashCommandCount} slash commands.`,
+      message: `Registered ${slashCommandCount + slashActionCommandCount} slash commands.` +
+        `(Including ${slashActionCommandCount} action commands)`,
       level: "loaded",
     });
     logger.log({
