@@ -111,12 +111,18 @@ const command: SlashCommandType = {
       ],
     };
 
+    const {
+      MOVIE_GUILD_ID,
+      MOVIE_ANNOUNCE_CHANNEL_ID,
+      MOVIE_ANNOUNCE_ROLE_ID,
+    } = process.env;
+
     const previewEmbedMessage = await interaction.followUp({
       embeds: [embed],
       content:
         "This is a preview of the content that will be sent. " +
         "Check if you want any changes. After confirming, " +
-        "A message will be sent to <#743748100367187999> and a movie night will be scheduled.",
+        `A message will be sent to <#${MOVIE_ANNOUNCE_CHANNEL_ID}> and a movie night will be scheduled.`,
       components: [row],
     });
 
@@ -124,7 +130,7 @@ const command: SlashCommandType = {
       time: 60000,
     });
     if (response.customId === "send") {
-      const guild = client.guilds.cache.get("869065050084737077");
+      const guild = client.guilds.cache.get(MOVIE_GUILD_ID);
 
       const guildEventDescription =
         "Our weekly movie night is being held today! Join us to watch the movie together! " +
@@ -142,9 +148,12 @@ const command: SlashCommandType = {
       const event = await guild.scheduledEvents.create(guildEvent);
       embed.url = event.url;
 
-      const channel = await guild.channels.fetch("869065266699579454");
+      const channel = await guild.channels.fetch(MOVIE_ANNOUNCE_CHANNEL_ID);
       if (channel.isTextBased()) {
-        const movieNightAnnouncementMessage = await channel.send({ embeds: [embed] });
+        const movieNightAnnouncementMessage = await channel.send({
+          content: `<@${MOVIE_ANNOUNCE_ROLE_ID}>`,
+          embeds: [embed],
+        });
         await movieNightAnnouncementMessage.react("🎉");
         await movieNightAnnouncementMessage.channel.send(event.url);
         await interaction.editReply({

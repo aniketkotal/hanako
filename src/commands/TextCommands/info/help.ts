@@ -10,7 +10,7 @@ const command: TextCommandType = {
   cooldown: 60,
   examples: ["help bite", "help ping"],
   category: CommandCategory.INFO,
-  run: async ({ message, client, args }) => {
+  run: async ({ client, args, guild }) => {
     const {
       textCommands,
       constants: { embed_colours: { default: embedColor } },
@@ -40,13 +40,26 @@ const command: TextCommandType = {
         icon_url: client.user.displayAvatarURL(),
       },
       description: "Here is a list of all the commands!\n" +
-        "Need more help? Come join our [support server](https://discord.gg/8cag4EzXfy)!",
-      fields: [],
+        "Need more help? Come join our [support server](https://discord.gg/8cag4EzXfy)!\n" +
+        `To view more information about a command, use \`${guild.prefix ?? process.env.DEFAULT_PREFIX}help <command>\` `,
+      fields: [
+        {
+          name: "Total Commands",
+          value: textCommands.size.toString(),
+          inline: true,
+        },
+        {
+          name: "Default Prefix",
+          value: `\`${process.env.DEFAULT_PREFIX}\``,
+          inline: true,
+        },
+        {
+          name: "Current Prefix",
+          value: `\`${guild.prefix ?? process.env.DEFAULT_PREFIX}\``,
+          inline: true,
+        },
+      ],
       color: parseInt(embedColor, 16),
-      footer: {
-        text: `Requested By ${message.author.username}`,
-        icon_url: message.author.displayAvatarURL(),
-      },
     };
 
     // {"Info": ["avatar", ...], ...}

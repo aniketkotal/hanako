@@ -1,4 +1,4 @@
-import { APIEmbed, Message, PermissionsBitField } from "discord.js";
+import { APIEmbed, Interaction, Message, PermissionsBitField } from "discord.js";
 import dayjs from "dayjs";
 import { client } from "../../index";
 import parseMessage from "./modules/parseMessage";
@@ -13,7 +13,7 @@ import { Guild } from "../../db/schemas/Guild";
 const { Flags } = PermissionsBitField;
 const {
   constants: { embed_colours: { default: embedColor } },
-  helpers: { errorEmbedBuilder, addAutoDeleteTimer },
+  helpers: { errorEmbedBuilder, addAutoDeleteTimer, sendErrorToOwners },
 } = client;
 
 const event: Event<"messageCreate"> = {
@@ -84,7 +84,7 @@ const event: Event<"messageCreate"> = {
           message: e.message,
           level: "error",
         });
-        sendErrorToOwners(message, e);
+        sendErrorToOwners(message, e, client);
         console.log(e);
         const errMessage = await message.reply({
           embeds: [errorEmbedBuilder("An error occurred while running the command. " +
@@ -115,33 +115,6 @@ const checkIfProperChannel = async (message: Message, command: TextCommandType) 
     return false;
   }
   return true;
-};
-
-const sendErrorToOwners = (message: Message, error: Error) => {
-  const timestamp = dayjs().toISOString();
-  const errorDetailsMessage: APIEmbed = {
-    author: {
-      name: `Error in ${message.guild?.name || "DM"} (${message.guildId || "DM"})`,
-      icon_url: message.guild?.iconURL() || message.author.avatarURL(),
-    },
-    title: `${error.name}: ${error.message}`,
-    description: `\`\`\`js\n${error.stack}\`\`\``,
-    timestamp,
-    color: parseInt(embedColor, 16),
-  };
-
-  const messageDetailsEmbed: APIEmbed = {
-    author: {
-      name: `Message sent by ${message.author.tag} (${message.author.id})`,
-      icon_url: message.author.avatarURL(),
-    },
-    description: `\`${message.content}\``,
-    color: parseInt(embedColor, 16),
-    timestamp,
-  };
-
-  const owners = client.owners.map((o) => client.users.cache.get(o));
-  owners.forEach((o) => o?.send({ embeds: [errorDetailsMessage, messageDetailsEmbed] }));
 };
 
 const checkIfHasPermissions = async (message: Message, command: TextCommandType) => {

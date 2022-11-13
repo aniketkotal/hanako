@@ -19,6 +19,7 @@ interface SlashCommandRunArgs {
   client: ExtendedClient;
   interaction: ExtendedInteraction;
   args: CommandInteractionOptionResolver;
+  guild: GuildInterface,
 }
 
 interface TextCommandRunArgs {

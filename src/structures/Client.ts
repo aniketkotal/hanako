@@ -9,7 +9,6 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
-import { RegisterCommandsOptions } from "../typings/client";
 import {
   CommandArgument,
   SlashCommandType,
@@ -53,7 +52,7 @@ export class ExtendedClient extends Client {
         status: "idle",
         activities: [
           {
-            name: ",help",
+            name: "/help",
             type: 2,
           },
           {
@@ -85,17 +84,23 @@ export class ExtendedClient extends Client {
     return a?.default as T;
   }
 
-  private async _registerSlashCommands({
-                                         commands,
-                                         guildID,
-                                       }: RegisterCommandsOptions) {
-    if (guildID) await this.guilds.cache.get(guildID)?.commands.set(commands);
-    else await this.application?.commands.set(commands);
+  private async _registerSlashCommands(commands: Array<SlashCommandType>) {
+    const ownerOnlyCommands = commands.filter(cmd => cmd.ownerOnly);
+    const guildCommands = commands.filter(cmd => !cmd.ownerOnly);
+    if (ownerOnlyCommands.length) {
+      const guildID = process.env.MOVIE_GUILD_ID;
+      const guild = this.guilds.cache.get(guildID);
+      if (!guild) return;
+      await guild.commands.set(ownerOnlyCommands);
+    }
+    if (guildCommands.length) {
+      await this.application?.commands.set(guildCommands);
+    }
   }
 
   private async _registerModules() {
     const start = process.hrtime();
-    const slashCommands: Array<ApplicationCommandDataResolvable> = [];
+    const slashCommands: Array<SlashCommandType> = [];
     const fileType = process.env.ENVIRONMENT === "dev" ? "ts" : "js";
     const [eventFiles, slashCommandFiles, textCommandFiles] = await Promise.all(
       [
@@ -150,9 +155,7 @@ export class ExtendedClient extends Client {
       actionCount += 1;
     });
     this.once("ready", async () => {
-      await this._registerSlashCommands({
-        commands: slashCommands,
-      });
+      await this._registerSlashCommands(slashCommands);
     });
 
     let eventCount = 0;

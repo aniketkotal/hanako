@@ -1,5 +1,6 @@
-import { APIEmbed, BaseGuildTextChannel, Guild, Message } from "discord.js";
+import { APIEmbed, BaseGuildTextChannel, Guild, Interaction, Message } from "discord.js";
 import axios from "axios";
+import dayjs from "dayjs";
 import type { ExtendedClient } from "../Client";
 import constants from "../../constants/constants.json";
 
@@ -126,6 +127,26 @@ const errorEmbedBuilder = (error: { title?: string, error: string } | string): A
   return embed;
 };
 
+const sendErrorToOwners = (message: Message | Interaction,
+                           error: Error,
+                           client: ExtendedClient) => {
+  const { constants: { embed_colours: { default: embedColor } } } = client;
+  const timestamp = dayjs().toISOString();
+  const errorDetailsMessage: APIEmbed = {
+    author: {
+      name: `Error in ${message.guild?.name || "DM"} (${message.guildId || "DM"})`,
+      icon_url: message.guild?.iconURL(),
+    },
+    title: `${error.name}: ${error.message}`,
+    description: `\`\`\`js\n${error.stack}\`\`\``,
+    timestamp,
+    color: parseInt(embedColor, 16),
+  };
+
+  const owners = client.owners.map((o) => client.users.cache.get(o));
+  owners.forEach((o) => o?.send({ embeds: [errorDetailsMessage] }));
+};
+
 export default {
   toTitleCase,
   getMessage,
@@ -135,4 +156,5 @@ export default {
   deleteReactionCollector,
   addAutoDeleteTimer,
   errorEmbedBuilder,
+  sendErrorToOwners,
 };

@@ -12,6 +12,7 @@ client.start().catch((e) => {
     message: error.message,
     level: "error",
   });
+  console.log(error);
 });
 
 process.on("uncaughtException", (e) => {
