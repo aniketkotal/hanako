@@ -8,10 +8,11 @@ import {
   GuildScheduledEventPrivacyLevel,
 } from "discord.js";
 import dayjs, { Dayjs } from "dayjs";
-import { SlashCommandType } from "../../../typings/command";
+import { SlashCommandType } from "../../../../typings/command";
 
 const command: SlashCommandType = {
-  name: "announce_movie_night",
+  name: "announce",
+  type: 1,
   description: "Announce a movie night!",
   ownerOnly: true,
   ephemeral: true,

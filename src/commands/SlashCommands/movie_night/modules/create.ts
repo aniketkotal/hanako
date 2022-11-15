@@ -1,12 +1,13 @@
 import { APIEmbed, ApplicationCommandOptionType } from "discord.js";
 import dayjs from "dayjs";
-import { addMovieNightCollector, addMovieNightToDB, sendMovieNightEmbed } from "./helpers";
-import { SlashCommandType } from "../../../typings/command";
-import logger from "../../../structures/Logger";
+import { addMovieNightCollector, addMovieNightToDB, sendMovieNightEmbed } from "../helpers";
+import { SlashCommandType } from "../../../../typings/command";
+import logger from "../../../../structures/Logger";
 
 const command: SlashCommandType = {
-  name: "movie_night",
+  name: "create",
   description: "Create a movie night!",
+  type: 1,
   ownerOnly: true,
   ephemeral: true,
   options: [

@@ -52,9 +52,10 @@ export default () => {
   });
 
   const simpleActions = Object.values(SimpleActionNames).map(action => {
+    const desc = action.slice(-1) === "e" ? action.slice(0, -1) : action;
     const cmd: InteractionActionCommandType = {
       name: action,
-      description: `Action command for ${action}ing`,
+      description: `Action command for ${desc}ing`,
       type: 2,
       async run({ interaction, client: cmdClient }) {
         return prepareSimpleInteractionEmbed(

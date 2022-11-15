@@ -4,7 +4,7 @@ import { DetailedActionNames, SimpleActionNames } from "../../../typings/client"
 
 const detailedActions = Object.values(DetailedActionNames).flatMap(action => ({
   name: action,
-  description: `Action command for ${action}ing`,
+  description: `Action command for ${action.slice(-1) === "e" ? action.slice(0, -1) : action}ing`,
   type: ApplicationCommandOptionType.Subcommand,
   options: [{
     name: "user",
@@ -16,7 +16,7 @@ const detailedActions = Object.values(DetailedActionNames).flatMap(action => ({
 
 const simpleActions = Object.values(SimpleActionNames).flatMap(action => ({
   name: action,
-  description: `Action command for ${action}ing`,
+  description: `Action command for ${action.slice(-1) === "e" ? action.slice(0, -1) : action}ing`,
   type: ApplicationCommandOptionType.Subcommand,
 })) as ApplicationCommandSubCommandData[];
 

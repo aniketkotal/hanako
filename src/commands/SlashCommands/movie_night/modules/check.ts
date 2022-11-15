@@ -1,12 +1,13 @@
 import { ApplicationCommandOptionType } from "discord.js";
-import { prepareMovieNightDetailEmbed, prepareVotesEmbed } from "./helpers";
-import { MovieNights } from "../../../db/schemas/MovieNights";
-import { SlashCommandType } from "../../../typings/command";
+import { prepareMovieNightDetailEmbed, prepareVotesEmbed } from "../helpers";
+import { MovieNights } from "../../../../db/schemas/MovieNights";
+import { SlashCommandType } from "../../../../typings/command";
 
 const command: SlashCommandType = {
-  name: "check_movie_votes",
+  name: "check_votes",
   description: "Get votes for a movie night",
   ownerOnly: true,
+  type: 1,
   ephemeral: true,
   options: [
     {

@@ -25,9 +25,11 @@ const customFormat = format.printf(
 
 const errorStackFormat = format((info) => {
   if (info instanceof Error) {
-    return { ...info,
-stack: info.stack,
-      message: info.message };
+    return {
+      ...info,
+      stack: info.stack,
+      message: info.message,
+    };
   }
   return info;
 });

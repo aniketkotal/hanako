@@ -105,7 +105,7 @@ export class ExtendedClient extends Client {
         glob(`/events/**/index.${fileType}`, {
           root: require.main?.path,
         }),
-        glob(`/commands/SlashCommands/**/*.${fileType}`, {
+        glob(`/commands/SlashCommands/*/*.${fileType}`, {
           root: require.main?.path,
         }),
         glob(`/commands/TextCommands/**/*.${fileType}`, {
